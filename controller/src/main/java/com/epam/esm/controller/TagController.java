@@ -1,10 +1,14 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping(value = "/tag")
+@RequestMapping(value = "/tags")
+
 public class TagController {
 
     private final TagService service;
@@ -13,7 +17,12 @@ public class TagController {
         this.service = service;
     }
 
-    @PostMapping(value = "/create")
+    @GetMapping
+    public List<Tag> showAllTags() {
+        return null;
+    }
+
+    @PostMapping
     public String createTag(@RequestParam("name") String name) {
         return name;
     }
@@ -23,7 +32,7 @@ public class TagController {
         return "id :" + id;
     }
 
-    @GetMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "{id}")
     public String deleteTag(@PathVariable long id) {
         return "deleted " + id;
     }

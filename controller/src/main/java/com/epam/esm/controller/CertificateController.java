@@ -1,11 +1,13 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.model.Certificate;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.service.CertificateService;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping(value = "/certificate")
+import java.util.List;
+import java.util.Optional;
+
+@RequestMapping(value = "/certificates")
 @RestController
 public class CertificateController {
 
@@ -15,24 +17,29 @@ public class CertificateController {
         this.service = service;
     }
 
+    @GetMapping
+    public List<Certificate> showAllCertificates() {
+        return null;
+    }
+
     @GetMapping(value = "/{id}")
-    public String showCertificate(@PathVariable long id, Model model) {
-        Certificate certificate = service.findCertificate(id);
-        return "id : " +  certificate.getId();
+    public Certificate showCertificate(@PathVariable Long id) {
+        Optional<Certificate> certificate = service.findById(id);
+        return certificate.orElseGet(Certificate::new);
     }
 
-    @PostMapping(value = "/create")
+    @PostMapping
     public String createCertificate(@ModelAttribute("certificate") Certificate certificate) {
-        return "id : " + service.createCertificate(certificate).getId();
+        return "id : " + service.create(certificate).getId();
     }
 
-    @GetMapping(value = "/delete/{id}")
-    public String deleteCertificate(@PathVariable long id,Model model) {
+    @DeleteMapping(value = "/{id}")
+    public String deleteCertificate(@PathVariable long id) {
         return id + " deleted";
     }
 
-    @PostMapping(value = "/update/{id}")
-    public String updateCertificate(@PathVariable long id,Model model) {
+    @PutMapping(value = "/{id}")
+    public String updateCertificate(@PathVariable long id) {
         return id + " updated";
     }
 }

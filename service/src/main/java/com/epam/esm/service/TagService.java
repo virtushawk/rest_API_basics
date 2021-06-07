@@ -1,6 +1,6 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.Tag;
+import com.epam.esm.entity.Tag;
 
 public interface TagService {
     Tag createTag(String name);
