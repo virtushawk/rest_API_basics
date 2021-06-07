@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.model.Certificate;
+import com.epam.esm.service.CertificateService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,16 +9,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CertificateController {
 
+    private final CertificateService service;
+
+    public CertificateController(CertificateService service) {
+        this.service = service;
+    }
+
     @GetMapping(value = "/{id}")
     public String showCertificate(@PathVariable long id, Model model) {
-        model.addAttribute("name",id);
-        model.addAttribute("cost","14.5");
-        return model.toString();
+        Certificate certificate = service.findCertificate(id);
+        return "id : " +  certificate.getId();
     }
 
     @PostMapping(value = "/create")
     public String createCertificate(@ModelAttribute("certificate") Certificate certificate) {
-        return certificate.toString();
+        return "id : " + service.createCertificate(certificate).getId();
     }
 
     @GetMapping(value = "/delete/{id}")
