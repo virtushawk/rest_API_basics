@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
@@ -21,7 +22,7 @@ public class DatabaseConfig {
 
     @Bean
     public DataSource getDataSource() {
-        HikariConfig  config = new HikariConfig();
+        HikariConfig config = new HikariConfig();
         config.setJdbcUrl(environment.getProperty("url"));
         config.setUsername(environment.getProperty("user"));
         config.setPassword(environment.getProperty("password"));
@@ -29,4 +30,10 @@ public class DatabaseConfig {
         config.setMaximumPoolSize(Integer.parseInt(environment.getProperty("maximum-pool-size")));
         return new HikariDataSource(config);
     }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
 }
