@@ -36,6 +36,14 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE = "INSERT INTO tag_has_gift_certificate(tag_id,gift_certificate_id) " +
             "VALUES(?,?)";
     private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id,name FROM tag INNER JOIN tag_has_gift_certificate ON id = tag_id WHERE gift_certificate_id = 18";
+    private static final String SQL_UPDATE_CERTIFICATE_NAME_BY_ID = "UPDATE gift_certificate set name = ? WHERE id = ?";
+    private static final String SQL_UPDATE_CERTIFICATE_DESCRIPTION_BY_ID = "UPDATE gift_certificate set description = ? WHERE id = ?";
+    private static final String SQL_UPDATE_CERTIFICATE_PRICE_BY_ID = "UPDATE gift_certificate set price = ? WHERE id = ?";
+    private static final String SQL_UPDATE_CERTIFICATE_DURATION_BY_ID = "UPDATE gift_certificate set duration = ? WHERE id = ?";
+    private static final String SQL_UPDATE_CERTIFICATE_CREATE_DATE_BY_ID = "UPDATE gift_certificate set create_date = ? WHERE id = ?";
+    private static final String SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID = "UPDATE gift_certificate set last_update_date = ? WHERE id = ?";
+    private static final String SQL_DELETE_CERTIFICATE_BY_ID = "DELETE FROM gift_certificate WHERE id = ?";
+    private static final String SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID = "DELETE FROM tag_has_gift_certificate WHERE gift_certificate_id = ?";
 
 
     public CertificateDAOImpl(JdbcTemplate jdbcTemplate, CertificateMapper certificateMapper, TagMapper tagMapper) {
@@ -83,11 +91,28 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public Certificate update(Certificate certificate) {
-        return null;
+        if (certificate.getName() != null) {
+            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_NAME_BY_ID, certificate.getName());
+        }
+        if (certificate.getDescription() != null) {
+            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_DESCRIPTION_BY_ID, certificate.getDescription());
+        }
+        if (certificate.getPrice() != null) {
+            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_PRICE_BY_ID, certificate.getPrice());
+        }
+        if (certificate.getDuration() != 0) {
+            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_DURATION_BY_ID, certificate.getDuration());
+        }
+        jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID, certificate.getLastUpdateDate());
+        return jdbcTemplate.queryForObject(SQL_SELECT_CERTIFICATE_BY_ID,
+                new Object[] {certificate.getId()},new int[] {Types.INTEGER},certificateMapper);
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        boolean flag;
+        flag = jdbcTemplate.update(SQL_DELETE_CERTIFICATE_BY_ID,id) > 0;
+        jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID,id);
+        return flag;
     }
 }
