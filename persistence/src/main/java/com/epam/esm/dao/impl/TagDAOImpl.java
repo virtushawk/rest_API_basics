@@ -4,13 +4,14 @@ import com.epam.esm.dao.TagDAO;
 import com.epam.esm.entity.Tag;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class TagDAOImpl implements TagDAO {
 
     @Override
-    public Tag update(Tag tag) {
+    public List<Tag> findAll() {
         return null;
     }
 
