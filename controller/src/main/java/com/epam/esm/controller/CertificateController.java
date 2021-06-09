@@ -1,6 +1,8 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.CertificateService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +20,17 @@ public class CertificateController {
     }
 
     @GetMapping
-    public List<Certificate> showAllCertificates() {
-        return null;
+    public List<CertificateDTO> showAllCertificates() {
+        return service.findAll();
     }
 
     @GetMapping(value = "/{id}")
-    public Certificate showCertificate(@PathVariable Long id) {
-        Optional<Certificate> certificate = service.findById(id);
-        return certificate.orElseGet(Certificate::new);
+    public CertificateDTO getCertificate(@PathVariable Long id) {
+        return service.findById(id);
     }
 
     @PostMapping
-    public String createCertificate(@ModelAttribute("certificate") Certificate certificate) {
+    public String createCertificate(@ModelAttribute("certificate") CertificateDTO certificate) {
         return "id : " + service.create(certificate).getId();
     }
 

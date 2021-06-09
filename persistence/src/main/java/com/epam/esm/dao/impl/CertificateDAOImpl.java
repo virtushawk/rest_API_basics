@@ -5,6 +5,7 @@ import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +54,7 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public List<Certificate> findAll() {
-        List<Certificate> certificates = jdbcTemplate.query(SQL_SELECT_CERTIFICATES,certificateMapper);
-        return null;
+        return jdbcTemplate.query(SQL_SELECT_CERTIFICATES, certificateMapper);
     }
 
     @Override
@@ -63,30 +62,29 @@ public class CertificateDAOImpl implements CertificateDAO {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_CERTIFICATE);
-            preparedStatement.setString(1,certificate.getName());
-            preparedStatement.setString(2,certificate.getDescription());
-            preparedStatement.setBigDecimal(3,certificate.getPrice());
-            preparedStatement.setInt(4,certificate.getDuration());
+            preparedStatement.setString(1, certificate.getName());
+            preparedStatement.setString(2, certificate.getDescription());
+            preparedStatement.setBigDecimal(3, certificate.getPrice());
+            preparedStatement.setInt(4, certificate.getDuration());
             preparedStatement.setTimestamp(5, Timestamp.from(certificate.getCreateDate().toInstant()));
             preparedStatement.setTimestamp(6, Timestamp.from(certificate.getLastUpdateDate().toInstant()));
             return preparedStatement;
-        },keyHolder);
+        }, keyHolder);
         certificate.setId((Long) keyHolder.getKey());
         Set<Tag> tags = certificate.getTags();
-        tags.forEach(o -> jdbcTemplate.update(SQL_INSERT_TAG,o.getName()));
-        tags.forEach(o -> jdbcTemplate.update(SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE,o.getId(),certificate.getId()));
+        tags.forEach(o -> jdbcTemplate.update(SQL_INSERT_TAG, o.getName()));
+        tags.forEach(o -> jdbcTemplate.update(SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE, o.getId(), certificate.getId()));
         return certificate;
     }
 
     @Override
     public Optional<Certificate> findById(Long id) {
-        Optional<Certificate> certificate = Optional.ofNullable(jdbcTemplate.queryForObject(SQL_SELECT_CERTIFICATE_BY_ID,
-                new Object[] {id},new int[] {Types.INTEGER},certificateMapper));
-        if (certificate.isPresent()) {
-            Set<Tag> tags = new HashSet<>(jdbcTemplate.query(SQL_SELECT_TAGS_BY_CERTIFICATE_ID,tagMapper));
-            certificate.get().setTags(tags);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_SELECT_CERTIFICATE_BY_ID, new Object[]{id}, new int[]{Types.INTEGER},
+                    certificateMapper));
+        } catch (EmptyResultDataAccessException e) {
+           return Optional.empty();
         }
-        return certificate;
     }
 
     @Override
@@ -105,14 +103,14 @@ public class CertificateDAOImpl implements CertificateDAO {
         }
         jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID, certificate.getLastUpdateDate());
         return jdbcTemplate.queryForObject(SQL_SELECT_CERTIFICATE_BY_ID,
-                new Object[] {certificate.getId()},new int[] {Types.INTEGER},certificateMapper);
+                new Object[]{certificate.getId()}, new int[]{Types.INTEGER}, certificateMapper);
     }
 
     @Override
     public boolean delete(Long id) {
         boolean flag;
-        flag = jdbcTemplate.update(SQL_DELETE_CERTIFICATE_BY_ID,id) > 0;
-        jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID,id);
+        flag = jdbcTemplate.update(SQL_DELETE_CERTIFICATE_BY_ID, id) > 0;
+        jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
         return flag;
     }
 }
