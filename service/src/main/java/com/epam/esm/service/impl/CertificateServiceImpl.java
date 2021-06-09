@@ -9,7 +9,6 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.MapperDTO;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +35,19 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    @Transactional
     public CertificateDTO create(CertificateDTO certificateDTO) {
-        return certificateDTO;
+        Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
+        certificate = certificateDAO.create(certificate);
+        Set<TagDTO> tagDTOS = certificateDTO.getTags();
+        final Long certificateId = certificate.getId();
+        Set<Tag> tags = tagDTOS.stream().map(mapperDTO::convertDTOToTag).collect(Collectors.toSet());
+        tags = tags.stream().map(tagDAO::create).collect(Collectors.toSet());
+        tags.forEach(tag -> tagDAO.attachToCertificateById(tag.getId(),certificateId));
+        tagDTOS = tags.stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toSet());
+        CertificateDTO result = mapperDTO.convertCertificateToDTO(certificate);
+        result.setTags(tagDTOS);
+        return result;
     }
 
     @Override

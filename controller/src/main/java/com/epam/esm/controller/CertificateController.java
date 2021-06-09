@@ -1,13 +1,14 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
-import com.epam.esm.entity.Certificate;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.CertificateService;
+import jakarta.validation.Validator;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping(value = "/certificates")
 @RestController
@@ -30,8 +31,11 @@ public class CertificateController {
     }
 
     @PostMapping
-    public String createCertificate(@ModelAttribute("certificate") CertificateDTO certificate) {
-        return "id : " + service.create(certificate).getId();
+    public CertificateDTO createCertificate(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new CertificateNotFoundException("ID : " + certificateDTO.getId());
+        }
+        return service.create(certificateDTO);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -39,7 +43,7 @@ public class CertificateController {
         return id + " deleted";
     }
 
-    @PutMapping(value = "/{id}")
+    @PatchMapping(value = "/{id}")
     public String updateCertificate(@PathVariable long id) {
         return id + " updated";
     }

@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
@@ -61,7 +62,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     public Certificate create(Certificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_CERTIFICATE);
+            PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, certificate.getName());
             preparedStatement.setString(2, certificate.getDescription());
             preparedStatement.setBigDecimal(3, certificate.getPrice());
@@ -70,10 +71,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             preparedStatement.setTimestamp(6, Timestamp.from(certificate.getLastUpdateDate().toInstant()));
             return preparedStatement;
         }, keyHolder);
-        certificate.setId((Long) keyHolder.getKey());
-        Set<Tag> tags = certificate.getTags();
-        tags.forEach(o -> jdbcTemplate.update(SQL_INSERT_TAG, o.getName()));
-        tags.forEach(o -> jdbcTemplate.update(SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE, o.getId(), certificate.getId()));
+        certificate.setId(keyHolder.getKey().longValue());
         return certificate;
     }
 
