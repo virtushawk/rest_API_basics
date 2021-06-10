@@ -2,6 +2,8 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.TagService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +25,18 @@ public class TagController {
     }
 
     @PostMapping
-    public TagDTO createTag(@RequestBody TagDTO tagDTO) {
+    public TagDTO createTag(@Valid @RequestBody TagDTO tagDTO) {
         return service.create(tagDTO);
     }
 
     @GetMapping(value = "/{id}")
-    public String showTag(@PathVariable long id) {
-        return "id :" + id;
+    public TagDTO getTag(@PathVariable Long id) {
+        return service.findById(id);
     }
 
     @DeleteMapping(value = "{id}")
-    public String deleteTag(@PathVariable long id) {
-        return "deleted " + id;
+    public ResponseEntity<?> deleteTag(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.ok("resources deleted");
     }
 }

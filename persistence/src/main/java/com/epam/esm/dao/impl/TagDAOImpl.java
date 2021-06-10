@@ -28,6 +28,9 @@ public class TagDAOImpl implements TagDAO {
             "VALUES(?,?)";
     private static final String SQL_SELECT_TAG_BY_NAME = "SELECT id,name FROM tag WHERE name = ?";
     private static final String SQL_SELECT_ALL_TAGS = "SELECT id,name FROM tag";
+    private static final String SQL_SELECT_TAG_BY_ID = "SELECT id,name FROM tag WHERE id = ?";
+    private static final String SQL_DELETE_TAG_BY_ID = "DELETE FROM tag WHERE id = ?";
+    private static final String SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID = "DELETE FROM tag_has_gift_certificate WHERE tag_id = ?";
 
     public TagDAOImpl(JdbcTemplate jdbcTemplate, TagMapper tagMapper) {
         this.jdbcTemplate = jdbcTemplate;
@@ -57,12 +60,22 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public Optional<Tag> findById(Long id) {
-        return Optional.empty();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_SELECT_TAG_BY_ID, new Object[]{id}, new int[]{Types.INTEGER},
+                    tagMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        boolean flag;
+        flag = jdbcTemplate.update(SQL_DELETE_TAG_BY_ID, id) > 0;
+        if (flag) {
+            jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
+        }
+        return flag;
     }
 
     @Override

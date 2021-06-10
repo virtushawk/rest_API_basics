@@ -3,11 +3,13 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.MapperDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +29,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDTO findById(Long aLong) {
-        return null;
+    public TagDTO findById(Long id) {
+        Optional<Tag> tag = tagDAO.findById(id);
+        if (tag.isEmpty()){
+            throw new TagNotFoundException("Requested tag not found, id : " + id);
+        }
+        return mapperDTO.convertTagToDTO(tag.get());
     }
 
     @Override
@@ -38,7 +44,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public boolean delete(Long aLong) {
-        return false;
+    public boolean delete(Long id) {
+        boolean flag = tagDAO.delete(id);
+        if (!flag) {
+            throw new TagNotFoundException("Requested tag not found, id : " + id);
+        }
+        return true;
     }
 }
