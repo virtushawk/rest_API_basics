@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.TagService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +18,8 @@ public class TagController {
     }
 
     @GetMapping
-    public List<Tag> showAllTags() {
-        return null;
+    public List<TagDTO> getAllTags() {
+        return service.findAll();
     }
 
     @PostMapping
