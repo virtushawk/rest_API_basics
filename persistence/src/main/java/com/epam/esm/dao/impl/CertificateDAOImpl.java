@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID = "UPDATE gift_certificate set last_update_date = ? WHERE id = ?";
     private static final String SQL_DELETE_CERTIFICATE_BY_ID = "DELETE FROM gift_certificate WHERE id = ?";
     private static final String SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID = "DELETE FROM tag_has_gift_certificate WHERE gift_certificate_id = ?";
+    private static final String SQL_UPDATE_BY_ID = "UPDATE gift_certificate SET %s = ? WHERE id = ?";
 
 
     public CertificateDAOImpl(JdbcTemplate jdbcTemplate, CertificateMapper certificateMapper, TagMapper tagMapper) {
@@ -105,10 +107,21 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
+    public boolean applyPatch(Map<String, Object> patchValues, Long id) {
+        patchValues.forEach((key, value) -> {
+            String formattedSQL = String.format(SQL_UPDATE_BY_ID,key);
+            jdbcTemplate.update(formattedSQL,value,id);
+        });
+        return true;
+    }
+
+    @Override
     public boolean delete(Long id) {
         boolean flag;
         flag = jdbcTemplate.update(SQL_DELETE_CERTIFICATE_BY_ID, id) > 0;
-        jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
+        if (flag) {
+            jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
+        }
         return flag;
     }
 }

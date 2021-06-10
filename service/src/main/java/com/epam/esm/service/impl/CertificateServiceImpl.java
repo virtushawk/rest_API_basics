@@ -9,13 +9,12 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.MapperDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -76,7 +75,24 @@ public class CertificateServiceImpl implements CertificateService {
         return null;
     }
 
+    @Override
+    @Transactional
+    public CertificateDTO applyPatch(Map<String, Object> patchValues,Long id) {
+        if (patchValues.containsKey("tags")) {
+            Set<Tag> tags = new ObjectMapper().convertValue(patchValues.remove("tags"),new TypeReference<Set<Tag>>() {});
+            tags = tags.stream().map(tagDAO::create).collect(Collectors.toSet());
+            tags.forEach(tag -> tagDAO.attachToCertificateById(tag.getId(),id));
+        }
+        certificateDAO.applyPatch(patchValues,id);
+        return findById(id);
+    }
+
+    @Transactional
     public boolean delete(Long id) {
-        return false;
+        boolean flag = certificateDAO.delete(id);
+        if(!flag) {
+            throw new CertificateNotFoundException("Requested certificate not found, id : " + id);
+        }
+        return true;
     }
 }
