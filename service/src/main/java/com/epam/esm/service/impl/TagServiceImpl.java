@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.MapperDTO;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDTO create(TagDTO tagDTO) {
-        return null;
+        Tag tag = mapperDTO.convertDTOToTag(tagDTO);
+        return mapperDTO.convertTagToDTO(tagDAO.create(tag));
     }
 
     @Override

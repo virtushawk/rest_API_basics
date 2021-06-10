@@ -23,8 +23,8 @@ public class TagController {
     }
 
     @PostMapping
-    public String createTag(@RequestParam("name") String name) {
-        return name;
+    public TagDTO createTag(@RequestBody TagDTO tagDTO) {
+        return service.create(tagDTO);
     }
 
     @GetMapping(value = "/{id}")
