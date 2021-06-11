@@ -47,7 +47,6 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    @Transactional
     public CertificateDTO findById(Long id) {
         Optional<Certificate> certificate = certificateDAO.findById(id);
         if (certificate.isEmpty()) {

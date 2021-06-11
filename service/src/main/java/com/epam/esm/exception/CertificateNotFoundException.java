@@ -2,6 +2,8 @@ package com.epam.esm.exception;
 
 public class CertificateNotFoundException extends RuntimeException {
 
+    public static final int CERTIFICATE_NOT_FOUND_ERROR_CODE = 103;
+
     public CertificateNotFoundException() {
     }
 
