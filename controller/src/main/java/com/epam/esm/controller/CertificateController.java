@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
-import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +45,9 @@ public class CertificateController {
     }
 
     @PatchMapping(value = "/{id}")
-    public CertificateDTO patchCertificate(@PathVariable Long id, @RequestBody Map<String, Object> patchValues) {
-        return service.applyPatch(patchValues, id);
+    public CertificateDTO patchCertificate(@PathVariable Long id, @RequestBody CertificateDTO certificateDTO) {
+        certificateDTO.setId(id);
+        return service.applyPatch(certificateDTO);
     }
 
     @PutMapping(value = "/{id}")

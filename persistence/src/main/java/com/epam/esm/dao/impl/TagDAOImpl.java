@@ -26,7 +26,7 @@ public class TagDAOImpl implements TagDAO {
     private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id,name FROM tag INNER JOIN tag_has_gift_certificate " +
             "ON id = tag_id WHERE gift_certificate_id = ?";
     private static final String SQL_INSERT_TAG = "INSERT INTO tag(name) VALUES(?)";
-    private static final String SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE = "INSERT INTO tag_has_gift_certificate(tag_id,gift_certificate_id) " +
+    private static final String SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE = "INSERT IGNORE INTO tag_has_gift_certificate(tag_id,gift_certificate_id) " +
             "VALUES(?,?)";
     private static final String SQL_SELECT_TAG_BY_NAME = "SELECT id,name FROM tag WHERE name = ?";
     private static final String SQL_SELECT_ALL_TAGS = "SELECT id,name FROM tag";

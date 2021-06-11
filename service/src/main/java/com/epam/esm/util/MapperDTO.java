@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 @AllArgsConstructor
 public class MapperDTO {
@@ -29,4 +31,5 @@ public class MapperDTO {
     public Tag convertDTOToTag(TagDTO tagDTO) {
         return modelMapper.map(tagDTO, Tag.class);
     }
+
 }

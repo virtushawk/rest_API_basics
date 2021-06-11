@@ -13,7 +13,7 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
 
     CertificateDTO update(CertificateDTO certificateDTO);
 
-    CertificateDTO applyPatch(Map<String, Object> patchValues, Long id);
+    CertificateDTO applyPatch(CertificateDTO certificateDTO);
 
     CertificateDTO attachTags(CertificateDTO certificateDTO, Set<TagDTO> tagDTOSet);
 }

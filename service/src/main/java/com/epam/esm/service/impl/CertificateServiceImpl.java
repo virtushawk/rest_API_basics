@@ -9,7 +9,6 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.MapperDTO;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,10 @@ public class CertificateServiceImpl implements CertificateService {
     private final CertificateDAO certificateDAO;
     private final TagDAO tagDAO;
     private final MapperDTO mapperDTO;
+    private final ObjectMapper objectMapper;
+
+    private static final String CERTIFICATE_ID_COLUMN = "id";
+    private static final String CERTIFICATE_TAGS_COLUMN = "tags";
 
     @Override
     @Transactional
@@ -64,22 +67,20 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public CertificateDTO update(CertificateDTO certificateDTO) {
         Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
-        certificate = certificateDAO.update(certificate);
-        certificateDTO = mapperDTO.convertCertificateToDTO(certificate);
-        return checkForTags(certificateDTO);
+        certificateDAO.update(certificate);
+        checkForTags(certificateDTO);
+        return findById(certificateDTO.getId());
     }
 
     @Override
     @Transactional
-    public CertificateDTO applyPatch(Map<String, Object> patchValues, Long id) {
-        if (patchValues.containsKey("tags")) {
-            Set<Tag> tags = new ObjectMapper().convertValue(patchValues.remove("tags"), new TypeReference<Set<Tag>>() {
-            });
-            tags = tags.stream().map(tagDAO::create).collect(Collectors.toSet());
-            tags.forEach(tag -> tagDAO.attachToCertificateById(tag.getId(), id));
-        }
-        certificateDAO.applyPatch(patchValues, id);
-        return findById(id);
+    public CertificateDTO applyPatch(CertificateDTO certificateDTO) {
+        Map<String,Object> patchMap = objectMapper.convertValue(certificateDTO,Map.class);
+        patchMap.remove(CERTIFICATE_ID_COLUMN);
+        patchMap.remove(CERTIFICATE_TAGS_COLUMN);
+        certificateDAO.applyPatch(patchMap, certificateDTO.getId());
+        checkForTags(certificateDTO);
+        return findById(certificateDTO.getId());
     }
 
     @Override

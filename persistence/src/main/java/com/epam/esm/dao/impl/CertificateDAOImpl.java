@@ -36,6 +36,8 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SQL_UPDATE_BY_ID = "UPDATE gift_certificate SET %s = ? WHERE id = ?";
     private static final String SQL_UPDATE_CERTIFICATE = "UPDATE gift_certificate SET name = ?, description = ?, price = ?, " +
             "duration = ?, last_update_date = ? WHERE id = ?";
+    private static final String LAST_UPDATE_DATE_COLUMN = "last_update_date";
+    private static final String CERTIFICATE_ID_COLUMN = "id";
 
 
     @Override
@@ -75,8 +77,8 @@ public class CertificateDAOImpl implements CertificateDAO {
     @Override
     public Certificate update(Certificate certificate) {
         certificate.setLastUpdateDate(ZonedDateTime.now());
-        jdbcTemplate.update(SQL_INSERT_CERTIFICATE,certificate.getName(),certificate.getDescription(),certificate.getPrice(),
-                certificate.getDuration(),certificate.getLastUpdateDate());
+        jdbcTemplate.update(SQL_UPDATE_CERTIFICATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
+                certificate.getDuration(), certificate.getLastUpdateDate(), certificate.getId());
         return certificate;
     }
 
@@ -86,7 +88,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             String formattedSQL = String.format(SQL_UPDATE_BY_ID, key);
             jdbcTemplate.update(formattedSQL, value, id);
         });
-        String formattedSQL = String.format(SQL_UPDATE_BY_ID, "last_update_date");
+        String formattedSQL = String.format(SQL_UPDATE_BY_ID, LAST_UPDATE_DATE_COLUMN);
         jdbcTemplate.update(formattedSQL, ZonedDateTime.now(), id);
         return true;
     }
