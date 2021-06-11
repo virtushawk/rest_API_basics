@@ -4,12 +4,14 @@ import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,9 +41,11 @@ public class CertificateController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteCertificate(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteCertificate(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.ok("resources deleted");
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message","certificate deleted successfully");
+        return new ResponseEntity<>(body, HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value = "/{id}")
