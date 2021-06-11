@@ -32,12 +32,8 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDTO create(CertificateDTO certificateDTO) {
         Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
         certificate = certificateDAO.create(certificate);
-        Set<TagDTO> tagDTOs = certificateDTO.getTags();
         certificateDTO = mapperDTO.convertCertificateToDTO(certificate);
-        if (tagDTOs != null) {
-            certificateDTO = attachTags(certificateDTO, tagDTOs);
-        }
-        return certificateDTO;
+        return checkForTags(certificateDTO);
     }
 
     @Override
@@ -65,8 +61,12 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    @Transactional
     public CertificateDTO update(CertificateDTO certificateDTO) {
-        return null;
+        Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
+        certificate = certificateDAO.update(certificate);
+        certificateDTO = mapperDTO.convertCertificateToDTO(certificate);
+        return checkForTags(certificateDTO);
     }
 
     @Override
@@ -100,5 +100,13 @@ public class CertificateServiceImpl implements CertificateService {
             throw new CertificateNotFoundException("Requested certificate not found, id : " + id);
         }
         return true;
+    }
+
+    private CertificateDTO checkForTags(CertificateDTO certificateDTO) {
+        Set<TagDTO> tagDTOs = certificateDTO.getTags();
+        if (tagDTOs != null) {
+            certificateDTO = attachTags(certificateDTO, tagDTOs);
+        }
+        return certificateDTO;
     }
 }

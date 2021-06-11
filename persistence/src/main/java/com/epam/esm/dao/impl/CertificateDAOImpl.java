@@ -31,14 +31,11 @@ public class CertificateDAOImpl implements CertificateDAO {
             "FROM gift_certificate";
     private static final String SQL_INSERT_CERTIFICATE = "INSERT INTO gift_certificate(name,description,price,duration,create_date,last_update_date) " +
             "VALUES(?,?,?,?,?,?)";
-    private static final String SQL_UPDATE_CERTIFICATE_NAME_BY_ID = "UPDATE gift_certificate set name = ? WHERE id = ?";
-    private static final String SQL_UPDATE_CERTIFICATE_DESCRIPTION_BY_ID = "UPDATE gift_certificate set description = ? WHERE id = ?";
-    private static final String SQL_UPDATE_CERTIFICATE_PRICE_BY_ID = "UPDATE gift_certificate set price = ? WHERE id = ?";
-    private static final String SQL_UPDATE_CERTIFICATE_DURATION_BY_ID = "UPDATE gift_certificate set duration = ? WHERE id = ?";
-    private static final String SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID = "UPDATE gift_certificate set last_update_date = ? WHERE id = ?";
     private static final String SQL_DELETE_CERTIFICATE_BY_ID = "DELETE FROM gift_certificate WHERE id = ?";
     private static final String SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID = "DELETE FROM tag_has_gift_certificate WHERE gift_certificate_id = ?";
     private static final String SQL_UPDATE_BY_ID = "UPDATE gift_certificate SET %s = ? WHERE id = ?";
+    private static final String SQL_UPDATE_CERTIFICATE = "UPDATE gift_certificate SET name = ?, description = ?, price = ?, " +
+            "duration = ?, last_update_date = ? WHERE id = ?";
 
 
     @Override
@@ -77,21 +74,10 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public Certificate update(Certificate certificate) {
-        if (certificate.getName() != null) {
-            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_NAME_BY_ID, certificate.getName());
-        }
-        if (certificate.getDescription() != null) {
-            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_DESCRIPTION_BY_ID, certificate.getDescription());
-        }
-        if (certificate.getPrice() != null) {
-            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_PRICE_BY_ID, certificate.getPrice());
-        }
-        if (certificate.getDuration() != 0) {
-            jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_DURATION_BY_ID, certificate.getDuration());
-        }
-        jdbcTemplate.update(SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID, certificate.getLastUpdateDate());
-        return jdbcTemplate.queryForObject(SQL_SELECT_CERTIFICATE_BY_ID,
-                new Object[]{certificate.getId()}, new int[]{Types.INTEGER}, certificateMapper);
+        certificate.setLastUpdateDate(ZonedDateTime.now());
+        jdbcTemplate.update(SQL_INSERT_CERTIFICATE,certificate.getName(),certificate.getDescription(),certificate.getPrice(),
+                certificate.getDuration(),certificate.getLastUpdateDate());
+        return certificate;
     }
 
     @Override
