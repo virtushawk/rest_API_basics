@@ -20,4 +20,10 @@ public class WebConfig implements WebMvcConfigurer {
         configurer.enable();
     }
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
+    }
 }

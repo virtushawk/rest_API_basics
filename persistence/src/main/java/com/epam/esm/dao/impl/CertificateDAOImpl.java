@@ -2,9 +2,8 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.mapper.CertificateMapper;
-import com.epam.esm.mapper.TagMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,45 +14,32 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
+@AllArgsConstructor
 public class CertificateDAOImpl implements CertificateDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final CertificateMapper certificateMapper;
-    private final TagMapper tagMapper;
     private static final String SQL_SELECT_CERTIFICATE_BY_ID = "SELECT id,name,description,price,duration,create_date,last_update_date" +
             " FROM gift_certificate WHERE id = ?";
     private static final String SQL_SELECT_CERTIFICATES = "SELECT id,name,description,price,duration,create_date,last_update_date " +
             "FROM gift_certificate";
-    private static final String SQL_SELECT_TAG_AND_CERTIFICATE_ID = "SELECT id,name,gift_certificate_id FROM tag INNER JOIN " +
-            "tag_has_gift_certificate ON id = tag_id";
     private static final String SQL_INSERT_CERTIFICATE = "INSERT INTO gift_certificate(name,description,price,duration,create_date,last_update_date) " +
             "VALUES(?,?,?,?,?,?)";
-    private static final String SQL_INSERT_TAG = "INSERT IGNORE INTO tag(name) VALUES(?)";
-    private static final String SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE = "INSERT INTO tag_has_gift_certificate(tag_id,gift_certificate_id) " +
-            "VALUES(?,?)";
-    private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id,name FROM tag INNER JOIN tag_has_gift_certificate ON id = tag_id WHERE gift_certificate_id = 18";
     private static final String SQL_UPDATE_CERTIFICATE_NAME_BY_ID = "UPDATE gift_certificate set name = ? WHERE id = ?";
     private static final String SQL_UPDATE_CERTIFICATE_DESCRIPTION_BY_ID = "UPDATE gift_certificate set description = ? WHERE id = ?";
     private static final String SQL_UPDATE_CERTIFICATE_PRICE_BY_ID = "UPDATE gift_certificate set price = ? WHERE id = ?";
     private static final String SQL_UPDATE_CERTIFICATE_DURATION_BY_ID = "UPDATE gift_certificate set duration = ? WHERE id = ?";
-    private static final String SQL_UPDATE_CERTIFICATE_CREATE_DATE_BY_ID = "UPDATE gift_certificate set create_date = ? WHERE id = ?";
     private static final String SQL_UPDATE_CERTIFICATE_LAST_UPDATE_DATE_BY_ID = "UPDATE gift_certificate set last_update_date = ? WHERE id = ?";
     private static final String SQL_DELETE_CERTIFICATE_BY_ID = "DELETE FROM gift_certificate WHERE id = ?";
     private static final String SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID = "DELETE FROM tag_has_gift_certificate WHERE gift_certificate_id = ?";
     private static final String SQL_UPDATE_BY_ID = "UPDATE gift_certificate SET %s = ? WHERE id = ?";
 
-
-    public CertificateDAOImpl(JdbcTemplate jdbcTemplate, CertificateMapper certificateMapper, TagMapper tagMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.certificateMapper = certificateMapper;
-        this.tagMapper = tagMapper;
-    }
 
     @Override
     public List<Certificate> findAll() {
@@ -63,6 +49,8 @@ public class CertificateDAOImpl implements CertificateDAO {
     @Override
     public Certificate create(Certificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        certificate.setCreateDate(ZonedDateTime.now());
+        certificate.setLastUpdateDate(ZonedDateTime.now());
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, certificate.getName());
@@ -83,7 +71,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_SELECT_CERTIFICATE_BY_ID, new Object[]{id}, new int[]{Types.INTEGER},
                     certificateMapper));
         } catch (EmptyResultDataAccessException e) {
-           return Optional.empty();
+            return Optional.empty();
         }
     }
 
@@ -109,9 +97,11 @@ public class CertificateDAOImpl implements CertificateDAO {
     @Override
     public boolean applyPatch(Map<String, Object> patchValues, Long id) {
         patchValues.forEach((key, value) -> {
-            String formattedSQL = String.format(SQL_UPDATE_BY_ID,key);
-            jdbcTemplate.update(formattedSQL,value,id);
+            String formattedSQL = String.format(SQL_UPDATE_BY_ID, key);
+            jdbcTemplate.update(formattedSQL, value, id);
         });
+        String formattedSQL = String.format(SQL_UPDATE_BY_ID, "last_update_date");
+        jdbcTemplate.update(formattedSQL, ZonedDateTime.now(), id);
         return true;
     }
 

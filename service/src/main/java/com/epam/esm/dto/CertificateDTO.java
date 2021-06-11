@@ -1,10 +1,13 @@
 package com.epam.esm.dto;
 
-import jakarta.validation.constraints.*;
+import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -32,12 +35,11 @@ public class CertificateDTO {
     @Max(100)
     private int duration;
 
-    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime createDate;
 
-    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime lastUpdateDate;
 
-    @NotNull
     Set<TagDTO> tags;
 }

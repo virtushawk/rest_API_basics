@@ -2,29 +2,28 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
 @RequestMapping(value = "/certificates")
 @RestController
+@AllArgsConstructor
 public class CertificateController {
 
     private final CertificateService service;
 
-    public CertificateController(CertificateService service) {
-        this.service = service;
-    }
-
     @GetMapping
-    public List<CertificateDTO> showAllCertificates() {
-        return service.findAll();
+    public List<CertificateDTO> getAllCertificates(@RequestParam Map<String, String> parameters) {
+        return service.findAll(parameters);
     }
 
     @GetMapping(value = "/{id}")
@@ -35,7 +34,7 @@ public class CertificateController {
     @PostMapping
     public CertificateDTO createCertificate(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult result) {
         if (result.hasErrors()) {
-            throw new CertificateNotFoundException("ID : " + certificateDTO.getId());
+            throw new InvalidDataFormException("Invalid data in request");
         }
         return service.create(certificateDTO);
     }

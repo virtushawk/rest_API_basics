@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.exception.TagNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 @ControllerAdvice
 @ResponseBody
-public class ControllerAdvisor extends ResponseEntityExceptionHandler {
+public class ExceptionController extends ResponseEntityExceptionHandler {
 
     private static int CERTIFICATE_NOT_FOUND_ERROR_CODE = 103;
     private static int TAG_NOT_FOUND_ERROR_CODE = 104;
@@ -34,5 +35,13 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         body.put("errorMessage",exception.getMessage());
         body.put("errorCode",TAG_NOT_FOUND_ERROR_CODE);
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidDataFormException.class)
+    public ResponseEntity<Object> handleInvalidDataFormException(InvalidDataFormException exception,WebRequest request) {
+        Map<String,Object> body = new LinkedHashMap<>();
+        body.put("errorMessage",exception.getMessage());
+        body.put("errorCode",InvalidDataFormException.INVALID_DATA_FROM_ERROR_CODE);
+        return new ResponseEntity<>(body,HttpStatus.BAD_REQUEST);
     }
 }
