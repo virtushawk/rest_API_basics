@@ -43,5 +43,5 @@ public class CertificateDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime lastUpdateDate;
 
-    Set<TagDTO> tags;
+    private Set<TagDTO> tags;
 }

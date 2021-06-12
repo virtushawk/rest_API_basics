@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +49,8 @@ public class CertificateDAOImpl implements CertificateDAO {
     @Override
     public Certificate create(Certificate certificate) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        certificate.setCreateDate(ZonedDateTime.now());
-        certificate.setLastUpdateDate(ZonedDateTime.now());
+        certificate.setCreateDate(ZonedDateTime.now(ZoneId.systemDefault()));
+        certificate.setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, certificate.getName());
@@ -76,7 +77,7 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public Certificate update(Certificate certificate) {
-        certificate.setLastUpdateDate(ZonedDateTime.now());
+        certificate.setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
         jdbcTemplate.update(SQL_UPDATE_CERTIFICATE, certificate.getName(), certificate.getDescription(), certificate.getPrice(),
                 certificate.getDuration(), certificate.getLastUpdateDate(), certificate.getId());
         return certificate;
@@ -89,7 +90,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             jdbcTemplate.update(formattedSQL, value, id);
         });
         String formattedSQL = String.format(SQL_UPDATE_BY_ID, LAST_UPDATE_DATE_COLUMN);
-        jdbcTemplate.update(formattedSQL, ZonedDateTime.now(), id);
+        jdbcTemplate.update(formattedSQL, ZonedDateTime.now(ZoneId.systemDefault()), id);
         return true;
     }
 

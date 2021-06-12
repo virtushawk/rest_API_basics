@@ -87,7 +87,8 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public CertificateDTO attachTags(CertificateDTO certificateDTO, Set<TagDTO> tagDTOs) {
         Set<Tag> tags = tagDTOs.stream().map(mapperDTO::convertDTOToTag)
-                .map(tagDAO::create).collect(Collectors.toSet());
+                .map(tagDAO::create)
+                .collect(Collectors.toSet());
         tags.forEach(tag -> tagDAO.attachToCertificateById(tag.getId(), certificateDTO.getId()));
         tagDTOs = tags.stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toSet());
         certificateDTO.setTags(tagDTOs);
