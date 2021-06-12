@@ -1,18 +1,14 @@
 package com.epam.esm.dto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.*;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Data
@@ -20,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class CertificateDTO {
+public class PatchDTO {
 
     private Long id;
 
@@ -28,7 +24,7 @@ public class CertificateDTO {
     @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
     private String name;
 
-    @NotBlank
+    @Size(min = 1,max = 300)
     @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
     private String description;
 
@@ -38,13 +34,8 @@ public class CertificateDTO {
 
     @Min(1)
     @Max(100)
-    private int duration;
+    private Integer duration;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    private ZonedDateTime createDate;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    private ZonedDateTime lastUpdateDate;
-
+    @Valid
     private Set<TagDTO> tags;
 }

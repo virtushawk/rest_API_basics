@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.TagDTO;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
 
     CertificateDTO update(CertificateDTO certificateDTO);
 
-    CertificateDTO applyPatch(CertificateDTO certificateDTO);
+    CertificateDTO applyPatch(PatchDTO patchDTO);
 
     CertificateDTO attachTags(CertificateDTO certificateDTO, Set<TagDTO> tagDTOSet);
 }

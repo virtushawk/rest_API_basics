@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
@@ -11,6 +12,8 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.MapperDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateDAO certificateDAO;
@@ -73,13 +77,14 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     @Transactional
-    public CertificateDTO applyPatch(CertificateDTO certificateDTO) {
-        Map<String,Object> patchMap = objectMapper.convertValue(certificateDTO,Map.class);
+    public CertificateDTO applyPatch(PatchDTO patchDTO) {
+        Map<String,Object> patchMap = objectMapper.convertValue(patchDTO,Map.class);
+        CertificateDTO certificateDTO = CertificateDTO.builder().tags(patchDTO.getTags()).id(patchDTO.getId()).build();
         patchMap.remove(CERTIFICATE_ID_COLUMN);
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);
-        certificateDAO.applyPatch(patchMap, certificateDTO.getId());
+        certificateDAO.applyPatch(patchMap, patchDTO.getId());
         checkForTags(certificateDTO);
-        return findById(certificateDTO.getId());
+        return findById(patchDTO.getId());
     }
 
     @Override
@@ -105,7 +110,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     private CertificateDTO checkForTags(CertificateDTO certificateDTO) {
         Set<TagDTO> tagDTOs = certificateDTO.getTags();
-        if (tagDTOs != null) {
+        if (!ObjectUtils.isEmpty(tagDTOs)) {
             certificateDTO = attachTags(certificateDTO, tagDTOs);
         }
         return certificateDTO;

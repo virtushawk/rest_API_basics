@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import lombok.AllArgsConstructor;
@@ -58,9 +59,12 @@ public class CertificateController {
     }
 
     @PatchMapping(value = "/{id}")
-    public CertificateDTO patchCertificate(@PathVariable Long id, @RequestBody CertificateDTO certificateDTO) {
-        certificateDTO.setId(id);
-        return service.applyPatch(certificateDTO);
+    public CertificateDTO patchCertificate(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO,BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidDataFormException("Invalid data in request");
+        }
+        patchDTO.setId(id);
+        return service.applyPatch(patchDTO);
     }
 
     @PutMapping(value = "/{id}")
