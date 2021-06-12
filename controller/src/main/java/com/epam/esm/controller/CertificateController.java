@@ -54,12 +54,12 @@ public class CertificateController {
     public ResponseEntity<Object> deleteCertificate(@PathVariable Long id) {
         service.delete(id);
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("message","certificate deleted successfully");
+        body.put("message", "certificate deleted successfully");
         return new ResponseEntity<>(body, HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value = "/{id}")
-    public CertificateDTO patchCertificate(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO,BindingResult bindingResult) {
+    public CertificateDTO patchCertificate(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException("Invalid data in request");
         }
@@ -68,7 +68,7 @@ public class CertificateController {
     }
 
     @PutMapping(value = "/{id}")
-    public CertificateDTO updateCertificate(@PathVariable Long id,@Valid @RequestBody CertificateDTO certificateDTO,
+    public CertificateDTO updateCertificate(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException("Invalid data in request");

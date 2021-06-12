@@ -36,7 +36,7 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(SQL_SELECT_ALL_TAGS,tagMapper);
+        return jdbcTemplate.query(SQL_SELECT_ALL_TAGS, tagMapper);
     }
 
     @Override
@@ -77,13 +77,13 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public List<Tag> findAllByCertificateId(Long certificateId) {
-        return jdbcTemplate.query(SQL_SELECT_TAGS_BY_CERTIFICATE_ID,new Object[]{certificateId},new int[] {Types.INTEGER},tagMapper);
+        return jdbcTemplate.query(SQL_SELECT_TAGS_BY_CERTIFICATE_ID, new Object[]{certificateId}, new int[]{Types.INTEGER}, tagMapper);
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
         try {
-            return Optional.of(jdbcTemplate.queryForObject(SQL_SELECT_TAG_BY_NAME,new Object[]{name},new int[] {Types.VARCHAR},tagMapper));
+            return Optional.of(jdbcTemplate.queryForObject(SQL_SELECT_TAG_BY_NAME, new Object[]{name}, new int[]{Types.VARCHAR}, tagMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -91,6 +91,6 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public boolean attachToCertificateById(Long tagId, Long certificateId) {
-        return jdbcTemplate.update(SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE,tagId,certificateId) > 0;
+        return jdbcTemplate.update(SQL_INSERT_TAG_HAS_GIFT_CERTIFICATE, tagId, certificateId) > 0;
     }
 }

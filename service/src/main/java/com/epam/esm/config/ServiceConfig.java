@@ -1,4 +1,4 @@
-package com.epam.esm.service.config;
+package com.epam.esm.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
