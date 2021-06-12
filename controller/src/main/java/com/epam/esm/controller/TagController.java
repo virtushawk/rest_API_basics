@@ -6,7 +6,7 @@ import com.epam.esm.service.TagService;
 import javax.validation.Valid;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +38,8 @@ public class TagController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity<?> deleteTag(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTag(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.ok("resources deleted");
     }
 }
