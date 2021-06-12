@@ -32,8 +32,8 @@ public class CertificateController {
     private final CertificateService service;
 
     @GetMapping
-    public List<CertificateDTO> getAllCertificates(@RequestParam Map<String, String> parameters) {
-        return service.findAll(parameters);
+    public List<CertificateDTO> getAllCertificates() {
+        return service.findAll();
     }
 
     @GetMapping(value = "/{id}")

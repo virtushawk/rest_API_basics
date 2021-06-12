@@ -41,8 +41,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<CertificateDTO> findAll() {
-        certificateDAO.findAll();
-        return null;
+        return certificateDAO.findAll().stream().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
     }
 
     @Override
