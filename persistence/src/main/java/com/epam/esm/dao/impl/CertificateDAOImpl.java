@@ -49,7 +49,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SELECT_CERTIFICATE_QUERY = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate" +
             " LEFT JOIN tag_has_gift_certificate ON gift_certificate_id = gift_certificate.id LEFT JOIN tag ON tag_id = tag.id" +
             " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE CONCAT('%',:text,'%') OR gift_certificate.description LIKE CONCAT('%',:text,'%'))) " +
-            "ORDER BY ";
+            "ORDER BY %s";
 
     @Override
     public List<Certificate> findAll(Query query) {
@@ -59,9 +59,8 @@ public class CertificateDAOImpl implements CertificateDAO {
         parameterSource.addValue("text", query.getText());
         parameterSource.addValue("order",null);
         if (!ObjectUtils.isEmpty(query.getOrder())){
-            List<String> sorts;
-            sorts = new ArrayList<>(query.getOrder());
-            sorts = sorts.stream().map(o -> o = "ASC").collect(Collectors.toList());
+            List<String> sorts  = new ArrayList<>(query.getOrder());
+            sorts = sorts.stream().map(o -> "ASC").collect(Collectors.toList());
             if (!ObjectUtils.isEmpty(query.getSort())) {
                 int i = 0;
                 for (String sort : query.getSort()) {
@@ -77,6 +76,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             result.deleteCharAt(result.length() - 1);
             resultQuery = SELECT_CERTIFICATE_QUERY + result;
         }
+        String.format(SELECT_CERTIFICATE_QUERY,"dd");
         return namedParameterJdbcTemplate.query(resultQuery,parameterSource,certificateMapper);
     }
 

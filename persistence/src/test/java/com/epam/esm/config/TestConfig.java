@@ -6,25 +6,24 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
-@Import({DatabaseConfig.class})
+
 @Configuration
+@Import({DatabaseConfig.class})
 @ComponentScan("com.epam.esm")
 @PropertySource("classpath:property/dataSource-dev.properties")
 public class TestConfig {
 
     @Autowired
-    private final Environment environment;
-
-    public TestConfig(Environment environment) {
-        this.environment = environment;
-    }
+    private Environment environment;
 
     @Bean
     @Profile("dev")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(environment.getProperty("driverClassName"));
-        dataSource.setUrl(environment.getProperty("url"));
+        dataSource.setDriverClassName(environment.getProperty("datasource.driverClassName"));
+        dataSource.setUrl(environment.getProperty("datasource.url"));
+        dataSource.setUsername(environment.getProperty("datasource.username"));
+        dataSource.setPassword(environment.getProperty("datasource.password"));
         return dataSource;
     }
 
