@@ -6,6 +6,10 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation group: 'org.springframework', name: 'spring-context', version: '5.3.7'
     implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.7'
@@ -26,6 +30,11 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0-alpha1'
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.0-alpha1'
 
+    testImplementation project(":model")
+    testImplementation project(":persistence")
+    testImplementation project(":controller")
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.7'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.1'
 
 }
 

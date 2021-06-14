@@ -1,14 +1,15 @@
 package com.epam.esm.util;
 
 import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.QueryDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Query;
 import com.epam.esm.entity.Tag;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 
 @Component
 @AllArgsConstructor
@@ -32,4 +33,7 @@ public class MapperDTO {
         return modelMapper.map(tagDTO, Tag.class);
     }
 
+    public Query convertDTOToQuery(QueryDTO queryDTO) {
+        return modelMapper.map(queryDTO,Query.class);
+    }
 }

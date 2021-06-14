@@ -1,6 +1,5 @@
 package com.epam.esm.dto;
 
-import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

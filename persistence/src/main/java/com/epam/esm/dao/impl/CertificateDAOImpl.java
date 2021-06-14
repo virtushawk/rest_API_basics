@@ -2,29 +2,36 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Query;
 import com.epam.esm.mapper.CertificateMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
+import java.awt.font.FontRenderContext;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @AllArgsConstructor
+@Slf4j
 public class CertificateDAOImpl implements CertificateDAO {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final CertificateMapper certificateMapper;
     private static final String SQL_SELECT_CERTIFICATE_BY_ID = "SELECT id,name,description,price,duration,create_date,last_update_date" +
             " FROM gift_certificate WHERE id = ?";
@@ -39,11 +46,38 @@ public class CertificateDAOImpl implements CertificateDAO {
             "duration = ?, last_update_date = ? WHERE id = ?";
     private static final String LAST_UPDATE_DATE_COLUMN = "last_update_date";
     private static final String CERTIFICATE_ID_COLUMN = "id";
-
+    private static final String SELECT_CERTIFICATE_QUERY = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate" +
+            " LEFT JOIN tag_has_gift_certificate ON gift_certificate_id = gift_certificate.id LEFT JOIN tag ON tag_id = tag.id" +
+            " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE CONCAT('%',:text,'%') OR gift_certificate.description LIKE CONCAT('%',:text,'%'))) " +
+            "ORDER BY ";
 
     @Override
-    public List<Certificate> findAll() {
-        return jdbcTemplate.query(SQL_SELECT_CERTIFICATES, certificateMapper);
+    public List<Certificate> findAll(Query query) {
+        String resultQuery = SELECT_CERTIFICATE_QUERY + "NULL";
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("tag",query.getTag());
+        parameterSource.addValue("text", query.getText());
+        parameterSource.addValue("order",null);
+        if (!ObjectUtils.isEmpty(query.getOrder())){
+            List<String> sorts;
+            sorts = new ArrayList<>(query.getOrder());
+            sorts = sorts.stream().map(o -> o = "ASC").collect(Collectors.toList());
+            if (!ObjectUtils.isEmpty(query.getSort())) {
+                int i = 0;
+                for (String sort : query.getSort()) {
+                    sorts.set(i, sort);
+                    i++;
+                }
+            }
+            StringBuilder result = new StringBuilder();
+            int i = 0;
+            for (String order : query.getOrder()) {
+                result.append(order).append(' ').append(sorts.get(i).toUpperCase(Locale.ROOT)).append(',');
+            }
+            result.deleteCharAt(result.length() - 1);
+            resultQuery = SELECT_CERTIFICATE_QUERY + result;
+        }
+        return namedParameterJdbcTemplate.query(resultQuery,parameterSource,certificateMapper);
     }
 
     @Override
@@ -63,6 +97,11 @@ public class CertificateDAOImpl implements CertificateDAO {
         }, keyHolder);
         certificate.setId(keyHolder.getKey().longValue());
         return certificate;
+    }
+
+    @Override
+    public List<Certificate> findAll() {
+        return null;
     }
 
     @Override

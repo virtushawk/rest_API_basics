@@ -1,24 +1,31 @@
 package com.epam.esm.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
-@Import(DatabaseConfig.class)
+@Import({DatabaseConfig.class})
 @Configuration
+@ComponentScan("com.epam.esm")
+@PropertySource("classpath:property/dataSource-dev.properties")
 public class TestConfig {
 
-    @Bean
-    public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder().setName("test_db").build();
+    @Autowired
+    private final Environment environment;
+
+    public TestConfig(Environment environment) {
+        this.environment = environment;
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+    @Profile("dev")
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(environment.getProperty("driverClassName"));
+        dataSource.setUrl(environment.getProperty("url"));
+        return dataSource;
     }
 
 }

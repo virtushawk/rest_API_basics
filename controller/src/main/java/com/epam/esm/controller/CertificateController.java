@@ -2,19 +2,17 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
+import com.epam.esm.dto.QueryDTO;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequestMapping(value = "/certificates")
 @RestController
@@ -24,8 +22,8 @@ public class CertificateController {
     private final CertificateService service;
 
     @GetMapping
-    public List<CertificateDTO> getAllCertificates() {
-        return service.findAll();
+    public List<CertificateDTO> getAllCertificates(QueryDTO queryDTO) {
+        return service.findAll(queryDTO);
     }
 
     @GetMapping(value = "/{id}")
