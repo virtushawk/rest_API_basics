@@ -23,7 +23,7 @@ import java.util.Optional;
 @ContextConfiguration(classes = {TestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("dev")
-@Sql("classpath:/insert_data_certificate.sql")
+/*@Sql("classpath:/insert_data_certificate.sql")*/
 class CertificateDAOImplTest {
 
     @Autowired

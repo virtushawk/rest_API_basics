@@ -3,13 +3,13 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
+import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 
 import javax.validation.Valid;
 import java.util.List;
@@ -43,6 +43,9 @@ public class CertificateController {
      */
     @GetMapping(value = "/{id}")
     public CertificateDTO getCertificate(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
         return service.findById(id);
     }
 
@@ -56,7 +59,7 @@ public class CertificateController {
     @PostMapping
     public CertificateDTO createCertificate(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException();
+            throw new InvalidDataFormException(bindingResult);
         }
         return service.create(certificateDTO);
     }
@@ -69,6 +72,9 @@ public class CertificateController {
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCertificate(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
         service.delete(id);
     }
 
@@ -82,8 +88,11 @@ public class CertificateController {
      */
     @PatchMapping(value = "/{id}")
     public CertificateDTO patchCertificate(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO, BindingResult bindingResult) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException();
+            throw new InvalidDataFormException(bindingResult);
         }
         patchDTO.setId(id);
         return service.applyPatch(patchDTO);
@@ -100,8 +109,11 @@ public class CertificateController {
     @PutMapping(value = "/{id}")
     public CertificateDTO updateCertificate(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
                                             BindingResult bindingResult) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException();
+            throw new InvalidDataFormException(bindingResult);
         }
         certificateDTO.setId(id);
         return service.update(certificateDTO);

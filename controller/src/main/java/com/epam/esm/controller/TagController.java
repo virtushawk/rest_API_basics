@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.TagService;
 
@@ -43,7 +44,7 @@ public class TagController {
     @PostMapping
     public TagDTO createTag(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException("Invalid data in request");
+            throw new InvalidDataFormException(bindingResult);
         }
         return service.create(tagDTO);
     }
@@ -56,6 +57,9 @@ public class TagController {
      */
     @GetMapping(value = "/{id}")
     public TagDTO getTag(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
         return service.findById(id);
     }
 
@@ -67,6 +71,9 @@ public class TagController {
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
         service.delete(id);
     }
 }

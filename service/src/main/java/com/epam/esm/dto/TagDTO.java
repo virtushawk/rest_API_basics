@@ -1,5 +1,6 @@
 package com.epam.esm.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -16,6 +17,6 @@ public class TagDTO {
     private long id;
 
     @Size(min = 1, max = 150)
-    @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
+    @NotBlank
     private String name;
 }

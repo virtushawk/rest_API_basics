@@ -1,10 +1,16 @@
 package com.epam.esm.exception;
 
+import org.springframework.validation.BindingResult;
+
 public class InvalidDataFormException extends RuntimeException {
 
     private int errorCode = 102;
+    private BindingResult bindingResult;
 
-    public InvalidDataFormException() {
+    public InvalidDataFormException() {}
+
+    public InvalidDataFormException(BindingResult bindingResult) {
+        this.bindingResult = bindingResult;
     }
 
     public InvalidDataFormException(String message) {
@@ -25,5 +31,9 @@ public class InvalidDataFormException extends RuntimeException {
 
     public int getErrorCode() {
         return errorCode;
+    }
+
+    public BindingResult getBindingResult() {
+        return bindingResult;
     }
 }

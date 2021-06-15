@@ -23,15 +23,16 @@ public class CertificateDTO {
     private Long id;
 
     @Size(min = 1, max = 150)
-    @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
+    @NotBlank
     private String name;
 
     @NotBlank
-    @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
+    @Size(min = 1,max = 300)
     private String description;
 
     @DecimalMin("0.1")
     @DecimalMax("1000.0")
+    @NotNull
     private BigDecimal price;
 
     @Min(1)
