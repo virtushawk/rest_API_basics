@@ -29,7 +29,7 @@ public class TagServiceImpl implements TagService {
     public TagDTO findById(Long id) {
         Optional<Tag> tag = tagDAO.findById(id);
         if (tag.isEmpty()) {
-            throw new TagNotFoundException("Requested tag not found, id : " + id);
+            throw new TagNotFoundException(id.toString());
         }
         return mapperDTO.convertTagToDTO(tag.get());
     }
@@ -44,7 +44,7 @@ public class TagServiceImpl implements TagService {
     public boolean delete(Long id) {
         boolean flag = tagDAO.delete(id);
         if (!flag) {
-            throw new TagNotFoundException("Requested tag not found, id : " + id);
+            throw new TagNotFoundException(id.toString());
         }
         return true;
     }

@@ -2,7 +2,7 @@ package com.epam.esm.exception;
 
 public class InvalidDataFormException extends RuntimeException {
 
-    public static int INVALID_DATA_FROM_ERROR_CODE = 102;
+    private int errorCode = 102;
 
     public InvalidDataFormException() {
     }
@@ -21,5 +21,9 @@ public class InvalidDataFormException extends RuntimeException {
 
     public InvalidDataFormException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public int getErrorCode() {
+        return errorCode;
     }
 }

@@ -1,8 +1,11 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.entity.ErrorResponse;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.exception.TagNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,37 +15,40 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @ControllerAdvice
 @ResponseBody
 public class ExceptionController extends ResponseEntityExceptionHandler {
 
-    private static final int TAG_NOT_FOUND_ERROR_CODE = 104;
-    private static final String ERROR_MESSAGE_TITLE = "errorMessage";
-    private static final String ERROR_CODE_TITLE = "errorCode";
+    @Autowired
+    private MessageSource messageSource;
 
     @ExceptionHandler(CertificateNotFoundException.class)
-    public ResponseEntity<Object> handleControllerNotFoundException(CertificateNotFoundException exception, WebRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put(ERROR_MESSAGE_TITLE, exception.getMessage());
-        body.put(ERROR_CODE_TITLE, CertificateNotFoundException.CERTIFICATE_NOT_FOUND_ERROR_CODE);
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleControllerNotFoundException(CertificateNotFoundException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("error.certificateNotFound", new Object[]{}, locale);
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorMessage(errorMessage + ' ' + exception.getMessage());
+        response.setErrorCode(exception.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(TagNotFoundException.class)
-    public ResponseEntity<Object> handleTagNotFoundException(TagNotFoundException exception, WebRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put(ERROR_MESSAGE_TITLE, exception.getMessage());
-        body.put(ERROR_CODE_TITLE, TAG_NOT_FOUND_ERROR_CODE);
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleTagNotFoundException(TagNotFoundException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("error.tagNotFound", new Object[]{}, locale);
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorMessage(errorMessage + ' ' + exception.getMessage());
+        response.setErrorCode(exception.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidDataFormException.class)
-    public ResponseEntity<Object> handleInvalidDataFormException(InvalidDataFormException exception, WebRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put(ERROR_MESSAGE_TITLE, exception.getMessage());
-        body.put(ERROR_CODE_TITLE, InvalidDataFormException.INVALID_DATA_FROM_ERROR_CODE);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> handleInvalidDataFormException(InvalidDataFormException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage("error.invalidDataForm", new Object[]{}, locale);
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorMessage(errorMessage + ' ' + exception.getMessage());
+        response.setErrorCode(exception.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

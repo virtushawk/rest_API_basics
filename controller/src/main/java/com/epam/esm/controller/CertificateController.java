@@ -34,7 +34,7 @@ public class CertificateController {
     @PostMapping
     public CertificateDTO createCertificate(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException("Invalid data in request");
+            throw new InvalidDataFormException();
         }
         return service.create(certificateDTO);
     }
@@ -48,7 +48,7 @@ public class CertificateController {
     @PatchMapping(value = "/{id}")
     public CertificateDTO patchCertificate(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException("Invalid data in request");
+            throw new InvalidDataFormException();
         }
         patchDTO.setId(id);
         return service.applyPatch(patchDTO);
@@ -58,7 +58,7 @@ public class CertificateController {
     public CertificateDTO updateCertificate(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException("Invalid data in request");
+            throw new InvalidDataFormException();
         }
         certificateDTO.setId(id);
         return service.update(certificateDTO);

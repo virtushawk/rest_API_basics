@@ -54,7 +54,7 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDTO findById(Long id) {
         Optional<Certificate> certificate = certificateDAO.findById(id);
         if (certificate.isEmpty()) {
-            throw new CertificateNotFoundException("Requested certificate not found, id : " + id);
+            throw new CertificateNotFoundException(id.toString());
         }
         Set<Tag> tags = new HashSet<>(tagDAO.findAllByCertificateId(id));
         CertificateDTO certificateDTO = mapperDTO.convertCertificateToDTO(certificate.get());
@@ -108,7 +108,7 @@ public class CertificateServiceImpl implements CertificateService {
     public boolean delete(Long id) {
         boolean flag = certificateDAO.delete(id);
         if (!flag) {
-            throw new CertificateNotFoundException("Requested certificate not found, id : " + id);
+            throw new CertificateNotFoundException(id.toString());
         }
         return true;
     }
