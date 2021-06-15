@@ -109,11 +109,11 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Transactional
     public boolean delete(Long id) {
-        boolean flag = certificateDAO.delete(id);
-        if (!flag) {
+        Optional<Certificate> certificate = certificateDAO.findById(id);
+        if (certificate.isEmpty()) {
             throw new CertificateNotFoundException(id.toString());
         }
-        return true;
+        return certificateDAO.delete(id);
     }
 
     private CertificateDTO checkForTags(CertificateDTO certificateDTO) {

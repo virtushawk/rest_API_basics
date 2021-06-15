@@ -8,6 +8,7 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,12 +50,13 @@ public class TagServiceImpl implements TagService {
         return mapperDTO.convertTagToDTO(tagDAO.create(tag));
     }
 
+    @Transactional
     @Override
     public boolean delete(Long id) {
-        boolean flag = tagDAO.delete(id);
-        if (!flag) {
+        Optional<Tag> tag = tagDAO.findById(id);
+        if (tag.isEmpty()) {
             throw new TagNotFoundException(id.toString());
         }
-        return true;
+        return tagDAO.delete(id);
     }
 }

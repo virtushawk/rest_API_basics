@@ -4,6 +4,7 @@ import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.mapper.CertificateMapper;
+import com.epam.esm.util.SQLStatementFormatter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -53,34 +54,10 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public List<Certificate> findAll(QuerySpecification querySpecification) {
-        String text = "'%%'";
-        StringBuilder result = new StringBuilder();
-        result.append("NULL");
-        if (!ObjectUtils.isEmpty(querySpecification.getText())) {
-            text = "'%" + querySpecification.getText() + "%'";
-        }
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("tag", querySpecification.getTag());
         parameterSource.addValue("text", querySpecification.getText());
-        parameterSource.addValue("order", null);
-        if (!ObjectUtils.isEmpty(querySpecification.getOrder())) {
-            List<String> sorts = new ArrayList<>(querySpecification.getOrder());
-            sorts = sorts.stream().map(o -> "ASC").collect(Collectors.toList());
-            if (!ObjectUtils.isEmpty(querySpecification.getSort())) {
-                int i = 0;
-                for (String sort : querySpecification.getSort()) {
-                    sorts.set(i, sort);
-                    i++;
-                }
-            }
-            result = new StringBuilder();
-            int i = 0;
-            for (String order : querySpecification.getOrder()) {
-                result.append(order).append(' ').append(sorts.get(i).toUpperCase(Locale.ROOT)).append(',');
-            }
-            result.deleteCharAt(result.length() - 1);
-        }
-        return namedParameterJdbcTemplate.query(String.format(SELECT_CERTIFICATE_QUERY, text, text, result), parameterSource, certificateMapper);
+        return namedParameterJdbcTemplate.query(SQLStatementFormatter.prepareCertificateQueryStatement(querySpecification), parameterSource, certificateMapper);
     }
 
     @Override
