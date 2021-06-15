@@ -2,7 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Query;
+import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.mapper.CertificateMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
-import java.awt.font.FontRenderContext;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -35,8 +34,6 @@ public class CertificateDAOImpl implements CertificateDAO {
     private final CertificateMapper certificateMapper;
     private static final String SQL_SELECT_CERTIFICATE_BY_ID = "SELECT id,name,description,price,duration,create_date,last_update_date" +
             " FROM gift_certificate WHERE id = ?";
-    private static final String SQL_SELECT_CERTIFICATES = "SELECT id,name,description,price,duration,create_date,last_update_date " +
-            "FROM gift_certificate";
     private static final String SQL_INSERT_CERTIFICATE = "INSERT INTO gift_certificate(name,description,price,duration,create_date,last_update_date) " +
             "VALUES(?,?,?,?,?,?)";
     private static final String SQL_DELETE_CERTIFICATE_BY_ID = "DELETE FROM gift_certificate WHERE id = ?";
@@ -45,39 +42,42 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SQL_UPDATE_CERTIFICATE = "UPDATE gift_certificate SET name = ?, description = ?, price = ?, " +
             "duration = ?, last_update_date = ? WHERE id = ?";
     private static final String LAST_UPDATE_DATE_COLUMN = "last_update_date";
-    private static final String CERTIFICATE_ID_COLUMN = "id";
     private static final String SELECT_CERTIFICATE_QUERY = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate" +
             " LEFT JOIN tag_has_gift_certificate ON gift_certificate_id = gift_certificate.id LEFT JOIN tag ON tag_id = tag.id" +
-            " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE CONCAT('%',:text,'%') OR gift_certificate.description LIKE CONCAT('%',:text,'%'))) " +
+            " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE %s OR gift_certificate.description LIKE %s)) " +
             "ORDER BY %s";
+    private static final String SELECT_CERTIFICATES = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate";
 
     @Override
-    public List<Certificate> findAll(Query query) {
-        String resultQuery = SELECT_CERTIFICATE_QUERY + "NULL";
+    public List<Certificate> findAll(QuerySpecification querySpecification) {
+        String text = "'%%'";
+        StringBuilder result = new StringBuilder();
+        result.append("NULL");
+        if (!ObjectUtils.isEmpty(querySpecification.getText())) {
+            text = "'%" + querySpecification.getText() + "%'";
+        }
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("tag",query.getTag());
-        parameterSource.addValue("text", query.getText());
+        parameterSource.addValue("tag", querySpecification.getTag());
+        parameterSource.addValue("text",querySpecification.getText());
         parameterSource.addValue("order",null);
-        if (!ObjectUtils.isEmpty(query.getOrder())){
-            List<String> sorts  = new ArrayList<>(query.getOrder());
+        if (!ObjectUtils.isEmpty(querySpecification.getOrder())){
+            List<String> sorts  = new ArrayList<>(querySpecification.getOrder());
             sorts = sorts.stream().map(o -> "ASC").collect(Collectors.toList());
-            if (!ObjectUtils.isEmpty(query.getSort())) {
+            if (!ObjectUtils.isEmpty(querySpecification.getSort())) {
                 int i = 0;
-                for (String sort : query.getSort()) {
+                for (String sort : querySpecification.getSort()) {
                     sorts.set(i, sort);
                     i++;
                 }
             }
-            StringBuilder result = new StringBuilder();
+            result = new StringBuilder();
             int i = 0;
-            for (String order : query.getOrder()) {
+            for (String order : querySpecification.getOrder()) {
                 result.append(order).append(' ').append(sorts.get(i).toUpperCase(Locale.ROOT)).append(',');
             }
             result.deleteCharAt(result.length() - 1);
-            resultQuery = SELECT_CERTIFICATE_QUERY + result;
         }
-        String.format(SELECT_CERTIFICATE_QUERY,"dd");
-        return namedParameterJdbcTemplate.query(resultQuery,parameterSource,certificateMapper);
+        return namedParameterJdbcTemplate.query(String.format(SELECT_CERTIFICATE_QUERY,text,text,result),parameterSource,certificateMapper);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public List<Certificate> findAll() {
-        return null;
+        return jdbcTemplate.query(SELECT_CERTIFICATES,certificateMapper);
     }
 
     @Override

@@ -4,10 +4,10 @@ import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
-import com.epam.esm.dto.QueryDTO;
+import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Query;
+import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.CertificateService;
@@ -64,9 +64,9 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> findAll(QueryDTO queryDTO) {
-        Query query = mapperDTO.convertDTOToQuery(queryDTO);
-        List<Certificate> certificates = certificateDAO.findAll(query);
+    public List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO) {
+        QuerySpecification querySpecification = mapperDTO.convertDTOToQuery(querySpecificationDTO);
+        List<Certificate> certificates = certificateDAO.findAll(querySpecification);
         certificates.forEach(o -> o.setTags(new HashSet<>(tagDAO.findAllByCertificateId(o.getId()))));
         return certificates.stream().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
     }
@@ -83,7 +83,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDTO applyPatch(PatchDTO patchDTO) {
-        Map<String,Object> patchMap = objectMapper.convertValue(patchDTO,Map.class);
+        Map<String, Object> patchMap = objectMapper.convertValue(patchDTO, Map.class);
         CertificateDTO certificateDTO = CertificateDTO.builder().tags(patchDTO.getTags()).id(patchDTO.getId()).build();
         patchMap.remove(CERTIFICATE_ID_COLUMN);
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);

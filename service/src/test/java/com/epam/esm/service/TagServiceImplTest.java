@@ -1,15 +1,25 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.util.MapperDTO;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -19,14 +29,77 @@ class TagServiceImplTest {
     private TagServiceImpl tagService;
 
     @Mock
-    public  TagDAO tagDAO;
+    public TagDAO tagDAO;
 
     @Mock
-    public  MapperDTO mapperDTO;
+    public MapperDTO mapperDTO;
 
     @Test
-    void create() {
-        System.out.println(tagService);
+    void findALlValid() {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.builder().name("Test case 1").build());
+        tags.add(Tag.builder().name("Test case 2").build());
+        List<TagDTO> expected = tags.stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
+        Mockito.when(tagDAO.findAll()).thenReturn(tags);
+        List<TagDTO> actual = tagService.findAll();
+        Assertions.assertEquals(expected, actual);
     }
+
+    @Test
+    void findAllEmpty() {
+        List<Tag> tags = new ArrayList<>();
+        List<TagDTO> expected = new ArrayList<>();
+        Mockito.when(tagDAO.findAll()).thenReturn(tags);
+        List<TagDTO> actual = tagService.findAll();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByIdValid() {
+        Tag tag = Tag.builder().name("test case 1").build();
+        Optional<Tag> optionalTag = Optional.of(tag);
+        Long id = 1L;
+        TagDTO expected = mapperDTO.convertTagToDTO(tag);
+        Mockito.when(tagDAO.findById(id)).thenReturn(optionalTag);
+        TagDTO actual = tagService.findById(id);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test()
+    void findByIdException() {
+        Long id = 1L;
+        Mockito.when(tagDAO.findById(id)).thenReturn(Optional.empty());
+        Assertions.assertThrows(TagNotFoundException.class, () -> {
+            tagService.findById(id);
+        });
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    void createValid() {
+        Tag tag = Tag.builder().name("test case").build();
+        Mockito.when(tagDAO.create(tag)).thenReturn(tag);
+        TagDTO expected = mapperDTO.convertTagToDTO(tag);
+        TagDTO actual = tagService.create(expected);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteValid() {
+        Long id = 1L;
+        Mockito.when(tagDAO.delete(id)).thenReturn(true);
+        boolean actual = tagService.delete(id);
+        Assertions.assertTrue(actual);
+    }
+
+    @Test
+    void deleteException() {
+        Long id = 1L;
+        Mockito.when(tagDAO.delete(id)).thenReturn(false);
+        Assertions.assertThrows(TagNotFoundException.class, () -> {
+            tagService.delete(id);
+        });
+    }
+
 
 }

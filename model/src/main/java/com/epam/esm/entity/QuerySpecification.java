@@ -1,4 +1,4 @@
-package com.epam.esm.dto;
+package com.epam.esm.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QueryDTO {
+public class QuerySpecification {
     private String tag;
 
     private String text;

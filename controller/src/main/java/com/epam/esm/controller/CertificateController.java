@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
-import com.epam.esm.dto.QueryDTO;
+import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import lombok.AllArgsConstructor;
@@ -22,8 +22,8 @@ public class CertificateController {
     private final CertificateService service;
 
     @GetMapping
-    public List<CertificateDTO> getAllCertificates(QueryDTO queryDTO) {
-        return service.findAll(queryDTO);
+    public List<CertificateDTO> getAllCertificates(QuerySpecificationDTO querySpecificationDTO) {
+        return service.findAll(querySpecificationDTO);
     }
 
     @GetMapping(value = "/{id}")
