@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+/**
+ * The type Sql statement formatter.
+ */
 @UtilityClass
 public class SQLStatementFormatter {
 
@@ -17,6 +20,12 @@ public class SQLStatementFormatter {
             " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE %s OR gift_certificate.description LIKE %s)) " +
             "ORDER BY %s";
 
+    /**
+     * Prepare certificate query statement string.
+     *
+     * @param querySpecification the query specification
+     * @return the string
+     */
     public static String prepareCertificateQueryStatement(QuerySpecification querySpecification) {
         String text = "'%%'";
         StringBuilder result = new StringBuilder();
