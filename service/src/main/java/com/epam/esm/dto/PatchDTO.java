@@ -20,11 +20,11 @@ public class PatchDTO {
 
     private Long id;
 
-    @Size(min = 1,max = 150)
+    @Size(min = 1, max = 150)
     @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
     private String name;
 
-    @Size(min = 1,max = 300)
+    @Size(min = 1, max = 300)
     @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
     private String description;
 

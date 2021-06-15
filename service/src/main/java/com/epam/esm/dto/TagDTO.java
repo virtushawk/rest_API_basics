@@ -2,6 +2,7 @@ package com.epam.esm.dto;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class TagDTO {
     private long id;
 
-    @Size(min = 1,max = 150)
+    @Size(min = 1, max = 150)
     @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
     private String name;
 }

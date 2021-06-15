@@ -48,7 +48,7 @@ class CertificateDAOImplTest {
         Certificate certificate = Certificate.builder().name("test name").description("Test description").price(new BigDecimal("11"))
                 .duration(4).build();
         Certificate actual = certificateDAO.create(certificate);
-        Assertions.assertEquals(certificate.getName(),actual.getName());
+        Assertions.assertEquals(certificate.getName(), actual.getName());
     }
 
     @Test
@@ -83,14 +83,14 @@ class CertificateDAOImplTest {
         Certificate certificate = Certificate.builder().name("test name").description("Test description").price(new BigDecimal("11"))
                 .duration(4).build();
         Certificate actual = certificateDAO.update(certificate);
-        Assertions.assertEquals(certificate.getName(),actual.getName());
+        Assertions.assertEquals(certificate.getName(), actual.getName());
     }
 
     @Test
     void applyPatchTrue() {
         Long id = 1L;
-        Map<String,Object> patchValues = new HashMap<>();
-        boolean actual = certificateDAO.applyPatch(patchValues,id);
+        Map<String, Object> patchValues = new HashMap<>();
+        boolean actual = certificateDAO.applyPatch(patchValues, id);
         Assertions.assertTrue(actual);
     }
 

@@ -28,28 +28,28 @@ class TagDAOImplTest {
     @Test
     void findAllValid() {
         List<Tag> tags = tagDAO.findAll();
-        Assertions.assertEquals(2,tags.size());
+        Assertions.assertEquals(2, tags.size());
     }
 
     @Test
     void createNewValid() {
         Tag tag = Tag.builder().name("tag").build();
         Tag actual = tagDAO.create(tag);
-        Assertions.assertEquals(tag.getName(),actual.getName());
+        Assertions.assertEquals(tag.getName(), actual.getName());
     }
 
     @Test
     void createExistingValid() {
         Tag tag = Tag.builder().name("IT").build();
         Tag actual = tagDAO.create(tag);
-        Assertions.assertEquals(tag.getName(),actual.getName());
+        Assertions.assertEquals(tag.getName(), actual.getName());
     }
 
     @Test
     void findByIdValid() {
         Long id = 1L;
         Optional<Tag> actual = tagDAO.findById(id);
-        Assertions.assertEquals("IT",actual.get().getName());
+        Assertions.assertEquals("IT", actual.get().getName());
     }
 
     @Test
@@ -91,7 +91,7 @@ class TagDAOImplTest {
     void findByNameValid() {
         String name = "IT";
         Optional<Tag> actual = tagDAO.findByName(name);
-        Assertions.assertEquals(name,actual.get().getName());
+        Assertions.assertEquals(name, actual.get().getName());
     }
 
     @Test

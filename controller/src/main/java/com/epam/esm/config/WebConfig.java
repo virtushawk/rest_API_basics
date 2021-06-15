@@ -14,6 +14,9 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * The type Web config.
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.epam.esm")
@@ -24,11 +27,21 @@ public class WebConfig implements WebMvcConfigurer {
         configurer.enable();
     }
 
+    /**
+     * Init binder.
+     *
+     * @param binder the binder
+     */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
+    /**
+     * Object mapper object mapper.
+     *
+     * @return the object mapper
+     */
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -36,6 +49,11 @@ public class WebConfig implements WebMvcConfigurer {
         return objectMapper;
     }
 
+    /**
+     * Message source message source.
+     *
+     * @return the message source
+     */
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();

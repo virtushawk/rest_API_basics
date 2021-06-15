@@ -24,6 +24,9 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The type Certificate dao.
+ */
 @Repository
 @AllArgsConstructor
 @Slf4j
@@ -58,10 +61,10 @@ public class CertificateDAOImpl implements CertificateDAO {
         }
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("tag", querySpecification.getTag());
-        parameterSource.addValue("text",querySpecification.getText());
-        parameterSource.addValue("order",null);
-        if (!ObjectUtils.isEmpty(querySpecification.getOrder())){
-            List<String> sorts  = new ArrayList<>(querySpecification.getOrder());
+        parameterSource.addValue("text", querySpecification.getText());
+        parameterSource.addValue("order", null);
+        if (!ObjectUtils.isEmpty(querySpecification.getOrder())) {
+            List<String> sorts = new ArrayList<>(querySpecification.getOrder());
             sorts = sorts.stream().map(o -> "ASC").collect(Collectors.toList());
             if (!ObjectUtils.isEmpty(querySpecification.getSort())) {
                 int i = 0;
@@ -77,7 +80,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             }
             result.deleteCharAt(result.length() - 1);
         }
-        return namedParameterJdbcTemplate.query(String.format(SELECT_CERTIFICATE_QUERY,text,text,result),parameterSource,certificateMapper);
+        return namedParameterJdbcTemplate.query(String.format(SELECT_CERTIFICATE_QUERY, text, text, result), parameterSource, certificateMapper);
     }
 
     @Override
@@ -101,7 +104,7 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public List<Certificate> findAll() {
-        return jdbcTemplate.query(SELECT_CERTIFICATES,certificateMapper);
+        return jdbcTemplate.query(SELECT_CERTIFICATES, certificateMapper);
     }
 
     @Override

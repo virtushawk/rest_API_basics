@@ -9,15 +9,18 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+/**
+ * The type Certificate mapper.
+ */
 @Component
 public class CertificateMapper implements RowMapper<Certificate> {
 
     @Override
     public Certificate mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Certificate.builder().id(rs.getLong("id")).name(rs.getString("name"))
-                 .description(rs.getString("description")).price(rs.getBigDecimal("price"))
-                 .duration(rs.getInt("duration"))
+                .description(rs.getString("description")).price(rs.getBigDecimal("price"))
+                .duration(rs.getInt("duration"))
                 .createDate(ZonedDateTime.ofInstant(rs.getTimestamp("create_date").toInstant(), ZoneId.systemDefault()))
-                 .lastUpdateDate(ZonedDateTime.ofInstant(rs.getTimestamp("last_update_date").toInstant(), ZoneId.systemDefault())).build();
+                .lastUpdateDate(ZonedDateTime.ofInstant(rs.getTimestamp("last_update_date").toInstant(), ZoneId.systemDefault())).build();
     }
 }

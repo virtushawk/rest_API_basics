@@ -16,6 +16,9 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type Tag dao.
+ */
 @Repository
 @AllArgsConstructor
 public class TagDAOImpl implements TagDAO {

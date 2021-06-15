@@ -19,7 +19,6 @@ dependencies {
     implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.7'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")

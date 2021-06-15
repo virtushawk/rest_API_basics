@@ -23,6 +23,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+/**
+ * The type Certificate service.
+ */
 @Service
 @AllArgsConstructor
 @Slf4j

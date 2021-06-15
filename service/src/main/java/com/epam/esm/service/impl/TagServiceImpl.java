@@ -13,11 +13,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The type Tag service.
+ */
 @Service
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
+    /**
+     * The Tag dao.
+     */
     public final TagDAO tagDAO;
+    /**
+     * The Mapper dto.
+     */
     public final MapperDTO mapperDTO;
 
     @Override

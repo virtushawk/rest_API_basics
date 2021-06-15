@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -23,7 +22,7 @@ public class CertificateDTO {
 
     private Long id;
 
-    @Size(min = 1,max = 150)
+    @Size(min = 1, max = 150)
     @Pattern(regexp = "(.|\\s)*\\S(.|\\s)*")
     private String name;
 
@@ -39,10 +38,10 @@ public class CertificateDTO {
     @Max(100)
     private int duration;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime createDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime lastUpdateDate;
 
     private Set<TagDTO> tags;

@@ -53,7 +53,7 @@ class CertificateServiceImplTest {
         Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
         Mockito.when(mapperDTO.convertDTOToCertificate(expected)).thenReturn(certificate);
         CertificateDTO actual = certificateService.create(expected);
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -70,7 +70,7 @@ class CertificateServiceImplTest {
         Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
         Mockito.when(certificateDAO.findAll()).thenReturn(certificates);
         List<CertificateDTO> actual = certificateService.findAll();
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -79,7 +79,7 @@ class CertificateServiceImplTest {
         List<CertificateDTO> expected = new ArrayList<>();
         Mockito.when(certificateDAO.findAll()).thenReturn(certificates);
         List<CertificateDTO> actual = certificateService.findAll();
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -99,14 +99,14 @@ class CertificateServiceImplTest {
         Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
         Mockito.when(mapperDTO.convertTagToDTO(tag)).thenReturn(tagDTO);
         CertificateDTO actual = certificateService.findById(id);
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void findByIdException() {
         Long id = 1L;
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CertificateNotFoundException.class,() -> {
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.findById(id);
         });
     }
@@ -120,18 +120,19 @@ class CertificateServiceImplTest {
         Mockito.when(certificateDAO.findAll(querySpecification)).thenReturn(certificates);
         List<CertificateDTO> expected = new ArrayList<>();
         List<CertificateDTO> actual = certificateService.findAll(querySpecificationDTO);
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void findAllQuerySpecificationEmpty() {
         QuerySpecificationDTO querySpecificationDTO = new QuerySpecificationDTO();
-        QuerySpecification querySpecification = new QuerySpecification();Mockito.when(mapperDTO.convertDTOToQuery(querySpecificationDTO)).thenReturn(querySpecification);
+        QuerySpecification querySpecification = new QuerySpecification();
+        Mockito.when(mapperDTO.convertDTOToQuery(querySpecificationDTO)).thenReturn(querySpecification);
         List<Certificate> certificates = new ArrayList<>();
         Mockito.when(certificateDAO.findAll(querySpecification)).thenReturn(certificates);
         List<CertificateDTO> expected = new ArrayList<>();
         List<CertificateDTO> actual = certificateService.findAll(querySpecificationDTO);
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -145,7 +146,7 @@ class CertificateServiceImplTest {
         Mockito.when(certificateDAO.findById(id)).thenReturn(optionalCertificate);
         Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
         CertificateDTO actual = certificateService.update(expected);
-        Assertions.assertEquals(expected,actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -156,7 +157,7 @@ class CertificateServiceImplTest {
         expected.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CertificateNotFoundException.class,() -> {
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.update(expected);
         });
     }
@@ -191,7 +192,7 @@ class CertificateServiceImplTest {
         expected.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CertificateNotFoundException.class,() -> {
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.applyPatch(patchDTO);
         });
     }
@@ -200,8 +201,8 @@ class CertificateServiceImplTest {
     void attachTagsValid() {
         CertificateDTO expected = new CertificateDTO();
         HashSet<TagDTO> tagDTOs = new HashSet<>();
-        CertificateDTO actual = certificateService.attachTags(expected,tagDTOs);
-        Assertions.assertEquals(expected,actual);
+        CertificateDTO actual = certificateService.attachTags(expected, tagDTOs);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -216,7 +217,7 @@ class CertificateServiceImplTest {
     void deleteException() {
         Long id = 1L;
         Mockito.when(certificateDAO.delete(id)).thenReturn(false);
-        Assertions.assertThrows(CertificateNotFoundException.class,() -> {
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.delete(id);
         });
     }
