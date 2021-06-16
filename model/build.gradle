@@ -1,13 +1,4 @@
 plugins {
     id 'war'
+    id 'java'
 }
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-}
-

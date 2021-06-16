@@ -10,7 +10,14 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -30,7 +37,7 @@ public class TagController {
      * @return the all tags
      */
     @GetMapping
-    public List<TagDTO> getAllTags() {
+    public List<TagDTO> findAllTags() {
         return service.findAll();
     }
 
@@ -42,7 +49,7 @@ public class TagController {
      * @return the tag dto
      */
     @PostMapping
-    public TagDTO createTag(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
+    public TagDTO findTagById(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
@@ -56,6 +63,7 @@ public class TagController {
      * @return the tag
      */
     @GetMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
     public TagDTO getTag(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);

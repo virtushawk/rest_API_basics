@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.Optional;
 @ContextConfiguration(classes = {TestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("dev")
-@Sql("classpath:/insert_data_certificate.sql")
 class TagDAOImplTest {
 
     @Autowired
@@ -53,7 +51,7 @@ class TagDAOImplTest {
     }
 
     @Test
-    void findByIdEmpty() {
+    void findByIdNotExists() {
         Long id = 112L;
         Optional<Tag> actual = tagDAO.findById(id);
         Assertions.assertTrue(actual.isEmpty());
@@ -95,7 +93,7 @@ class TagDAOImplTest {
     }
 
     @Test
-    void findByNameEmpty() {
+    void findByNameNotExists() {
         String name = "test case";
         Optional<Tag> actual = tagDAO.findByName(name);
         Assertions.assertTrue(actual.isEmpty());

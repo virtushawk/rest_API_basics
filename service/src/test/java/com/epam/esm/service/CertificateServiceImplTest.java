@@ -22,7 +22,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceImplTest {
@@ -171,12 +176,11 @@ class CertificateServiceImplTest {
         Certificate certificate = Certificate.builder().name("new certificate").build();
         Optional<Certificate> optionalCertificate = Optional.of(certificate);
         Long id = 1L;
-        patchDTO.setId(id);
         expected.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(optionalCertificate);
         Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
-        CertificateDTO actual = certificateService.applyPatch(patchDTO);
+        CertificateDTO actual = certificateService.applyPatch(id,patchDTO);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -188,12 +192,11 @@ class CertificateServiceImplTest {
         CertificateDTO expected = CertificateDTO.builder().name("new certificate").build();
         Certificate certificate = Certificate.builder().name("new certificate").build();
         Long id = 1L;
-        patchDTO.setId(id);
         expected.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {
-            certificateService.applyPatch(patchDTO);
+            certificateService.applyPatch(id,patchDTO);
         });
     }
 
@@ -208,6 +211,7 @@ class CertificateServiceImplTest {
     @Test
     void deleteValid() {
         Long id = 1L;
+        Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.of(new Certificate()));
         Mockito.when(certificateDAO.delete(id)).thenReturn(true);
         boolean flag = certificateService.delete(id);
         Assertions.assertTrue(flag);
@@ -216,7 +220,7 @@ class CertificateServiceImplTest {
     @Test
     void deleteException() {
         Long id = 1L;
-        Mockito.when(certificateDAO.delete(id)).thenReturn(false);
+        Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.delete(id);
         });

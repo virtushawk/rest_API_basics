@@ -35,7 +35,7 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
      * @param patchDTO the patch dto
      * @return the certificate dto
      */
-    CertificateDTO applyPatch(PatchDTO patchDTO);
+    CertificateDTO applyPatch(Long id,PatchDTO patchDTO);
 
     /**
      * Attach tags certificate dto.

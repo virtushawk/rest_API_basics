@@ -19,7 +19,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -85,14 +89,13 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     @Transactional
-    public CertificateDTO applyPatch(PatchDTO patchDTO) {
+    public CertificateDTO applyPatch(Long id,PatchDTO patchDTO) {
         Map<String, Object> patchMap = objectMapper.convertValue(patchDTO, Map.class);
-        CertificateDTO certificateDTO = CertificateDTO.builder().tags(patchDTO.getTags()).id(patchDTO.getId()).build();
-        patchMap.remove(CERTIFICATE_ID_COLUMN);
+        CertificateDTO certificateDTO = CertificateDTO.builder().tags(patchDTO.getTags()).id(id).build();
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);
-        certificateDAO.applyPatch(patchMap, patchDTO.getId());
+        certificateDAO.applyPatch(patchMap,id);
         checkForTags(certificateDTO);
-        return findById(patchDTO.getId());
+        return findById(id);
     }
 
     @Override

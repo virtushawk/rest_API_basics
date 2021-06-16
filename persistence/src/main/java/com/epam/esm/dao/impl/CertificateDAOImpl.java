@@ -4,7 +4,6 @@ import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.mapper.CertificateMapper;
-import com.epam.esm.util.SQLStatementFormatter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,8 +21,10 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * The type Certificate dao.
@@ -34,8 +35,11 @@ import java.util.stream.Collectors;
 public class CertificateDAOImpl implements CertificateDAO {
 
     private final JdbcTemplate jdbcTemplate;
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private final CertificateMapper certificateMapper;
+
     private static final String SQL_SELECT_CERTIFICATE_BY_ID = "SELECT id,name,description,price,duration,create_date,last_update_date" +
             " FROM gift_certificate WHERE id = ?";
     private static final String SQL_INSERT_CERTIFICATE = "INSERT INTO gift_certificate(name,description,price,duration,create_date,last_update_date) " +
@@ -46,18 +50,21 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SQL_UPDATE_CERTIFICATE = "UPDATE gift_certificate SET name = ?, description = ?, price = ?, " +
             "duration = ?, last_update_date = ? WHERE id = ?";
     private static final String LAST_UPDATE_DATE_COLUMN = "last_update_date";
+    private static final String SELECT_CERTIFICATES = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate";
+    private static final String QUERY_SPECIFICATION_TEXT = "text";
+    private static final String QUERY_SPECIFICATION_TAG = "tag";
     private static final String SELECT_CERTIFICATE_QUERY = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate" +
             " LEFT JOIN tag_has_gift_certificate ON gift_certificate_id = gift_certificate.id LEFT JOIN tag ON tag_id = tag.id" +
             " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE %s OR gift_certificate.description LIKE %s)) " +
             "ORDER BY %s";
-    private static final String SELECT_CERTIFICATES = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate";
+
 
     @Override
     public List<Certificate> findAll(QuerySpecification querySpecification) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("tag", querySpecification.getTag());
-        parameterSource.addValue("text", querySpecification.getText());
-        return namedParameterJdbcTemplate.query(SQLStatementFormatter.prepareCertificateQueryStatement(querySpecification), parameterSource, certificateMapper);
+        parameterSource.addValue(QUERY_SPECIFICATION_TAG, querySpecification.getTag());
+        parameterSource.addValue(QUERY_SPECIFICATION_TEXT, querySpecification.getText());
+        return namedParameterJdbcTemplate.query(prepareCertificateQueryStatement(querySpecification), parameterSource, certificateMapper);
     }
 
     @Override
@@ -115,11 +122,23 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public boolean delete(Long id) {
-        boolean flag;
-        flag = jdbcTemplate.update(SQL_DELETE_CERTIFICATE_BY_ID, id) > 0;
+        boolean flag = jdbcTemplate.update(SQL_DELETE_CERTIFICATE_BY_ID, id) > 0;
         if (flag) {
             jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
         }
         return flag;
+    }
+
+    private String prepareCertificateQueryStatement(QuerySpecification querySpecification) {
+        String text = ObjectUtils.isEmpty(querySpecification.getText()) ? "'%%'" : "'%" + querySpecification.getText() + "%'";
+        final StringBuilder orderSearch = new StringBuilder();
+        if (ObjectUtils.isEmpty(querySpecification.getOrder())) {
+            orderSearch.append("NULL");
+        } else {
+            List<String> sort = querySpecification.getSort();
+            querySpecification.getOrder().forEach(o -> orderSearch.append(o).append(" ").append(ObjectUtils.isEmpty(sort) ? "ASC" : sort.remove(0).toUpperCase(Locale.ROOT)).append(","));
+            orderSearch.deleteCharAt(orderSearch.length() - 1);
+        }
+        return String.format(SELECT_CERTIFICATE_QUERY, text, text, orderSearch);
     }
 }

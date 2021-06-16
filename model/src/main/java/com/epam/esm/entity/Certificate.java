@@ -21,5 +21,5 @@ public class Certificate {
     private int duration;
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
-    Set<Tag> tags;
+    private Set<Tag> tags;
 }

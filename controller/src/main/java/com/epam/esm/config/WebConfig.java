@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Init binder.
+     * WebDataBinder configuration
      *
      * @param binder the binder
      */
@@ -38,7 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Object mapper object mapper.
+     * Object mapper
      *
      * @return the object mapper
      */
@@ -50,7 +50,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Message source message source.
+     * Message source to read data from properties file
      *
      * @return the message source
      */

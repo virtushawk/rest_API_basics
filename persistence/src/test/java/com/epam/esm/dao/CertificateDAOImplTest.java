@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -23,7 +22,6 @@ import java.util.Optional;
 @ContextConfiguration(classes = {TestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("dev")
-/*@Sql("classpath:/insert_data_certificate.sql")*/
 class CertificateDAOImplTest {
 
     @Autowired
@@ -72,7 +70,7 @@ class CertificateDAOImplTest {
     }
 
     @Test
-    void findByIdEmpty() {
+    void findByIdNotExists() {
         Long id = 1244L;
         Optional<Certificate> actual = certificateDAO.findById(id);
         Assertions.assertTrue(actual.isEmpty());
