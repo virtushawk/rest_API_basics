@@ -17,8 +17,8 @@ import java.util.List;
 /**
  * The type Certificate controller.
  */
-@RequestMapping(value = "/certificates")
 @RestController
+@RequestMapping(value = "/certificates")
 @AllArgsConstructor
 public class CertificateController {
 
