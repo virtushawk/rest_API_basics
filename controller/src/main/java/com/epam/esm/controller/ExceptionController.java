@@ -23,7 +23,7 @@ import java.util.Locale;
  */
 @ControllerAdvice
 @ResponseBody
-public class ExceptionController extends ResponseEntityExceptionHandler {
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
