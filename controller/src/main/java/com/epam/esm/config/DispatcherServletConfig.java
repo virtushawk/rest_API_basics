@@ -3,7 +3,7 @@ package com.epam.esm.config;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**
- * The type Dispatcher servlet config.
+ * The type Dispatcher servlet configuration.
  */
 public class DispatcherServletConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
 
