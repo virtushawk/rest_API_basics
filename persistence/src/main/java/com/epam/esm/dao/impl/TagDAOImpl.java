@@ -70,8 +70,7 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public boolean delete(Long id) {
-        boolean flag;
-        flag = jdbcTemplate.update(SQL_DELETE_TAG_BY_ID, id) > 0;
+        boolean flag = jdbcTemplate.update(SQL_DELETE_TAG_BY_ID, id) > 0;
         if (flag) {
             jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
         }

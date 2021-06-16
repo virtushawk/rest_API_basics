@@ -5,7 +5,7 @@ import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.exception.TagNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +23,15 @@ import java.util.Locale;
  */
 @ControllerAdvice
 @ResponseBody
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+@AllArgsConstructor
+public class ExceptionController extends ResponseEntityExceptionHandler {
 
-    @Autowired
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
     private static final int INTERNAL_SERVER_ERROR_CODE = 100;
 
     /**
-     * Handle controller not found exception response entity.
+     * Handles the certificateNotFoundException class
      *
      * @param exception the exception
      * @param locale    the locale
@@ -47,7 +47,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handle tag not found exception response entity.
+     * Handles the TagNotFoundException class
      *
      * @param exception the exception
      * @param locale    the locale
@@ -63,7 +63,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handle invalid data form exception response entity.
+     * Handles the InvalidDataFromException class
      *
      * @param exception the exception
      * @param locale    the locale
@@ -86,6 +86,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handles the RuntimeException class
+     *
+     * @param exception the exception
+     * @param locale    the locale
+     * @return the response entity
+     */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleInternalServerError(RuntimeException exception, Locale locale) {
         String errorMessage = messageSource.getMessage("error.internalServerError", new Object[]{}, locale);
@@ -95,8 +102,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Handles the IdInvalidException class
+     *
+     * @param exception the exception
+     * @param locale    the locale
+     * @return the response entity
+     */
     @ExceptionHandler(IdInvalidException.class)
-    public ResponseEntity<Object> handleInternalServerError(IdInvalidException exception, Locale locale) {
+    public ResponseEntity<Object> handleIdInvalidException(IdInvalidException exception, Locale locale) {
         String errorMessage = messageSource.getMessage("error.idInvalidError", new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse();
         response.setErrorMessage(errorMessage + " " + exception.getId());
