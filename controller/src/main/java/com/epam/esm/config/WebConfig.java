@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * The type Web config.
+ * The type Web configuration.
  */
 @Configuration
 @EnableWebMvc
