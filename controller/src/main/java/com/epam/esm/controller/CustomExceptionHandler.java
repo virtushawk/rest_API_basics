@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Locale;
 @ControllerAdvice
 @ResponseBody
 @AllArgsConstructor
-public class ExceptionController extends ResponseEntityExceptionHandler {
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageSource messageSource;
 
@@ -55,11 +56,9 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTagNotFoundException(TagNotFoundException exception, Locale locale) {
-        String errorMessage = messageSource.getMessage("error.tagNotFound", new Object[]{}, locale);
-        ErrorResponse response = new ErrorResponse();
-        response.setErrorMessage(errorMessage + ' ' + exception.getMessage());
-        response.setErrorCode(exception.getErrorCode());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        String message = messageSource.getMessage("error.tagNotFound", new Object[]{}, locale);
+        String errorMessage = message + ' ' + exception.getMessage();
+        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -73,17 +72,11 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleInvalidDataFormException(InvalidDataFormException exception, Locale locale) {
         StringBuilder errorMessage = new StringBuilder();
         errorMessage.append(messageSource.getMessage("error.invalidDataForm", new Object[]{}, locale));
-        for (ObjectError object : exception.getBindingResult().getAllErrors()) {
-            if (object instanceof FieldError) {
-                FieldError fieldError = (FieldError) object;
-                errorMessage.append(messageSource.getMessage(fieldError, locale)).append(',');
-            }
-        }
+        List<ObjectError> errors = exception.getBindingResult().getAllErrors();
+        errors.stream().filter(FieldError.class::isInstance)
+                .forEach(objectError -> errorMessage.append(' ').append(messageSource.getMessage(objectError, locale)).append(","));
         errorMessage.deleteCharAt(errorMessage.length() - 1);
-        ErrorResponse response = new ErrorResponse();
-        response.setErrorMessage(errorMessage.toString());
-        response.setErrorCode(exception.getErrorCode());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(createErrorResponse(errorMessage.toString(), exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -96,10 +89,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleInternalServerError(RuntimeException exception, Locale locale) {
         String errorMessage = messageSource.getMessage("error.internalServerError", new Object[]{}, locale);
-        ErrorResponse response = new ErrorResponse();
-        response.setErrorMessage(errorMessage);
-        response.setErrorCode(INTERNAL_SERVER_ERROR_CODE);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(createErrorResponse(errorMessage, INTERNAL_SERVER_ERROR_CODE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -111,11 +101,15 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(IdInvalidException.class)
     public ResponseEntity<Object> handleIdInvalidException(IdInvalidException exception, Locale locale) {
-        String errorMessage = messageSource.getMessage("error.idInvalidError", new Object[]{}, locale);
-        ErrorResponse response = new ErrorResponse();
-        response.setErrorMessage(errorMessage + " " + exception.getId());
-        response.setErrorCode(exception.getErrorCode());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        String message = messageSource.getMessage("error.idInvalidError", new Object[]{}, locale);
+        String errorMessage = message + ' ' + exception.getId();
+        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
 
+    private ErrorResponse createErrorResponse(String errorMessage, int errorCode) {
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorMessage(errorMessage);
+        response.setErrorCode(errorCode);
+        return response;
+    }
 }

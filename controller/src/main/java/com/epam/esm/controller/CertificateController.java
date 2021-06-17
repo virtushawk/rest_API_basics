@@ -40,7 +40,7 @@ public class CertificateController {
      * @return List of all certificates
      */
     @GetMapping
-    public List<CertificateDTO> findAllCertificatesByCriteria(QuerySpecificationDTO querySpecificationDTO) {
+    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO) {
         return service.findAll(querySpecificationDTO);
     }
 
@@ -51,7 +51,7 @@ public class CertificateController {
      * @return the certificate
      */
     @GetMapping(value = "/{id}")
-    public CertificateDTO findCertificateById(@PathVariable Long id) {
+    public CertificateDTO findById(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
@@ -67,7 +67,7 @@ public class CertificateController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDTO createCertificate(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult bindingResult) {
+    public CertificateDTO create(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
@@ -81,7 +81,7 @@ public class CertificateController {
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCertificate(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
@@ -97,7 +97,7 @@ public class CertificateController {
      * @return the certificate dto
      */
     @PatchMapping(value = "/{id}")
-    public CertificateDTO patchCertificate(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO, BindingResult bindingResult) {
+    public CertificateDTO patch(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO, BindingResult bindingResult) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
@@ -116,7 +116,7 @@ public class CertificateController {
      * @return the certificate dto
      */
     @PutMapping(value = "/{id}")
-    public CertificateDTO updateCertificate(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
+    public CertificateDTO update(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
                                             BindingResult bindingResult) {
         if (id < 0) {
             throw new IdInvalidException(id);

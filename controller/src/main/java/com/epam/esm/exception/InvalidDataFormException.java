@@ -2,9 +2,9 @@ package com.epam.esm.exception;
 
 import org.springframework.validation.BindingResult;
 
-public class InvalidDataFormException extends RuntimeException {
+public class InvalidDataFormException extends CustomServiceException {
 
-    private int errorCode = 102;
+    private static final int INVALID_DATA_FORM_ERROR_CODE = 102;
     private BindingResult bindingResult;
 
     public InvalidDataFormException() {}
@@ -29,8 +29,9 @@ public class InvalidDataFormException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    @Override
     public int getErrorCode() {
-        return errorCode;
+        return INVALID_DATA_FORM_ERROR_CODE;
     }
 
     public BindingResult getBindingResult() {

@@ -1,8 +1,8 @@
 package com.epam.esm.exception;
 
-public class TagNotFoundException extends RuntimeException {
+public class TagNotFoundException extends CustomServiceException {
 
-    private int errorCode = 104;
+    private static final int TAG_NOT_FOUND_ERROR_CODE = 104;
 
     public TagNotFoundException() {
     }
@@ -23,7 +23,8 @@ public class TagNotFoundException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    @Override
     public int getErrorCode() {
-        return errorCode;
+        return TAG_NOT_FOUND_ERROR_CODE;
     }
 }

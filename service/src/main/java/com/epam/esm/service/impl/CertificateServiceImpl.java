@@ -40,16 +40,13 @@ public class CertificateServiceImpl implements CertificateService {
     private final MapperDTO mapperDTO;
     private final ObjectMapper objectMapper;
 
-    private static final String CERTIFICATE_ID_COLUMN = "id";
     private static final String CERTIFICATE_TAGS_COLUMN = "tags";
 
     @Override
     @Transactional
     public CertificateDTO create(CertificateDTO certificateDTO) {
         Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
-        certificate = certificateDAO.create(certificate);
-        certificateDTO = mapperDTO.convertCertificateToDTO(certificate);
-        return checkForTags(certificateDTO);
+       return checkForTags(mapperDTO.convertCertificateToDTO(certificateDAO.create(certificate)));
     }
 
     @Override
@@ -63,9 +60,11 @@ public class CertificateServiceImpl implements CertificateService {
         if (certificate.isEmpty()) {
             throw new CertificateNotFoundException(id.toString());
         }
-        Set<Tag> tags = new HashSet<>(tagDAO.findAllByCertificateId(id));
+        Set<TagDTO> tagDTOs = tagDAO.findAllByCertificateId(id).stream()
+                .distinct()
+                .map(mapperDTO::convertTagToDTO)
+                .collect(Collectors.toSet());
         CertificateDTO certificateDTO = mapperDTO.convertCertificateToDTO(certificate.get());
-        Set<TagDTO> tagDTOs = tags.stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toSet());
         certificateDTO.setTags(tagDTOs);
         return certificateDTO;
     }
@@ -73,9 +72,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO) {
         QuerySpecification querySpecification = mapperDTO.convertDTOToQuery(querySpecificationDTO);
-        List<Certificate> certificates = certificateDAO.findAll(querySpecification);
-        certificates.forEach(o -> o.setTags(new HashSet<>(tagDAO.findAllByCertificateId(o.getId()))));
-        return certificates.stream().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
+        return certificateDAO.findAll(querySpecification).stream()
+                .map(o -> {
+                    o.setTags(new HashSet<>(tagDAO.findAllByCertificateId(o.getId())));
+                    return o;
+                })
+                .map(mapperDTO::convertCertificateToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -89,11 +92,11 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     @Transactional
-    public CertificateDTO applyPatch(Long id,PatchDTO patchDTO) {
+    public CertificateDTO applyPatch(Long id, PatchDTO patchDTO) {
         Map<String, Object> patchMap = objectMapper.convertValue(patchDTO, Map.class);
         CertificateDTO certificateDTO = CertificateDTO.builder().tags(patchDTO.getTags()).id(id).build();
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);
-        certificateDAO.applyPatch(patchMap,id);
+        certificateDAO.applyPatch(patchMap, id);
         checkForTags(certificateDTO);
         return findById(id);
     }

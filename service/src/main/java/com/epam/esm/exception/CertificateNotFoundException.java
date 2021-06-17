@@ -1,8 +1,8 @@
 package com.epam.esm.exception;
 
-public class CertificateNotFoundException extends RuntimeException {
+public class CertificateNotFoundException extends CustomServiceException {
 
-    private int errorCode = 103;
+    private static final int CERTIFICATE_NOT_FOUND_ERROR_CODE = 103;
 
     public CertificateNotFoundException() {
     }
@@ -23,7 +23,8 @@ public class CertificateNotFoundException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    @Override
     public int getErrorCode() {
-        return errorCode;
+        return CERTIFICATE_NOT_FOUND_ERROR_CODE;
     }
 }

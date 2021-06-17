@@ -37,7 +37,7 @@ public class TagController {
      * @return the all tags
      */
     @GetMapping
-    public List<TagDTO> findAllTags() {
+    public List<TagDTO> findAll() {
         return service.findAll();
     }
 
@@ -49,7 +49,7 @@ public class TagController {
      * @return the tag dto
      */
     @PostMapping
-    public TagDTO findTagById(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
+    public TagDTO findById(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
@@ -64,7 +64,7 @@ public class TagController {
      */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO getTag(@PathVariable Long id) {
+    public TagDTO get(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
@@ -78,7 +78,7 @@ public class TagController {
      */
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }

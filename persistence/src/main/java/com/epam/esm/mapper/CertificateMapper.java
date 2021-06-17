@@ -16,14 +16,17 @@ import java.time.ZonedDateTime;
 public class CertificateMapper implements RowMapper<Certificate> {
 
     @Override
-    public Certificate mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return Certificate.builder().id(rs.getLong("id"))
-                .name(rs.getString("name"))
-                .description(rs.getString("description"))
-                .price(rs.getBigDecimal("price"))
-                .duration(rs.getInt("duration"))
-                .createDate(ZonedDateTime.ofInstant(rs.getTimestamp("create_date").toInstant(), ZoneId.systemDefault()))
-                .lastUpdateDate(ZonedDateTime.ofInstant(rs.getTimestamp("last_update_date").toInstant(), ZoneId.systemDefault()))
+    public Certificate mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        return Certificate.builder()
+                .id(resultSet.getLong("id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .price(resultSet.getBigDecimal("price"))
+                .duration(resultSet.getInt("duration"))
+                .createDate(ZonedDateTime.ofInstant(resultSet.getTimestamp("create_date").toInstant(),
+                        ZoneId.systemDefault()))
+                .lastUpdateDate(ZonedDateTime.ofInstant(resultSet.getTimestamp("last_update_date").toInstant(),
+                        ZoneId.systemDefault()))
                 .build();
     }
 }

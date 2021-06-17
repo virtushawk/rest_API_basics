@@ -1,8 +1,8 @@
 package com.epam.esm.exception;
 
-public class IdInvalidException extends RuntimeException {
+public class IdInvalidException extends CustomServiceException {
 
-    private int errorCode = 101;
+    private static final int ID_INVALID_ERROR_CODE = 101;
     private Long id;
 
     public IdInvalidException() {
@@ -28,8 +28,9 @@ public class IdInvalidException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    @Override
     public int getErrorCode() {
-        return errorCode;
+        return ID_INVALID_ERROR_CODE;
     }
 
     public Long getId() {
