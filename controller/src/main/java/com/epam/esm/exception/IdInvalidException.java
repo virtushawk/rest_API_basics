@@ -3,6 +3,7 @@ package com.epam.esm.exception;
 public class IdInvalidException extends CustomServiceException {
 
     private static final int ID_INVALID_ERROR_CODE = 101;
+    private static final String ID_INVALID_MESSAGE = "error.idInvalidError";
     private Long id;
 
     public IdInvalidException() {
@@ -31,6 +32,11 @@ public class IdInvalidException extends CustomServiceException {
     @Override
     public int getErrorCode() {
         return ID_INVALID_ERROR_CODE;
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return ID_INVALID_MESSAGE;
     }
 
     public Long getId() {

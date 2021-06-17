@@ -2,8 +2,6 @@ package com.epam.esm.exception;
 
 public abstract class CustomServiceException extends RuntimeException {
 
-    protected abstract int getErrorCode();
-
     protected CustomServiceException() {
     }
 
@@ -22,4 +20,9 @@ public abstract class CustomServiceException extends RuntimeException {
     protected CustomServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
+    protected abstract int getErrorCode();
+
+    protected abstract String getErrorMessage();
+
 }
