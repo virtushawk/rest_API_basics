@@ -29,7 +29,9 @@ class CertificateDAOImplTest {
 
     @Test
     void findAllQuerySpecification() {
-        QuerySpecification querySpecification = QuerySpecification.builder().tag("IT").build();
+        QuerySpecification querySpecification = QuerySpecification.builder()
+                .tag("IT")
+                .build();
         List<Certificate> certificates = certificateDAO.findAll(querySpecification);
         Assertions.assertFalse(certificates.isEmpty());
     }
@@ -43,15 +45,21 @@ class CertificateDAOImplTest {
 
     @Test
     void createValid() {
-        Certificate certificate = Certificate.builder().name("test name").description("Test description").price(new BigDecimal("11"))
-                .duration(4).build();
+        Certificate certificate = Certificate.builder()
+                .name("test name")
+                .description("Test description")
+                .price(new BigDecimal("11"))
+                .duration(4)
+                .build();
         Certificate actual = certificateDAO.create(certificate);
         Assertions.assertEquals(certificate.getName(), actual.getName());
     }
 
     @Test
     void findAllQuerySpecificationEmpty() {
-        QuerySpecification querySpecification = QuerySpecification.builder().tag("test case").build();
+        QuerySpecification querySpecification = QuerySpecification.builder()
+                .tag("test case")
+                .build();
         List<Certificate> certificates = certificateDAO.findAll(querySpecification);
         Assertions.assertTrue(certificates.isEmpty());
     }
@@ -78,8 +86,12 @@ class CertificateDAOImplTest {
 
     @Test
     void updateValid() {
-        Certificate certificate = Certificate.builder().name("test name").description("Test description").price(new BigDecimal("11"))
-                .duration(4).build();
+        Certificate certificate = Certificate.builder()
+                .name("test name")
+                .description("Test description")
+                .price(new BigDecimal("11"))
+                .duration(4)
+                .build();
         Certificate actual = certificateDAO.update(certificate);
         Assertions.assertEquals(certificate.getName(), actual.getName());
     }

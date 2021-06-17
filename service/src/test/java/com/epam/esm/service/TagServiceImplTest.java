@@ -7,6 +7,7 @@ import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.util.MapperDTO;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,11 +35,17 @@ class TagServiceImplTest {
     @Mock
     public MapperDTO mapperDTO;
 
+    private Tag tag;
+
+    @BeforeEach
+    public void initEach() {
+        tag = Tag.builder().name("Test case 1").build();
+    }
+
     @Test
     void findALlValid() {
         List<Tag> tags = new ArrayList<>();
-        tags.add(Tag.builder().name("Test case 1").build());
-        tags.add(Tag.builder().name("Test case 2").build());
+        tags.add(tag);
         List<TagDTO> expected = tags.stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
         Mockito.when(tagDAO.findAll()).thenReturn(tags);
         List<TagDTO> actual = tagService.findAll();
@@ -56,7 +63,6 @@ class TagServiceImplTest {
 
     @Test
     void findByIdValid() {
-        Tag tag = Tag.builder().name("test case 1").build();
         Optional<Tag> optionalTag = Optional.of(tag);
         Long id = 1L;
         TagDTO expected = mapperDTO.convertTagToDTO(tag);
@@ -77,7 +83,6 @@ class TagServiceImplTest {
     @Test
     @MockitoSettings(strictness = Strictness.LENIENT)
     void createValid() {
-        Tag tag = Tag.builder().name("test case").build();
         Mockito.when(tagDAO.create(tag)).thenReturn(tag);
         TagDTO expected = mapperDTO.convertTagToDTO(tag);
         TagDTO actual = tagService.create(expected);
@@ -87,6 +92,7 @@ class TagServiceImplTest {
     @Test
     void deleteValid() {
         Long id = 1L;
+        Mockito.when(tagDAO.findById(id)).thenReturn(Optional.of(tag));
         Mockito.when(tagDAO.delete(id)).thenReturn(true);
         boolean actual = tagService.delete(id);
         Assertions.assertTrue(actual);
@@ -95,7 +101,7 @@ class TagServiceImplTest {
     @Test
     void deleteException() {
         Long id = 1L;
-        Mockito.when(tagDAO.delete(id)).thenReturn(false);
+        Mockito.when(tagDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(TagNotFoundException.class, () -> {
             tagService.delete(id);
         });

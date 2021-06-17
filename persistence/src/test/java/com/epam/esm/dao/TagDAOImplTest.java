@@ -31,14 +31,18 @@ class TagDAOImplTest {
 
     @Test
     void createNewValid() {
-        Tag tag = Tag.builder().name("tag").build();
+        Tag tag = Tag.builder()
+                .name("tag")
+                .build();
         Tag actual = tagDAO.create(tag);
         Assertions.assertEquals(tag.getName(), actual.getName());
     }
 
     @Test
     void createExistingValid() {
-        Tag tag = Tag.builder().name("IT").build();
+        Tag tag = Tag.builder()
+                .name("IT")
+                .build();
         Tag actual = tagDAO.create(tag);
         Assertions.assertEquals(tag.getName(), actual.getName());
     }

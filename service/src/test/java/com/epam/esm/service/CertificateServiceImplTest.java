@@ -8,12 +8,12 @@ import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.QuerySpecification;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.service.impl.CertificateServiceImpl;
 import com.epam.esm.util.MapperDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,27 +47,38 @@ class CertificateServiceImplTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    private static Certificate certificate;
+    private static CertificateDTO certificateDTO;
+
+    @BeforeEach
+    public void initEach() {
+        certificate = Certificate.builder()
+                .name("test name")
+                .description("test description")
+                .price(new BigDecimal("10"))
+                .duration(5)
+                .tags(new HashSet<>())
+                .build();
+        certificateDTO =  CertificateDTO.builder()
+               .name("test name")
+               .description("test description")
+               .price(new BigDecimal("10"))
+               .duration(5)
+               .tags(new HashSet<>())
+               .build();
+    }
+
     @Test
     void createValid() {
-        Certificate certificate = Certificate.builder().name("test name").description("test description").price(new BigDecimal("10"))
-                .duration(5).tags(new HashSet<>()).build();
-        certificate.getTags().add(Tag.builder().name("test tag").build());
-        CertificateDTO expected = CertificateDTO.builder().name("test name").description("test description").price(new BigDecimal("10"))
-                .duration(5).tags(new HashSet<>()).build();
         Mockito.when(certificateDAO.create(certificate)).thenReturn(certificate);
-        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
-        Mockito.when(mapperDTO.convertDTOToCertificate(expected)).thenReturn(certificate);
-        CertificateDTO actual = certificateService.create(expected);
-        Assertions.assertEquals(expected, actual);
+        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
+        Mockito.when(mapperDTO.convertDTOToCertificate(certificateDTO)).thenReturn(certificate);
+        CertificateDTO actual = certificateService.create(certificateDTO);
+        Assertions.assertEquals(certificateDTO, actual);
     }
 
     @Test
     void findAllValid() {
-        Certificate certificate = Certificate.builder().name("test name").description("test description").price(new BigDecimal("10"))
-                .duration(5).tags(new HashSet<>()).build();
-        certificate.getTags().add(Tag.builder().name("test tag").build());
-        CertificateDTO certificateDTO = CertificateDTO.builder().name("test name").description("test description").price(new BigDecimal("10"))
-                .duration(5).tags(new HashSet<>()).build();
         List<Certificate> certificates = new ArrayList<>();
         List<CertificateDTO> expected = new ArrayList<>();
         certificates.add(certificate);
@@ -89,22 +100,12 @@ class CertificateServiceImplTest {
 
     @Test
     void findByIdValid() {
-        Certificate certificate = Certificate.builder().name("test name").description("test description").price(new BigDecimal("10"))
-                .duration(5).tags(new HashSet<>()).build();
-        List<Tag> tags = new ArrayList<>();
-        CertificateDTO expected = CertificateDTO.builder().name("test name").description("test description").price(new BigDecimal("10"))
-                .duration(5).tags(new HashSet<>()).build();
-        Tag tag = Tag.builder().name("test tag").build();
-        TagDTO tagDTO = TagDTO.builder().name("test tag").build();
-        tags.add(tag);
         Optional<Certificate> optionalCertificate = Optional.of(certificate);
         Long id = 1L;
         Mockito.when(certificateDAO.findById(id)).thenReturn(optionalCertificate);
-        Mockito.when(tagDAO.findAllByCertificateId(id)).thenReturn(tags);
-        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
-        Mockito.when(mapperDTO.convertTagToDTO(tag)).thenReturn(tagDTO);
+        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
         CertificateDTO actual = certificateService.findById(id);
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(certificateDTO, actual);
     }
 
     @Test
@@ -142,28 +143,24 @@ class CertificateServiceImplTest {
 
     @Test
     void updateValid() {
-        CertificateDTO expected = CertificateDTO.builder().name("new certificate").build();
-        Certificate certificate = Certificate.builder().name("new certificate").build();
         Optional<Certificate> optionalCertificate = Optional.of(certificate);
         Long id = 1L;
-        expected.setId(id);
+        certificateDTO.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(optionalCertificate);
-        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
-        CertificateDTO actual = certificateService.update(expected);
-        Assertions.assertEquals(expected, actual);
+        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
+        CertificateDTO actual = certificateService.update(certificateDTO);
+        Assertions.assertEquals(certificateDTO, actual);
     }
 
     @Test
     void updateException() {
-        CertificateDTO expected = CertificateDTO.builder().name("new certificate").build();
-        Certificate certificate = Certificate.builder().name("new certificate").build();
         Long id = 1L;
-        expected.setId(id);
+        certificateDTO.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {
-            certificateService.update(expected);
+            certificateService.update(certificateDTO);
         });
     }
 
@@ -172,16 +169,14 @@ class CertificateServiceImplTest {
         PatchDTO patchDTO = new PatchDTO();
         Map<String, Object> patchMap = new HashMap<>();
         Mockito.when(objectMapper.convertValue(patchDTO, Map.class)).thenReturn(patchMap);
-        CertificateDTO expected = CertificateDTO.builder().name("new certificate").build();
-        Certificate certificate = Certificate.builder().name("new certificate").build();
         Optional<Certificate> optionalCertificate = Optional.of(certificate);
         Long id = 1L;
-        expected.setId(id);
+        certificateDTO.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(optionalCertificate);
-        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(expected);
+        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
         CertificateDTO actual = certificateService.applyPatch(id,patchDTO);
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(certificateDTO, actual);
     }
 
     @Test
@@ -189,10 +184,8 @@ class CertificateServiceImplTest {
         PatchDTO patchDTO = new PatchDTO();
         Map<String, Object> patchMap = new HashMap<>();
         Mockito.when(objectMapper.convertValue(patchDTO, Map.class)).thenReturn(patchMap);
-        CertificateDTO expected = CertificateDTO.builder().name("new certificate").build();
-        Certificate certificate = Certificate.builder().name("new certificate").build();
         Long id = 1L;
-        expected.setId(id);
+        certificateDTO.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {

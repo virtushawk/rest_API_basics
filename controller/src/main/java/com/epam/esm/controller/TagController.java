@@ -49,7 +49,8 @@ public class TagController {
      * @return the tag dto
      */
     @PostMapping
-    public TagDTO findById(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public TagDTO create(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
@@ -63,8 +64,7 @@ public class TagController {
      * @return the tag
      */
     @GetMapping(value = "/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO get(@PathVariable Long id) {
+    public TagDTO findById(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }

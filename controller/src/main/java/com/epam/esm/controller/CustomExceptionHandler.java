@@ -30,6 +30,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private final MessageSource messageSource;
 
     private static final int INTERNAL_SERVER_ERROR_CODE = 100;
+    private static final String INTERNAL_SERVER_CODE = "error.internalServerError";
 
     /**
      * Handles the certificateNotFoundException class
@@ -40,7 +41,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(CertificateNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleControllerNotFoundException(CertificateNotFoundException exception, Locale locale) {
-        String errorMessage = messageSource.getMessage("error.certificateNotFound", new Object[]{}, locale);
+        String errorMessage = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse();
         response.setErrorMessage(errorMessage + ' ' + exception.getMessage());
         response.setErrorCode(exception.getErrorCode());
@@ -56,7 +57,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTagNotFoundException(TagNotFoundException exception, Locale locale) {
-        String message = messageSource.getMessage("error.tagNotFound", new Object[]{}, locale);
+        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
         String errorMessage = message + ' ' + exception.getMessage();
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
@@ -71,10 +72,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidDataFormException.class)
     public ResponseEntity<Object> handleInvalidDataFormException(InvalidDataFormException exception, Locale locale) {
         StringBuilder errorMessage = new StringBuilder();
-        errorMessage.append(messageSource.getMessage("error.invalidDataForm", new Object[]{}, locale));
+        errorMessage.append(messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale));
         List<ObjectError> errors = exception.getBindingResult().getAllErrors();
         errors.stream().filter(FieldError.class::isInstance)
-                .forEach(objectError -> errorMessage.append(' ').append(messageSource.getMessage(objectError, locale)).append(","));
+                .forEach(objectError -> errorMessage
+                        .append(' ')
+                        .append(messageSource.getMessage(objectError, locale))
+                        .append(","));
         errorMessage.deleteCharAt(errorMessage.length() - 1);
         return new ResponseEntity<>(createErrorResponse(errorMessage.toString(), exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
@@ -88,7 +92,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleInternalServerError(RuntimeException exception, Locale locale) {
-        String errorMessage = messageSource.getMessage("error.internalServerError", new Object[]{}, locale);
+        String errorMessage = messageSource.getMessage(INTERNAL_SERVER_CODE, new Object[]{}, locale);
         return new ResponseEntity<>(createErrorResponse(errorMessage, INTERNAL_SERVER_ERROR_CODE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -101,7 +105,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(IdInvalidException.class)
     public ResponseEntity<Object> handleIdInvalidException(IdInvalidException exception, Locale locale) {
-        String message = messageSource.getMessage("error.idInvalidError", new Object[]{}, locale);
+        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
         String errorMessage = message + ' ' + exception.getId();
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
