@@ -1,5 +1,6 @@
 package com.epam.esm.dto;
 
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
@@ -51,5 +52,6 @@ public class CertificateDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime lastUpdateDate;
 
+    @Valid
     private Set<TagDTO> tags;
 }
