@@ -1,0 +1,20 @@
+plugins {
+    id 'war'
+}
+
+dependencies {
+    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.2.0.Final'
+    implementation group: 'org.springframework', name: 'spring-tx', version: '5.3.7'
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
+    implementation project(":model")
+    implementation project(":persistence")
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testImplementation project(":model")
+    testImplementation project(":persistence")
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.6.28'
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
+}
+
+
