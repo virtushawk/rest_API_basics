@@ -100,12 +100,11 @@ class TagServiceImplTest {
 
     @Test
     void deleteException() {
-        Long id = 1L;
+         Long id = 1L;
         Mockito.when(tagDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(TagNotFoundException.class, () -> {
             tagService.delete(id);
         });
     }
-
 
 }

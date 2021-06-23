@@ -31,6 +31,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final int INTERNAL_SERVER_ERROR_CODE = 100;
     private static final String INTERNAL_SERVER_CODE = "error.internalServerError";
+    private static final String SPACE_DELIMITER = " ";
+    private static final String COMMA_DELIMITER = ",";
 
     /**
      * Handles the certificateNotFoundException class
@@ -43,7 +45,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleControllerNotFoundException(CertificateNotFoundException exception, Locale locale) {
         String errorMessage = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
         ErrorResponse response = new ErrorResponse();
-        response.setErrorMessage(errorMessage + ' ' + exception.getMessage());
+        response.setErrorMessage(errorMessage + SPACE_DELIMITER + exception.getMessage());
         response.setErrorCode(exception.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
@@ -58,7 +60,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTagNotFoundException(TagNotFoundException exception, Locale locale) {
         String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        String errorMessage = message + ' ' + exception.getMessage();
+        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
 
@@ -76,9 +78,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<ObjectError> errors = exception.getBindingResult().getAllErrors();
         errors.stream().filter(FieldError.class::isInstance)
                 .forEach(objectError -> errorMessage
-                        .append(' ')
+                        .append(SPACE_DELIMITER)
                         .append(messageSource.getMessage(objectError, locale))
-                        .append(","));
+                        .append(COMMA_DELIMITER));
         errorMessage.deleteCharAt(errorMessage.length() - 1);
         return new ResponseEntity<>(createErrorResponse(errorMessage.toString(), exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
@@ -106,7 +108,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IdInvalidException.class)
     public ResponseEntity<Object> handleIdInvalidException(IdInvalidException exception, Locale locale) {
         String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        String errorMessage = message + ' ' + exception.getId();
+        String errorMessage = message + SPACE_DELIMITER + exception.getId();
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
 
