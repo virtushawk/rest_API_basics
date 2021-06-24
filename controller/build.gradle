@@ -1,13 +1,13 @@
 plugins {
-    id 'war'
+    id 'java'
+    id "org.springframework.boot" version "2.5.1"
 }
 
 dependencies {
-    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     implementation project(':model')
     implementation project(':service')
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4")
-    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.2.0.Final'
-    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+}
+
+bootRun {
+    main = 'com.epam.esm.config.ApplicationConfiguration'
 }

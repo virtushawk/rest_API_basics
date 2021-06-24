@@ -1,12 +1,17 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.config.DatabaseConfig;
 import com.epam.esm.config.TestConfig;
+import com.epam.esm.dao.impl.CertificateDAOImpl;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.QuerySpecification;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,10 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TestConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("dev")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CertificateDAOImplTest {
 
     @Autowired

@@ -104,7 +104,7 @@ public class CertificateController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return service.applyPatch(id,patchDTO);
+        return service.applyPatch(id, patchDTO);
     }
 
     /**
@@ -117,7 +117,7 @@ public class CertificateController {
      */
     @PutMapping(value = "/{id}")
     public CertificateDTO update(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
-                                            BindingResult bindingResult) {
+                                 BindingResult bindingResult) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
