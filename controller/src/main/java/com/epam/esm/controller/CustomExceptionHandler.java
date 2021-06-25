@@ -1,10 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.entity.ErrorResponse;
-import com.epam.esm.exception.CertificateNotFoundException;
-import com.epam.esm.exception.IdInvalidException;
-import com.epam.esm.exception.InvalidDataFormException;
-import com.epam.esm.exception.TagNotFoundException;
+import com.epam.esm.exception.*;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -42,12 +39,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return the response entity
      */
     @ExceptionHandler(CertificateNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleControllerNotFoundException(CertificateNotFoundException exception, Locale locale) {
-        String errorMessage = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        ErrorResponse response = new ErrorResponse();
-        response.setErrorMessage(errorMessage + SPACE_DELIMITER + exception.getMessage());
-        response.setErrorCode(exception.getErrorCode());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleCertificateNotFoundException(CertificateNotFoundException exception, Locale locale) {
+        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
+        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
+        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -110,6 +105,20 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
         String errorMessage = message + SPACE_DELIMITER + exception.getId();
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles the UserNotFoundException class
+     *
+     * @param exception the exception
+     * @param locale    the locale
+     * @return the response entity
+     */
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception, Locale locale) {
+        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
+        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
+        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
 
     private ErrorResponse createErrorResponse(String errorMessage, int errorCode) {

@@ -32,7 +32,7 @@ public class TagController {
     private final TagService service;
 
     /**
-     * Gets all tags.
+     * Finds all tags.
      *
      * @return the all tags
      */
