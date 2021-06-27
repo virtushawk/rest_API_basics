@@ -12,18 +12,17 @@ import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The type Order service.
  */
 @Service
 @AllArgsConstructor
-@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDAO orderDAO;
@@ -63,5 +62,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean delete(Long id) {
         return false;
+    }
+
+    @Override
+    public List<OrderDTO> findAllByUserId(Long id) {
+        Optional<User> user = userDAO.findById(id);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(id.toString());
+        }
+        return orderDAO.findAllByUserId(id).stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
     }
 }

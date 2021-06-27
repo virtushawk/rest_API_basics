@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("dev")
@@ -39,5 +40,19 @@ class OrderDAOImplTest {
                 .build();
         Order actual = orderDAO.create(order);
         Assertions.assertEquals(order.getCertificateId(), actual.getCertificateId());
+    }
+
+    @Test
+    void findAllByUserIdValid() {
+        Long id = 1L;
+        List<Order> orders = orderDAO.findAllByUserId(id);
+        Assertions.assertFalse(orders.isEmpty());
+    }
+
+    @Test
+    void findAllByUserIdEmpty() {
+        Long id = 10L;
+        List<Order> orders = orderDAO.findAllByUserId(id);
+        Assertions.assertTrue(orders.isEmpty());
     }
 }

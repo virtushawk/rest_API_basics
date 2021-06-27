@@ -4,7 +4,6 @@ import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.entity.Order;
 import com.epam.esm.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -25,12 +24,13 @@ import java.util.Optional;
  */
 @Repository
 @AllArgsConstructor
-@Slf4j
 public class OrderDAOImpl implements OrderDAO {
 
     private static final String SQL_INSERT_ORDER = "INSERT INTO orders(certificate_id,user_id,cost,order_time) VALUES(?,?,?,?)";
     private static final String SQL_SELECT_ORDER_BY_CERTIFICATE_ID = "SELECT id,certificate_id,user_id,cost,order_time " +
             "FROM orders WHERE certificate_id = ?";
+    private static final String SQL_SELECT_ORDERS_BY_USER_ID = "SELECT id,certificate_id,user_id,cost,order_time FROM orders " +
+            "WHERE user_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -74,5 +74,10 @@ public class OrderDAOImpl implements OrderDAO {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Order> findAllByUserId(Long id) {
+        return jdbcTemplate.query(SQL_SELECT_ORDERS_BY_USER_ID, new Object[]{id}, new int[]{Types.INTEGER}, orderMapper);
     }
 }

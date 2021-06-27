@@ -1,7 +1,9 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.UserDTO;
 import com.epam.esm.exception.IdInvalidException;
+import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
-    private final UserService service;
+    private final UserService userService;
+    private final OrderService orderService;
 
     /**
      * Finds all users
@@ -28,7 +31,7 @@ public class UserController {
      */
     @GetMapping
     public List<UserDTO> findAll() {
-        return service.findAll();
+        return userService.findAll();
     }
 
     /**
@@ -42,7 +45,21 @@ public class UserController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return service.findById(id);
+        return userService.findById(id);
+    }
+
+    /**
+     * Find user orders list.
+     *
+     * @param id the id
+     * @return the list
+     */
+    @GetMapping(value = "/{id}/orders")
+    public List<OrderDTO> findUserOrders(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
+        return orderService.findAllByUserId(id);
     }
 
 }

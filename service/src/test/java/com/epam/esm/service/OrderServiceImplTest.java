@@ -21,6 +21,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,4 +100,21 @@ class OrderServiceImplTest {
         Assertions.assertEquals(actual, orderDTO);
     }
 
+    @Test
+    void findAllByUserIdValid() {
+        List<Order> orders = new ArrayList<>();
+        List<OrderDTO> expected = new ArrayList<>();
+        Mockito.when(userDAO.findById(order.getUserId())).thenReturn(Optional.of(new User()));
+        Mockito.when(orderDAO.findAllByUserId(order.getUserId())).thenReturn(orders);
+        List<OrderDTO> actual = orderService.findAllByUserId(order.getUserId());
+        Assertions.assertEquals(actual, expected);
+    }
+
+    @Test
+    void findAllByUserIdException() {
+        Mockito.when(userDAO.findById(order.getUserId())).thenReturn(Optional.empty());
+        Assertions.assertThrows(UserNotFoundException.class, () -> {
+            orderService.findAllByUserId(order.getUserId());
+        });
+    }
 }
