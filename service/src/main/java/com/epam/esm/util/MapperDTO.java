@@ -1,13 +1,7 @@
 package com.epam.esm.util;
 
-import com.epam.esm.dto.CertificateDTO;
-import com.epam.esm.dto.QuerySpecificationDTO;
-import com.epam.esm.dto.TagDTO;
-import com.epam.esm.dto.UserDTO;
-import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.QuerySpecification;
-import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.User;
+import com.epam.esm.dto.*;
+import com.epam.esm.entity.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -90,5 +84,25 @@ public class MapperDTO {
      */
     public User convertDTOToUser(UserDTO userDTO) {
         return modelMapper.map(userDTO, User.class);
+    }
+
+    /**
+     * Convert order to dto
+     *
+     * @param order the order
+     * @return the order dto
+     */
+    public OrderDTO convertOrderToDTO(Order order) {
+        return modelMapper.map(order, OrderDTO.class);
+    }
+
+    /**
+     * Convert dto to order
+     *
+     * @param orderDTO the order dto
+     * @return the order
+     */
+    public Order convertDTOToOrder(OrderDTO orderDTO) {
+        return modelMapper.map(orderDTO, Order.class);
     }
 }
