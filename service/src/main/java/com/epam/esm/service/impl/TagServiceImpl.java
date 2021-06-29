@@ -1,8 +1,11 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.MapperDTO;
@@ -25,6 +28,7 @@ public class TagServiceImpl implements TagService {
      * The Tag dao.
      */
     public final TagDAO tagDAO;
+    public final CertificateDAO certificateDAO;
     /**
      * The Mapper dto.
      */
@@ -58,5 +62,14 @@ public class TagServiceImpl implements TagService {
             throw new TagNotFoundException(id.toString());
         }
         return tagDAO.delete(id);
+    }
+
+    @Override
+    public List<TagDTO> findByCertificateId(Long id) {
+        Optional<Certificate> certificate = certificateDAO.findById(id);
+        if (certificate.isEmpty()) {
+            throw new CertificateNotFoundException(id.toString());
+        }
+        return tagDAO.findAllByCertificateId(id).stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
     }
 }

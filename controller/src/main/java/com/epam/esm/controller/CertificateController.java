@@ -3,9 +3,11 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
+import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.TagService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,8 @@ import java.util.List;
 @Slf4j
 public class CertificateController {
 
-    private final CertificateService service;
+    private final CertificateService certificateService;
+    private final TagService tagService;
 
     /**
      * finds all certificates by criteria
@@ -44,7 +47,7 @@ public class CertificateController {
      */
     @GetMapping
     public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO) {
-        return ResponseAssembler.assembleCertificates(service.findAll(querySpecificationDTO));
+        return ResponseAssembler.assembleCertificates(certificateService.findAll(querySpecificationDTO));
     }
 
     /**
@@ -58,7 +61,7 @@ public class CertificateController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return ResponseAssembler.assembleCertificate(service.findById(id));
+        return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
     /**
@@ -74,7 +77,7 @@ public class CertificateController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return ResponseAssembler.assembleCertificate(service.create(certificateDTO));
+        return ResponseAssembler.assembleCertificate(certificateService.create(certificateDTO));
     }
 
     /**
@@ -88,7 +91,7 @@ public class CertificateController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        service.delete(id);
+        certificateService.delete(id);
     }
 
     /**
@@ -107,7 +110,7 @@ public class CertificateController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return ResponseAssembler.assembleCertificate(service.applyPatch(id, patchDTO));
+        return ResponseAssembler.assembleCertificate(certificateService.applyPatch(id, patchDTO));
     }
 
     /**
@@ -128,6 +131,20 @@ public class CertificateController {
             throw new InvalidDataFormException(bindingResult);
         }
         certificateDTO.setId(id);
-        return ResponseAssembler.assembleCertificate(service.update(certificateDTO));
+        return ResponseAssembler.assembleCertificate(certificateService.update(certificateDTO));
+    }
+
+    /**
+     * Find tags by certificate id.
+     *
+     * @param id the id
+     * @return the list
+     */
+    @GetMapping(value = "/{id}/tags")
+    public List<TagDTO> findTagsByCertificateId(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IdInvalidException(id);
+        }
+        return ResponseAssembler.assembleTags(tagService.findByCertificateId(id));
     }
 }

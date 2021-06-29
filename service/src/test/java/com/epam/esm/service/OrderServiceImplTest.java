@@ -1,3 +1,4 @@
+/*
 package com.epam.esm.service;
 
 import com.epam.esm.dao.CertificateDAO;
@@ -81,16 +82,19 @@ class OrderServiceImplTest {
         });
     }
 
-    @Test
+  */
+/*  @Test
     void createUserIdInvalid() {
         Mockito.when(certificateDAO.findById(order.getCertificateId())).thenReturn(Optional.of(new Certificate()));
         Mockito.when(userDAO.findById(order.getUserId())).thenReturn(Optional.empty());
         Assertions.assertThrows(UserNotFoundException.class, () -> {
             orderService.create(orderDTO);
         });
-    }
+    }*//*
 
-    @Test
+
+  */
+/*  @Test
     void createOrderExist() {
         Mockito.when(certificateDAO.findById(order.getCertificateId())).thenReturn(Optional.of(new Certificate()));
         Mockito.when(userDAO.findById(order.getUserId())).thenReturn(Optional.of(new User()));
@@ -99,6 +103,7 @@ class OrderServiceImplTest {
         OrderDTO actual = orderService.create(orderDTO);
         Assertions.assertEquals(actual, orderDTO);
     }
+*//*
 
     @Test
     void findAllByUserIdValid() {
@@ -118,3 +123,4 @@ class OrderServiceImplTest {
         });
     }
 }
+*/

@@ -16,19 +16,38 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Response assembler.
+ */
 @UtilityClass
 public class ResponseAssembler {
 
+    /**
+     * Assemble certificates list.
+     *
+     * @param certificates the certificates
+     * @return the list
+     */
     public static List<CertificateDTO> assembleCertificates(List<CertificateDTO> certificates) {
         return certificates.stream()
                 .map(certificateDTO -> {
-                    certificateDTO.add(linkTo(methodOn(CertificateController.class).findById(certificateDTO.getId())).withSelfRel());
-                    certificateDTO.getTags()
-                            .forEach(tagDTO -> tagDTO.add(linkTo(methodOn(TagController.class).findById(tagDTO.getId())).withSelfRel()));
+                    certificateDTO.add(linkTo(methodOn(CertificateController.class)
+                            .findById(certificateDTO.getId())).withSelfRel());
+                    if (!ObjectUtils.isEmpty(certificateDTO.getTags())) {
+                        certificateDTO.add(linkTo(methodOn(CertificateController.class)
+                                .findTagsByCertificateId(certificateDTO.getId())).withRel("tags"));
+                    }
+                    certificateDTO.setTags(null);
                     return certificateDTO;
                 }).collect(Collectors.toList());
     }
 
+    /**
+     * Assemble certificate dto
+     *
+     * @param certificate the certificate
+     * @return the certificate dto
+     */
     public static CertificateDTO assembleCertificate(CertificateDTO certificate) {
         if (!ObjectUtils.isEmpty(certificate.getTags())) {
             certificate.getTags()
@@ -37,21 +56,39 @@ public class ResponseAssembler {
         return certificate.add(linkTo(methodOn(CertificateController.class).findById(certificate.getId())).withSelfRel());
     }
 
+    /**
+     * Assemble orders
+     *
+     * @param orders the orders
+     * @return the list
+     */
     public static List<OrderDTO> assembleOrders(List<OrderDTO> orders) {
         return orders.stream()
                 .map(orderDTO -> {
-            orderDTO.getCertificateId().forEach(id -> orderDTO.add(linkTo(methodOn(CertificateController.class).findById(id)).withRel("certificates")));
-            orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
-            return orderDTO;
-        }).collect(Collectors.toList());
+                    orderDTO.getCertificateId().forEach(id -> orderDTO.add(linkTo(methodOn(CertificateController.class).findById(id)).withRel("certificates")));
+                    orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
+                    return orderDTO;
+                }).collect(Collectors.toList());
     }
 
+    /**
+     * Assemble order order dto.
+     *
+     * @param orderDTO the order dto
+     * @return the order dto
+     */
     public static OrderDTO assembleOrder(OrderDTO orderDTO) {
         orderDTO.getCertificateId().forEach(id -> orderDTO.add(linkTo(methodOn(CertificateController.class).findById(id)).withRel("certificates")));
         orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
         return orderDTO;
     }
 
+    /**
+     * Assemble tags list.
+     *
+     * @param tags the tags
+     * @return the list
+     */
     public static List<TagDTO> assembleTags(List<TagDTO> tags) {
         return tags.stream()
                 .map(tagDTO -> {
@@ -60,10 +97,22 @@ public class ResponseAssembler {
                 }).collect(Collectors.toList());
     }
 
+    /**
+     * Assemble  tag dto.
+     *
+     * @param tagDTO the tag dto
+     * @return the tag dto
+     */
     public static TagDTO assembleTag(TagDTO tagDTO) {
         return tagDTO.add(linkTo(methodOn(TagController.class).findById(tagDTO.getId())).withSelfRel());
     }
 
+    /**
+     * Assemble users list.
+     *
+     * @param users the users
+     * @return the list
+     */
     public static List<UserDTO> assembleUsers(List<UserDTO> users) {
         return users.stream()
                 .map(userDTO -> {
@@ -72,6 +121,12 @@ public class ResponseAssembler {
                 }).collect(Collectors.toList());
     }
 
+    /**
+     * Assemble  user dto.
+     *
+     * @param userDTO the user dto
+     * @return the user dto
+     */
     public static UserDTO assembleUser(UserDTO userDTO) {
         return userDTO.add(linkTo(methodOn(UserController.class).findById(userDTO.getId())).withSelfRel());
     }
