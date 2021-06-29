@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -14,7 +15,7 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 public class Order {
     private Long id;
-    private Long certificateId;
+    private List<Long> certificateId;
     private Long userId;
     private BigDecimal cost;
     private ZonedDateTime orderTime;

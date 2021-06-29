@@ -4,6 +4,7 @@ import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.entity.Order;
 import com.epam.esm.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,13 +25,15 @@ import java.util.Optional;
  */
 @Repository
 @AllArgsConstructor
+@Slf4j
 public class OrderDAOImpl implements OrderDAO {
 
-    private static final String SQL_INSERT_ORDER = "INSERT INTO orders(certificate_id,user_id,cost,order_time) VALUES(?,?,?,?)";
+    private static final String SQL_INSERT_ORDER = "INSERT INTO orders(user_id,cost,order_time) VALUES(?,?,?)";
     private static final String SQL_SELECT_ORDER_BY_CERTIFICATE_ID = "SELECT id,certificate_id,user_id,cost,order_time " +
             "FROM orders WHERE certificate_id = ?";
     private static final String SQL_SELECT_ORDERS_BY_USER_ID = "SELECT id,certificate_id,user_id,cost,order_time FROM orders " +
             "WHERE user_id = ?";
+    private static final String SQL_INSERT_ORDERS_HAS_GIFT_CERTIFICATE = "INSERT INTO orders_has_gift_certificate(orders_id,gift_certificate_id) VALUES(?,?)";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -52,10 +55,9 @@ public class OrderDAOImpl implements OrderDAO {
         order.setOrderTime(ZonedDateTime.now(ZoneId.systemDefault()));
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_ORDER, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setLong(1, order.getCertificateId());
-            preparedStatement.setLong(2, order.getUserId());
-            preparedStatement.setBigDecimal(3, order.getCost());
-            preparedStatement.setTimestamp(4, Timestamp.from(order.getOrderTime().toInstant()));
+            preparedStatement.setLong(1, order.getUserId());
+            preparedStatement.setBigDecimal(2, order.getCost());
+            preparedStatement.setTimestamp(3, Timestamp.from(order.getOrderTime().toInstant()));
             return preparedStatement;
         }, keyHolder);
         order.setId(keyHolder.getKey().longValue());
@@ -79,5 +81,10 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public List<Order> findAllByUserId(Long id) {
         return jdbcTemplate.query(SQL_SELECT_ORDERS_BY_USER_ID, new Object[]{id}, new int[]{Types.INTEGER}, orderMapper);
+    }
+
+    @Override
+    public boolean attachCertificate(Long orderId,Long certificateId) {
+        return jdbcTemplate.update(SQL_INSERT_ORDERS_HAS_GIFT_CERTIFICATE, orderId, certificateId) > 0;
     }
 }

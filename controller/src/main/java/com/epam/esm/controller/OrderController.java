@@ -3,7 +3,9 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(value = "/orders")
 @AllArgsConstructor
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
@@ -33,6 +36,7 @@ public class OrderController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return orderService.create(orderDTO);
+
+        return ResponseAssembler.assembleOrder(orderService.create(orderDTO));
     }
 }

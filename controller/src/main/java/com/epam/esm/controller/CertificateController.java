@@ -6,7 +6,9 @@ import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/certificates")
 @AllArgsConstructor
+@Slf4j
 public class CertificateController {
 
     private final CertificateService service;
@@ -41,7 +44,7 @@ public class CertificateController {
      */
     @GetMapping
     public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO) {
-        return service.findAll(querySpecificationDTO);
+        return ResponseAssembler.assembleCertificates(service.findAll(querySpecificationDTO));
     }
 
     /**
@@ -55,7 +58,7 @@ public class CertificateController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return service.findById(id);
+        return ResponseAssembler.assembleCertificate(service.findById(id));
     }
 
     /**
@@ -71,7 +74,7 @@ public class CertificateController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return service.create(certificateDTO);
+        return ResponseAssembler.assembleCertificate(service.create(certificateDTO));
     }
 
     /**
@@ -104,7 +107,7 @@ public class CertificateController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return service.applyPatch(id, patchDTO);
+        return ResponseAssembler.assembleCertificate(service.applyPatch(id, patchDTO));
     }
 
     /**
@@ -125,6 +128,6 @@ public class CertificateController {
             throw new InvalidDataFormException(bindingResult);
         }
         certificateDTO.setId(id);
-        return service.update(certificateDTO);
+        return ResponseAssembler.assembleCertificate(service.update(certificateDTO));
     }
 }

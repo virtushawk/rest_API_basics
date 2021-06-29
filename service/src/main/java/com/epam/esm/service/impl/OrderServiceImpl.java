@@ -12,8 +12,11 @@ import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDAO orderDAO;
@@ -42,21 +46,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDTO create(OrderDTO orderDTO) {
-        Optional<Certificate> certificate = certificateDAO.findById(orderDTO.getCertificateId());
-        if (certificate.isEmpty()) {
-            throw new CertificateNotFoundException(orderDTO.getCertificateId().toString());
-        }
         Optional<User> user = userDAO.findById(orderDTO.getUserId());
         if (user.isEmpty()) {
             throw new UserNotFoundException(orderDTO.getUserId().toString());
         }
-        Optional<Order> optionalOrder = orderDAO.findByCertificateId(orderDTO.getCertificateId());
-        if (optionalOrder.isPresent()) {
-            return mapperDTO.convertOrderToDTO(optionalOrder.get());
-        }
+        orderDTO.setCost(new BigDecimal(0));
+        orderDTO.getCertificateId().forEach(id -> {
+            Optional<Certificate> certificate = certificateDAO.findById(id);
+            if (certificate.isEmpty()) {
+                throw new CertificateNotFoundException(id.toString());
+            }
+            orderDTO.setCost(orderDTO.getCost().add(certificate.get().getPrice()));
+        });
         Order order = mapperDTO.convertDTOToOrder(orderDTO);
-        return mapperDTO.convertOrderToDTO(orderDAO.create(order));
+        OrderDTO result = mapperDTO.convertOrderToDTO(orderDAO.create(order));
+        result.setCertificateId(orderDTO.getCertificateId());
+        result.getCertificateId()
+                .forEach(id -> orderDAO.attachCertificate(result.getId(),id)
+        );
+        return result;
     }
 
     @Override
@@ -71,5 +81,13 @@ public class OrderServiceImpl implements OrderService {
             throw new UserNotFoundException(id.toString());
         }
         return orderDAO.findAllByUserId(id).stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDTO findByUserIdOrderId(Long userId, Long orderId) {
+        List<OrderDTO> orders = findAllByUserId(userId);
+        if (orders.size() > orderId) {
+        }
+        return null;
     }
 }

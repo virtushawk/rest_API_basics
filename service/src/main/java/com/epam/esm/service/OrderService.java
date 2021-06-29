@@ -15,4 +15,6 @@ public interface OrderService extends BaseService<OrderDTO, Long> {
      * @return the list
      */
     List<OrderDTO> findAllByUserId(Long id);
+
+    OrderDTO findByUserIdOrderId(Long userId,Long orderId);
 }

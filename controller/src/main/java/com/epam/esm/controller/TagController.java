@@ -7,6 +7,7 @@ import com.epam.esm.service.TagService;
 
 import javax.validation.Valid;
 
+import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -38,7 +39,7 @@ public class TagController {
      */
     @GetMapping
     public List<TagDTO> findAll() {
-        return service.findAll();
+        return ResponseAssembler.assembleTags(service.findAll());
     }
 
     /**
@@ -54,7 +55,7 @@ public class TagController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return service.create(tagDTO);
+        return ResponseAssembler.assembleTag(service.create(tagDTO));
     }
 
     /**
@@ -68,7 +69,7 @@ public class TagController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return service.findById(id);
+        return ResponseAssembler.assembleTag(service.findById(id));
     }
 
     /**

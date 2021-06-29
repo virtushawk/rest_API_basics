@@ -5,32 +5,28 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO {
+public class OrderDTO extends RepresentationModel<OrderDTO> {
     private Long id;
 
     @NotNull
-    @Min(0)
-    private Long certificateId;
+    private List<Long> certificateId;
 
     @NotNull
     @Min(0)
     private Long userId;
 
-    @DecimalMin("0.1")
-    @DecimalMax("1000.0")
-    @NotNull
     private BigDecimal cost;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")

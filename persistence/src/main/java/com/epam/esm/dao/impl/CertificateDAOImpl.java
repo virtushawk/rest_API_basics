@@ -53,17 +53,18 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SELECT_CERTIFICATES = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate";
     private static final String QUERY_SPECIFICATION_TEXT = "text";
     private static final String QUERY_SPECIFICATION_TAG = "tag";
-    private static final String SELECT_CERTIFICATE_QUERY = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate" +
+    private static final String SELECT_CERTIFICATE_QUERY = "SELECT DISTINCT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate" +
             " LEFT JOIN tag_has_gift_certificate ON gift_certificate_id = gift_certificate.id LEFT JOIN tag ON tag_id = tag.id" +
             " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE %s OR gift_certificate.description LIKE %s)) " +
             "ORDER BY %s";
-
+    private static final String SEARCH_QUERY = "SELECT tag_id,count(certificate_id),user_id,sum(cost) as money,name FROM orders Inner JOIN tag_has_gift_certificate ON certificate_id = gift_certificate_id INNER JOIN tag ON tag_id = tag.id group by user_id,tag_id order by money desc";
 
     @Override
     public List<Certificate> findAll(QuerySpecification querySpecification) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue(QUERY_SPECIFICATION_TAG, querySpecification.getTag());
         parameterSource.addValue(QUERY_SPECIFICATION_TEXT, querySpecification.getText());
+        log.info(namedParameterJdbcTemplate.query(prepareCertificateQueryStatement(querySpecification), parameterSource, certificateMapper).toString());
         return namedParameterJdbcTemplate.query(prepareCertificateQueryStatement(querySpecification), parameterSource, certificateMapper);
     }
 

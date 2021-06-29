@@ -19,7 +19,6 @@ public class OrderMapper implements RowMapper<Order> {
     public Order mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return Order.builder()
                 .id(resultSet.getLong("id"))
-                .certificateId(resultSet.getLong("certificate_id"))
                 .userId(resultSet.getLong("user_id"))
                 .cost(resultSet.getBigDecimal("cost"))
                 .orderTime(ZonedDateTime.ofInstant(resultSet.getTimestamp("order_time").toInstant(),
