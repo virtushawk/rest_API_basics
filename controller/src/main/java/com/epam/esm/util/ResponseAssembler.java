@@ -50,9 +50,9 @@ public class ResponseAssembler {
      */
     public static CertificateDTO assembleCertificate(CertificateDTO certificate) {
         if (!ObjectUtils.isEmpty(certificate.getTags())) {
-            certificate.getTags()
-                    .forEach(tagDTO -> tagDTO.add(linkTo(methodOn(TagController.class).findById(tagDTO.getId())).withSelfRel()));
+            certificate.add(linkTo(methodOn(CertificateController.class).findTagsByCertificateId(certificate.getId())).withRel("tags"));
         }
+        certificate.setTags(null);
         return certificate.add(linkTo(methodOn(CertificateController.class).findById(certificate.getId())).withSelfRel());
     }
 
