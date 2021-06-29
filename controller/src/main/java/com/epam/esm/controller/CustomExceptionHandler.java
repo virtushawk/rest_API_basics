@@ -121,6 +121,20 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Handle the OrderNotFoundException class
+     *
+     * @param exception the exception
+     * @param locale    the locale
+     * @return the response entity
+     */
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException exception, Locale locale) {
+        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
+        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
+        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
+    }
+
     private ErrorResponse createErrorResponse(String errorMessage, int errorCode) {
         ErrorResponse response = new ErrorResponse();
         response.setErrorMessage(errorMessage);

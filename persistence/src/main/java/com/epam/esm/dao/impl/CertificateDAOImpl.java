@@ -58,6 +58,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             " WHERE (:tag IS NULL OR tag.name = :tag) AND (:text IS NULL OR (gift_certificate.name LIKE %s OR gift_certificate.description LIKE %s)) " +
             "ORDER BY %s";
     private static final String SEARCH_QUERY = "SELECT tag_id,count(certificate_id),user_id,sum(cost) as money,name FROM orders Inner JOIN tag_has_gift_certificate ON certificate_id = gift_certificate_id INNER JOIN tag ON tag_id = tag.id group by user_id,tag_id order by money desc";
+    private static final String SQL_SELECT_CERTIFICATES_BY_ORDER_ID = "SELECT id,name,description,price,duration,create_date,last_update_date FROM orders_has_gift_certificate INNER JOIN gift_certificate ON id = gift_certificate_id WHERE orders_id = ?";
 
     @Override
     public List<Certificate> findAll(QuerySpecification querySpecification) {
@@ -119,6 +120,11 @@ public class CertificateDAOImpl implements CertificateDAO {
         String formattedSQL = String.format(SQL_UPDATE_BY_ID, LAST_UPDATE_DATE_COLUMN);
         jdbcTemplate.update(formattedSQL, ZonedDateTime.now(ZoneId.systemDefault()), id);
         return true;
+    }
+
+    @Override
+    public List<Certificate> findAllByOrderId(Long id) {
+        return jdbcTemplate.query(SQL_SELECT_CERTIFICATES_BY_ORDER_ID, new Object[]{id}, new int[]{Types.INTEGER}, certificateMapper);
     }
 
     @Override

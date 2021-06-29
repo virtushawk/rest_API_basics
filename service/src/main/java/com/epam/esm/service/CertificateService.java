@@ -45,4 +45,12 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
      * @return the certificate dto
      */
     CertificateDTO attachTags(CertificateDTO certificateDTO, Set<TagDTO> tagDTOSet);
+
+    /**
+     * Find certificates by order id
+     *
+     * @param id the id
+     * @return the list
+     */
+    List<CertificateDTO> findAllByOrderId(Long id);
 }

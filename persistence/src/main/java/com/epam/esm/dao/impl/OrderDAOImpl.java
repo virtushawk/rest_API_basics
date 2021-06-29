@@ -29,11 +29,13 @@ import java.util.Optional;
 public class OrderDAOImpl implements OrderDAO {
 
     private static final String SQL_INSERT_ORDER = "INSERT INTO orders(user_id,cost,order_time) VALUES(?,?,?)";
-    private static final String SQL_SELECT_ORDER_BY_CERTIFICATE_ID = "SELECT id,certificate_id,user_id,cost,order_time " +
+    private static final String SQL_SELECT_ORDER_BY_CERTIFICATE_ID = "SELECT id,user_id,cost,order_time " +
             "FROM orders WHERE certificate_id = ?";
-    private static final String SQL_SELECT_ORDERS_BY_USER_ID = "SELECT id,certificate_id,user_id,cost,order_time FROM orders " +
+    private static final String SQL_SELECT_ORDERS_BY_USER_ID = "SELECT id,user_id,cost,order_time FROM orders " +
             "WHERE user_id = ?";
     private static final String SQL_INSERT_ORDERS_HAS_GIFT_CERTIFICATE = "INSERT INTO orders_has_gift_certificate(orders_id,gift_certificate_id) VALUES(?,?)";
+    private static final String SQL_SELECT_ORDERS = "SELECT id,user_id,cost,order_time FROM orders";
+    private static final String SQL_SELECT_ORDER_BY_ID = "SELECT id,user_id,cost,order_time FROM orders WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -41,12 +43,16 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public List<Order> findAll() {
-        return null;
+        return jdbcTemplate.query(SQL_SELECT_ORDERS, orderMapper);
     }
 
     @Override
     public Optional<Order> findById(Long id) {
-        return Optional.empty();
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(SQL_SELECT_ORDER_BY_ID, new Object[]{id}, new int[]{Types.INTEGER}, orderMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -84,7 +90,7 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public boolean attachCertificate(Long orderId,Long certificateId) {
+    public boolean attachCertificate(Long orderId, Long certificateId) {
         return jdbcTemplate.update(SQL_INSERT_ORDERS_HAS_GIFT_CERTIFICATE, orderId, certificateId) > 0;
     }
 }

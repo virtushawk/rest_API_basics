@@ -26,5 +26,12 @@ public interface OrderDAO extends BaseDAO<Order, Long> {
      */
     List<Order> findAllByUserId(Long id);
 
-    boolean attachCertificate(Long orderId,Long certificateId);
+    /**
+     * Attach certificate
+     *
+     * @param orderId       the order id
+     * @param certificateId the certificate id
+     * @return the boolean
+     */
+    boolean attachCertificate(Long orderId, Long certificateId);
 }

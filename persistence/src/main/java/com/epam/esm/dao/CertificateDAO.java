@@ -34,4 +34,12 @@ public interface CertificateDAO extends BaseDAO<Certificate, Long> {
      * @return the boolean
      */
     boolean applyPatch(Map<String, Object> patchValues, Long id);
+
+    /**
+     * Find certificates by order id
+     *
+     * @param id the id
+     * @return the list
+     */
+    List<Certificate> findAllByOrderId(Long id);
 }

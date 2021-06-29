@@ -6,8 +6,11 @@ import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.OrderNotFoundException;
+import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.MapperDTO;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,12 +41,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> findAll() {
-        return null;
+        return orderDAO.findAll().stream()
+                .map(order -> {
+                    List<Long> certificatesId = new ArrayList<>();
+                    certificateDAO.findAllByOrderId(order.getId())
+                            .forEach(o -> certificatesId.add(o.getId()));
+                    log.info(certificatesId.toString());
+                    order.setCertificateId(certificatesId);
+                    return order;
+                })
+                .map(mapperDTO::convertOrderToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public OrderDTO findById(Long aLong) {
-        return null;
+    public OrderDTO findById(Long id) {
+        Optional<Order> order = orderDAO.findById(id);
+        if (order.isEmpty()) {
+            throw new OrderNotFoundException(id.toString());
+        }
+        List<Long> certificatesId = new ArrayList<>();
+        certificateDAO.findAllByOrderId(id)
+                .forEach(o -> certificatesId.add(o.getId()));
+        OrderDTO orderDTO = mapperDTO.convertOrderToDTO(order.get());
+        orderDTO.setCertificateId(certificatesId);
+        return orderDTO;
     }
 
     @Override
@@ -64,8 +87,8 @@ public class OrderServiceImpl implements OrderService {
         OrderDTO result = mapperDTO.convertOrderToDTO(orderDAO.create(order));
         result.setCertificateId(orderDTO.getCertificateId());
         result.getCertificateId()
-                .forEach(id -> orderDAO.attachCertificate(result.getId(),id)
-        );
+                .forEach(id -> orderDAO.attachCertificate(result.getId(), id)
+                );
         return result;
     }
 

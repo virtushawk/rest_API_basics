@@ -1,6 +1,7 @@
 package com.epam.esm.util;
 
 import com.epam.esm.controller.CertificateController;
+import com.epam.esm.controller.OrderController;
 import com.epam.esm.controller.TagController;
 import com.epam.esm.controller.UserController;
 import com.epam.esm.dto.CertificateDTO;
@@ -65,8 +66,13 @@ public class ResponseAssembler {
     public static List<OrderDTO> assembleOrders(List<OrderDTO> orders) {
         return orders.stream()
                 .map(orderDTO -> {
-                    orderDTO.getCertificateId().forEach(id -> orderDTO.add(linkTo(methodOn(CertificateController.class).findById(id)).withRel("certificates")));
+                    orderDTO.add(linkTo(methodOn(OrderController.class).findById(orderDTO.getId())).withSelfRel());
+                    if (!ObjectUtils.isEmpty(orderDTO.getCertificateId())) {
+                        orderDTO.add(linkTo(methodOn(OrderController.class).findCertificatesByOrderId(orderDTO.getId())).withRel("certificates"));
+                    }
                     orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
+                    orderDTO.setCertificateId(null);
+                    orderDTO.setUserId(null);
                     return orderDTO;
                 }).collect(Collectors.toList());
     }
@@ -78,8 +84,13 @@ public class ResponseAssembler {
      * @return the order dto
      */
     public static OrderDTO assembleOrder(OrderDTO orderDTO) {
-        orderDTO.getCertificateId().forEach(id -> orderDTO.add(linkTo(methodOn(CertificateController.class).findById(id)).withRel("certificates")));
+        orderDTO.add(linkTo(methodOn(OrderController.class).findById(orderDTO.getId())).withSelfRel());
+        if (!ObjectUtils.isEmpty(orderDTO.getCertificateId())) {
+            orderDTO.add(linkTo(methodOn(OrderController.class).findCertificatesByOrderId(orderDTO.getId())).withRel("certificates"));
+        }
         orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
+        orderDTO.setCertificateId(null);
+        orderDTO.setUserId(null);
         return orderDTO;
     }
 
