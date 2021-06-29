@@ -1,8 +1,11 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.util.MapperDTO;
@@ -31,6 +34,9 @@ class TagServiceImplTest {
 
     @Mock
     public TagDAO tagDAO;
+
+    @Mock
+    CertificateDAO certificateDAO;
 
     @Mock
     public MapperDTO mapperDTO;
@@ -100,11 +106,30 @@ class TagServiceImplTest {
 
     @Test
     void deleteException() {
-         Long id = 1L;
+        Long id = 1L;
         Mockito.when(tagDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(TagNotFoundException.class, () -> {
             tagService.delete(id);
         });
     }
 
+    @Test
+    void findByCertificateIdValid() {
+        List<Tag> tags = new ArrayList<>();
+        List<TagDTO> expected = new ArrayList<>();
+        Long id = 1L;
+        Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.of(new Certificate()));
+        Mockito.when(tagDAO.findAllByCertificateId(id)).thenReturn(tags);
+        List<TagDTO> actual = tagService.findByCertificateId(id);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByCertificateIdInvalid() {
+        Long id = 1L;
+        Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
+            tagService.findByCertificateId(id);
+        });
+    }
 }
