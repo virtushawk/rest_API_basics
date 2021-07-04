@@ -12,7 +12,6 @@ import lombok.experimental.UtilityClass;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -68,9 +67,7 @@ public class ResponseAssembler {
         return orders.stream()
                 .map(orderDTO -> {
                     orderDTO.add(linkTo(methodOn(OrderController.class).findById(orderDTO.getId())).withSelfRel());
-                    if (!ObjectUtils.isEmpty(orderDTO.getCertificateId())) {
-                        orderDTO.add(linkTo(methodOn(OrderController.class).findCertificatesByOrderId(orderDTO.getId())).withRel("certificates"));
-                    }
+                    orderDTO.add(linkTo(methodOn(OrderController.class).findCertificatesByOrderId(orderDTO.getId())).withRel("certificates"));
                     orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
                     orderDTO.setCertificateId(null);
                     orderDTO.setUserId(null);
@@ -86,9 +83,7 @@ public class ResponseAssembler {
      */
     public static OrderDTO assembleOrder(OrderDTO orderDTO) {
         orderDTO.add(linkTo(methodOn(OrderController.class).findById(orderDTO.getId())).withSelfRel());
-        if (!ObjectUtils.isEmpty(orderDTO.getCertificateId())) {
-            orderDTO.add(linkTo(methodOn(OrderController.class).findCertificatesByOrderId(orderDTO.getId())).withRel("certificates"));
-        }
+        orderDTO.add(linkTo(methodOn(OrderController.class).findCertificatesByOrderId(orderDTO.getId())).withRel("certificates"));
         orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
         orderDTO.setCertificateId(null);
         orderDTO.setUserId(null);

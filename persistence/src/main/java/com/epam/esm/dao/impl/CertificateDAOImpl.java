@@ -86,7 +86,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
-    public List<Certificate> findAll() {
+    public List<Certificate> findAll(Page page) {
         return jdbcTemplate.query(SELECT_CERTIFICATES, certificateMapper);
     }
 

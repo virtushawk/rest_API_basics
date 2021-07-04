@@ -4,6 +4,7 @@ import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagNotFoundException;
@@ -36,8 +37,8 @@ public class TagServiceImpl implements TagService {
     public final MapperDTO mapperDTO;
 
     @Override
-    public List<TagDTO> findAll() {
-        return tagDAO.findAll().stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
+    public List<TagDTO> findAll(Page page) {
+        return tagDAO.findAll(page).stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
     }
 
     @Override

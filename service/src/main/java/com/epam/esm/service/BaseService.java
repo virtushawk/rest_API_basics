@@ -1,5 +1,7 @@
 package com.epam.esm.service;
 
+import com.epam.esm.entity.Page;
+
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public interface BaseService<T, K> {
      *
      * @return the list
      */
-    List<T> findAll();
+    List<T> findAll(Page page);
 
     /**
      * Find by id t.

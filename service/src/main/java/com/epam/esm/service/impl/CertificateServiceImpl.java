@@ -1,27 +1,27 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDAO;
+import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.OrderNotFoundException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.MapperDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
  */
 @Service
 @AllArgsConstructor
-@Slf4j
 public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateDAO certificateDAO;
     private final TagDAO tagDAO;
+    private final OrderDAO orderDAO;
     private final MapperDTO mapperDTO;
     private final ObjectMapper objectMapper;
 
@@ -65,8 +65,8 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> findAll() {
-        return certificateDAO.findAll().stream().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
+    public List<CertificateDTO> findAll(Page page) {
+        return certificateDAO.findAll(page).stream().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -112,7 +112,7 @@ public class CertificateServiceImpl implements CertificateService {
         Map<String, Object> patchMap = objectMapper.convertValue(patchDTO, Map.class);
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);
         patchMap.remove("id");
-       certificateDAO.applyPatch(patchMap, id);
+        certificateDAO.applyPatch(patchMap, id);
         certificate.setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
         return mapperDTO.convertCertificateToDTO(certificate);
     }
@@ -131,13 +131,11 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<CertificateDTO> findAllByOrderId(Long id) {
-        return certificateDAO.findAllByOrderId(id).stream()
-                .map(o -> {
-                    o.setTags(new HashSet<>(tagDAO.findAllByCertificateId(o.getId())));
-                    return o;
-                })
-                .map(mapperDTO::convertCertificateToDTO)
-                .collect(Collectors.toList());
+        Optional<Order> optionalOrder = orderDAO.findById(id);
+        if (optionalOrder.isEmpty()) {
+            throw new OrderNotFoundException(id.toString());
+        }
+        return optionalOrder.get().getCertificates().stream().distinct().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -149,11 +147,4 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDAO.delete(id);
     }
 
-    private CertificateDTO checkForTags(CertificateDTO certificateDTO) {
-        Set<TagDTO> tagDTOs = certificateDTO.getTags();
-        if (!ObjectUtils.isEmpty(tagDTOs)) {
-            certificateDTO = attachTags(certificateDTO, tagDTOs);
-        }
-        return certificateDTO;
-    }
 }

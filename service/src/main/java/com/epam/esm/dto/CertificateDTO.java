@@ -11,7 +11,11 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
@@ -33,7 +37,7 @@ public class CertificateDTO extends RepresentationModel<CertificateDTO> {
     private String name;
 
     @NotBlank
-    @Size(min = 1,max = 300)
+    @Size(min = 1, max = 300)
     private String description;
 
     @DecimalMin("0.1")

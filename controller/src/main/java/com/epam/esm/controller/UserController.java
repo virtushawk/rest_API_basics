@@ -2,6 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.entity.Page;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
@@ -31,8 +32,8 @@ public class UserController {
      * @return the list
      */
     @GetMapping
-    public List<UserDTO> findAll() {
-        return ResponseAssembler.assembleUsers(userService.findAll());
+    public List<UserDTO> findAll(Page page) {
+        return ResponseAssembler.assembleUsers(userService.findAll(page));
     }
 
     /**

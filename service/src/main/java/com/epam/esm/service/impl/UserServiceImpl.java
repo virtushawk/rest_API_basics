@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.UserService;
@@ -30,8 +31,8 @@ public class UserServiceImpl implements UserService {
     public final MapperDTO mapperDTO;
 
     @Override
-    public List<UserDTO> findAll() {
-        return userDAO.findAll().stream().map(mapperDTO::convertUserToDTO).collect(Collectors.toList());
+    public List<UserDTO> findAll(Page page) {
+        return userDAO.findAll(page).stream().map(mapperDTO::convertUserToDTO).collect(Collectors.toList());
     }
 
     @Override

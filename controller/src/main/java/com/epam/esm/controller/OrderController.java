@@ -2,13 +2,13 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.OrderDTO;
+import com.epam.esm.entity.Page;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,20 +28,20 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/orders")
 @AllArgsConstructor
-@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
     private final CertificateService certificateService;
 
     /**
-     * Find orders
+     * Find all list.
      *
+     * @param page the page
      * @return the list
      */
     @GetMapping
-    public List<OrderDTO> findAll() {
-        return ResponseAssembler.assembleOrders(orderService.findAll());
+    public List<OrderDTO> findAll(Page page) {
+        return ResponseAssembler.assembleOrders(orderService.findAll(page));
     }
 
     /**
@@ -87,4 +87,5 @@ public class OrderController {
         }
         return ResponseAssembler.assembleOrder(orderService.findById(id));
     }
+
 }

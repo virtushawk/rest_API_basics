@@ -6,20 +6,20 @@ import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
-import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.OrderNotFoundException;
-import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
  */
 @Service
 @AllArgsConstructor
-@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDAO orderDAO;
@@ -40,19 +39,8 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<OrderDTO> findAll() {
-       /* return orderDAO.findAll().stream()
-                .map(order -> {
-                    List<Long> certificatesId = new ArrayList<>();
-                    certificateDAO.findAllByOrderId(order.getId())
-                            .forEach(o -> certificatesId.add(o.getId()));
-                    log.info(certificatesId.toString());
-                    order.setCertificateId(certificatesId);
-                    return order;
-                })
-                .map(mapperDTO::convertOrderToDTO)
-                .collect(Collectors.toList());*/
-        return null;
+    public List<OrderDTO> findAll(Page page) {
+        return orderDAO.findAll(page).stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -61,12 +49,7 @@ public class OrderServiceImpl implements OrderService {
         if (order.isEmpty()) {
             throw new OrderNotFoundException(id.toString());
         }
-        List<Long> certificatesId = new ArrayList<>();
-        certificateDAO.findAllByOrderId(id)
-                .forEach(o -> certificatesId.add(o.getId()));
-        OrderDTO orderDTO = mapperDTO.convertOrderToDTO(order.get());
-        orderDTO.setCertificateId(certificatesId);
-        return orderDTO;
+        return mapperDTO.convertOrderToDTO(order.get());
     }
 
     @Override
@@ -77,20 +60,21 @@ public class OrderServiceImpl implements OrderService {
             throw new UserNotFoundException(orderDTO.getUserId().toString());
         }
         orderDTO.setCost(new BigDecimal(0));
+        List<Certificate> certificates = new ArrayList<>();
         orderDTO.getCertificateId().forEach(id -> {
             Optional<Certificate> certificate = certificateDAO.findById(id);
             if (certificate.isEmpty()) {
                 throw new CertificateNotFoundException(id.toString());
             }
+            certificates.add(certificate.get());
             orderDTO.setCost(orderDTO.getCost().add(certificate.get().getPrice()));
         });
         Order order = mapperDTO.convertDTOToOrder(orderDTO);
-        OrderDTO result = mapperDTO.convertOrderToDTO(orderDAO.create(order));
-        result.setCertificateId(orderDTO.getCertificateId());
-        result.getCertificateId()
-                .forEach(id -> orderDAO.attachCertificate(result.getId(), id)
-                );
-        return result;
+        order.setUser(user.get());
+        order.setOrderTime(ZonedDateTime.now(ZoneId.systemDefault()));
+        order = orderDAO.create(order);
+        order.setCertificates(certificates);
+        return mapperDTO.convertOrderToDTO(order);
     }
 
     @Override

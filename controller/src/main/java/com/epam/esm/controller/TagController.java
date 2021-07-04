@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Page;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.TagService;
@@ -38,8 +39,8 @@ public class TagController {
      * @return the all tags
      */
     @GetMapping
-    public List<TagDTO> findAll() {
-        return ResponseAssembler.assembleTags(service.findAll());
+    public List<TagDTO> findAll(Page page) {
+        return ResponseAssembler.assembleTags(service.findAll(page));
     }
 
     /**

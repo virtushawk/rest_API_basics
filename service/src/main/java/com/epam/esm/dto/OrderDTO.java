@@ -5,15 +5,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,7 +25,7 @@ import java.util.List;
 public class OrderDTO extends RepresentationModel<OrderDTO> {
     private Long id;
 
-    @NotNull
+    @NotEmpty
     private List<Long> certificateId;
 
     @NotNull
@@ -34,5 +37,4 @@ public class OrderDTO extends RepresentationModel<OrderDTO> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime orderTime;
 
-    private List<CertificateDTO> certificates;
 }
