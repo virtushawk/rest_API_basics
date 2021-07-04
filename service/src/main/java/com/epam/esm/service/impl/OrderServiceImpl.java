@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> findAll() {
-        return orderDAO.findAll().stream()
+       /* return orderDAO.findAll().stream()
                 .map(order -> {
                     List<Long> certificatesId = new ArrayList<>();
                     certificateDAO.findAllByOrderId(order.getId())
@@ -51,7 +51,8 @@ public class OrderServiceImpl implements OrderService {
                     return order;
                 })
                 .map(mapperDTO::convertOrderToDTO)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        return null;
     }
 
     @Override

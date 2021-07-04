@@ -4,6 +4,7 @@ import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Page;
 
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,7 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
      * @param querySpecificationDTO the query specification dto
      * @return the list
      */
-    List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO);
+    List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO, Page page);
 
     /**
      * Update certificate dto.

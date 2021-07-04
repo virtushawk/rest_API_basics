@@ -4,12 +4,17 @@ import com.epam.esm.dao.TagDAO;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.mapper.TagMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Criteria;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
+import javax.persistence.EntityManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
@@ -21,10 +26,12 @@ import java.util.Optional;
  */
 @Repository
 @AllArgsConstructor
+@Slf4j
 public class TagDAOImpl implements TagDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final TagMapper tagMapper;
+    private final EntityManager entityManager;
 
     private static final String SQL_SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id,name FROM tag INNER JOIN tag_has_gift_certificate " +
             "ON id = tag_id WHERE gift_certificate_id = ?";
@@ -39,42 +46,30 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public List<Tag> findAll() {
-        return jdbcTemplate.query(SQL_SELECT_ALL_TAGS, tagMapper);
+        return entityManager.createQuery("SELECT a FROM tag a", Tag.class).getResultList();
     }
 
     @Override
+    @Transactional
     public Tag create(Tag tag) {
         Optional<Tag> optionalTag = findByName(tag.getName());
         if (optionalTag.isPresent()) {
             return optionalTag.get();
         }
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_TAG, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, tag.getName());
-            return preparedStatement;
-        }, keyHolder);
-        tag.setId(keyHolder.getKey().longValue());
+        entityManager.persist(tag);
         return tag;
     }
 
     @Override
     public Optional<Tag> findById(Long id) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_SELECT_TAG_BY_ID, new Object[]{id}, new int[]{Types.INTEGER},
-                    tagMapper));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Optional.of(entityManager.find(Tag.class,id));
     }
 
     @Override
     public boolean delete(Long id) {
-        boolean flag = jdbcTemplate.update(SQL_DELETE_TAG_BY_ID, id) > 0;
-        if (flag) {
-            jdbcTemplate.update(SQL_DELETE_TAG_HAS_GIFT_CERTIFICATE_BY_ID, id);
-        }
-        return flag;
+        return entityManager.createQuery("delete from tag where id = :id")
+                .setParameter("id", id)
+                .executeUpdate() > 0;
     }
 
     @Override
@@ -84,11 +79,13 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public Optional<Tag> findByName(String name) {
-        try {
-            return Optional.of(jdbcTemplate.queryForObject(SQL_SELECT_TAG_BY_NAME, new Object[]{name}, new int[]{Types.VARCHAR}, tagMapper));
-        } catch (EmptyResultDataAccessException e) {
+        List<Tag> tags = entityManager.createQuery("select e from tag e where e.name = :name",Tag.class)
+                .setParameter("name",name)
+                .getResultList();
+        if (ObjectUtils.isEmpty(tags)){
             return Optional.empty();
         }
+        return Optional.of(tags.get(0));
     }
 
     @Override

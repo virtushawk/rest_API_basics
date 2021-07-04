@@ -17,12 +17,13 @@ public class OrderMapper implements RowMapper<Order> {
 
     @Override
     public Order mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        return Order.builder()
+       /* return Order.builder()
                 .id(resultSet.getLong("id"))
                 .userId(resultSet.getLong("user_id"))
                 .cost(resultSet.getBigDecimal("cost"))
                 .orderTime(ZonedDateTime.ofInstant(resultSet.getTimestamp("order_time").toInstant(),
                         ZoneId.systemDefault()))
-                .build();
+                .build();*/
+        return null;
     }
 }

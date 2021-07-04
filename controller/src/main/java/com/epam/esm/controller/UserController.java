@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{userId}/orders/{orderId}")
-    public OrderDTO findUserOrderById(@PathVariable Long userId,@PathVariable Long orderId) {
+    public OrderDTO findUserOrderById(@PathVariable Long userId, @PathVariable Long orderId) {
         if (userId < 0) {
             throw new IdInvalidException(userId);
         }

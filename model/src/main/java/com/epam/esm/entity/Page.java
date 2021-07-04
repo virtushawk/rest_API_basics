@@ -5,18 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuerySpecification {
-    private List<String> tags;
-
-    private String text;
-
-    private List<String> order;
-
-    private List<String> sort;
+public class Page {
+    private int size = 10;
+    private int page = 0;
 }

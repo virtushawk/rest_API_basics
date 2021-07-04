@@ -57,7 +57,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public Order create(Order order) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        /*KeyHolder keyHolder = new GeneratedKeyHolder();
         order.setOrderTime(ZonedDateTime.now(ZoneId.systemDefault()));
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(SQL_INSERT_ORDER, Statement.RETURN_GENERATED_KEYS);
@@ -66,7 +66,7 @@ public class OrderDAOImpl implements OrderDAO {
             preparedStatement.setTimestamp(3, Timestamp.from(order.getOrderTime().toInstant()));
             return preparedStatement;
         }, keyHolder);
-        order.setId(keyHolder.getKey().longValue());
+        order.setId(keyHolder.getKey().longValue());*/
         return order;
     }
 

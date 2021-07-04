@@ -4,6 +4,7 @@ import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Page;
 import com.epam.esm.exception.IdInvalidException;
 import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
@@ -46,8 +47,8 @@ public class CertificateController {
      * @return List of all certificates
      */
     @GetMapping
-    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO) {
-        return ResponseAssembler.assembleCertificates(certificateService.findAll(querySpecificationDTO));
+    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO, Page page) {
+        return ResponseAssembler.assembleCertificates(certificateService.findAll(querySpecificationDTO, page));
     }
 
     /**
@@ -61,6 +62,7 @@ public class CertificateController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
+        log.info(certificateService.findById(id).toString());
         return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
@@ -110,7 +112,8 @@ public class CertificateController {
         if (bindingResult.hasErrors()) {
             throw new InvalidDataFormException(bindingResult);
         }
-        return ResponseAssembler.assembleCertificate(certificateService.applyPatch(id, patchDTO));
+        certificateService.applyPatch(id, patchDTO);
+        return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
     /**

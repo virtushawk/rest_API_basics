@@ -7,6 +7,7 @@ import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
@@ -17,8 +18,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +51,17 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public CertificateDTO create(CertificateDTO certificateDTO) {
         Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
-        return checkForTags(mapperDTO.convertCertificateToDTO(certificateDAO.create(certificate)));
+        Set<Tag> tags = new HashSet<>();
+        if (!ObjectUtils.isEmpty(certificateDTO.getTags())) {
+            certificate.getTags().forEach(o -> {
+                Optional<Tag> temp = tagDAO.findByName(o.getName());
+                tags.add(temp.isEmpty() ? tagDAO.create(o) : temp.get());
+            });
+        }
+        certificate.setTags(null);
+        certificate = certificateDAO.create(certificate);
+        certificate.setTags(tags);
+        return mapperDTO.convertCertificateToDTO(certificate);
     }
 
     @Override
@@ -60,45 +75,46 @@ public class CertificateServiceImpl implements CertificateService {
         if (certificate.isEmpty()) {
             throw new CertificateNotFoundException(id.toString());
         }
-        Set<TagDTO> tagDTOs = tagDAO.findAllByCertificateId(id).stream()
-                .distinct()
-                .map(mapperDTO::convertTagToDTO)
-                .collect(Collectors.toSet());
-        CertificateDTO certificateDTO = mapperDTO.convertCertificateToDTO(certificate.get());
-        certificateDTO.setTags(tagDTOs);
-        return certificateDTO;
+        return mapperDTO.convertCertificateToDTO(certificate.get());
     }
 
     @Override
-    public List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO) {
+    public List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO, Page page) {
         QuerySpecification querySpecification = mapperDTO.convertDTOToQuery(querySpecificationDTO);
-        return certificateDAO.findAll(querySpecification).stream()
-                .map(o -> {
-                    o.setTags(new HashSet<>(tagDAO.findAllByCertificateId(o.getId())));
-                    return o;
-                })
-                .map(mapperDTO::convertCertificateToDTO)
-                .collect(Collectors.toList());
+        return certificateDAO.findAll(querySpecification, page).stream().map(mapperDTO::convertCertificateToDTO).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public CertificateDTO update(CertificateDTO certificateDTO) {
-        Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
-        certificateDAO.update(certificate);
-        checkForTags(certificateDTO);
-        return findById(certificateDTO.getId());
+    public CertificateDTO update(CertificateDTO updateDTO) {
+        Optional<Certificate> certificate = certificateDAO.findById(updateDTO.getId());
+        if (certificate.isEmpty()) {
+            throw new CertificateNotFoundException(updateDTO.getId().toString());
+        }
+        Certificate update = mapperDTO.convertDTOToCertificate(updateDTO);
+        if (!ObjectUtils.isEmpty(update.getTags())) {
+            update.getTags().forEach(o -> {
+                Optional<Tag> temp = tagDAO.findByName(o.getName());
+                certificate.get().getTags().add(temp.isEmpty() ? tagDAO.create(o) : temp.get());
+            });
+        }
+        return mapperDTO.convertCertificateToDTO(certificateDAO.update(certificate.get(), update));
     }
 
     @Override
     @Transactional
     public CertificateDTO applyPatch(Long id, PatchDTO patchDTO) {
+        Optional<Certificate> optionalCertificate = certificateDAO.findById(id);
+        if (optionalCertificate.isEmpty()) {
+            throw new CertificateNotFoundException(id.toString());
+        }
+        Certificate certificate = optionalCertificate.get();
         Map<String, Object> patchMap = objectMapper.convertValue(patchDTO, Map.class);
-        CertificateDTO certificateDTO = CertificateDTO.builder().tags(patchDTO.getTags()).id(id).build();
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);
-        certificateDAO.applyPatch(patchMap, id);
-        checkForTags(certificateDTO);
-        return findById(id);
+        patchMap.remove("id");
+       certificateDAO.applyPatch(patchMap, id);
+        certificate.setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
+        return mapperDTO.convertCertificateToDTO(certificate);
     }
 
     @Override

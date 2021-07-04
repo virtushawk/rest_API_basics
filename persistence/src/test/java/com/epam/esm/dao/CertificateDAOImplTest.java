@@ -81,7 +81,7 @@ class CertificateDAOImplTest {
         Assertions.assertTrue(actual.isEmpty());
     }
 
-    @Test
+    /*@Test
     void updateValid() {
         Certificate certificate = Certificate.builder()
                 .name("test name")
@@ -91,7 +91,7 @@ class CertificateDAOImplTest {
                 .build();
         Certificate actual = certificateDAO.update(certificate);
         Assertions.assertEquals(certificate.getName(), actual.getName());
-    }
+    }*/
 
     @Test
     void applyPatchTrue() {

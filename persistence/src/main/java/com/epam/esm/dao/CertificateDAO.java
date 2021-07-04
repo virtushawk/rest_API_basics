@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface CertificateDAO extends BaseDAO<Certificate, Long> {
      * @param querySpecification the query specification
      * @return the list
      */
-    List<Certificate> findAll(QuerySpecification querySpecification);
+    List<Certificate> findAll(QuerySpecification querySpecification, Page page);
 
     /**
      * Update certificate.
@@ -24,7 +25,7 @@ public interface CertificateDAO extends BaseDAO<Certificate, Long> {
      * @param certificate the certificate
      * @return the certificate
      */
-    Certificate update(Certificate certificate);
+    Certificate update(Certificate certificate,Certificate update);
 
     /**
      * Apply patch boolean.
