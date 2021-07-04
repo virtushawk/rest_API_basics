@@ -146,6 +146,6 @@ public class CertificateController {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return ResponseAssembler.assembleTags(tagService.findByCertificateId(id));
+        return ResponseAssembler.assembleTags(tagService.findAllByCertificateId(id));
     }
 }

@@ -53,10 +53,7 @@ public class CertificateServiceImpl implements CertificateService {
         Certificate certificate = mapperDTO.convertDTOToCertificate(certificateDTO);
         Set<Tag> tags = new HashSet<>();
         if (!ObjectUtils.isEmpty(certificateDTO.getTags())) {
-            certificate.getTags().forEach(o -> {
-                Optional<Tag> temp = tagDAO.findByName(o.getName());
-                tags.add(temp.isEmpty() ? tagDAO.create(o) : temp.get());
-            });
+            certificate.getTags().forEach(o -> tags.add(tagDAO.findOrCreate(o)));
         }
         certificate.setTags(null);
         certificate = certificateDAO.create(certificate);
@@ -93,10 +90,7 @@ public class CertificateServiceImpl implements CertificateService {
         }
         Certificate update = mapperDTO.convertDTOToCertificate(updateDTO);
         if (!ObjectUtils.isEmpty(update.getTags())) {
-            update.getTags().forEach(o -> {
-                Optional<Tag> temp = tagDAO.findByName(o.getName());
-                certificate.get().getTags().add(temp.isEmpty() ? tagDAO.create(o) : temp.get());
-            });
+            update.getTags().forEach(o -> certificate.get().getTags().add(tagDAO.findOrCreate(o)));
         }
         return mapperDTO.convertCertificateToDTO(certificateDAO.update(certificate.get(), update));
     }

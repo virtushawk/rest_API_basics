@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -70,7 +69,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> findByCertificateId(Long id) {
+    public List<TagDTO> findAllByCertificateId(Long id) {
         Optional<Certificate> certificate = certificateDAO.findById(id);
         if (certificate.isEmpty()) {
             throw new CertificateNotFoundException(id.toString());

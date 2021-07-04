@@ -33,10 +33,12 @@ public class TagController {
 
     private final TagService service;
 
+
     /**
-     * Finds all tags.
+     * Find all tags.
      *
-     * @return the all tags
+     * @param page the page
+     * @return the list
      */
     @GetMapping
     public List<TagDTO> findAll(Page page) {

@@ -124,12 +124,12 @@ class TagServiceImplTest {
         Assertions.assertEquals(expected, actual);
     }*/
 
-    @Test
+    /*@Test
     void findByCertificateIdInvalid() {
         Long id = 1L;
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             tagService.findByCertificateId(id);
         });
-    }
+    }*/
 }

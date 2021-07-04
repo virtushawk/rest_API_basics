@@ -33,4 +33,6 @@ public interface TagDAO extends BaseDAO<Tag, Long> {
      * @return the boolean
      */
     boolean attachToCertificateById(Long tagId, Long certificateId);
+
+    Tag findOrCreate(Tag tag);
 }

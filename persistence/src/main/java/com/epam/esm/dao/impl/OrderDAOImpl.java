@@ -3,6 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Page;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -39,14 +40,10 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public List<Order> findAll(Page page) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
-        Root<Order> root = criteriaQuery.from(Order.class);
-        criteriaQuery.select(root);
-        TypedQuery<Order> query = entityManager.createQuery(criteriaQuery);
-        query.setFirstResult(page.getPage() * page.getSize());
-        query.setMaxResults(page.getSize());
-        return query.getResultList();
+        return entityManager.createQuery("SELECT a FROM gift_order a", Order.class)
+                .setFirstResult(page.getPage() * page.getSize())
+                .setMaxResults(page.getSize())
+                .getResultList();
     }
 
     @Override
