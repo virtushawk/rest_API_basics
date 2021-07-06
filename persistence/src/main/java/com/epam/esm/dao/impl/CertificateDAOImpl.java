@@ -45,6 +45,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String SQL_UPDATE_BY_ID = "UPDATE gift_certificate SET %s = %s WHERE id = :id";
     private static final String SELECT_CERTIFICATES = "SELECT gift_certificate.id,gift_certificate.name,gift_certificate.description,gift_certificate.price,gift_certificate.duration,gift_certificate.create_date,gift_certificate.last_update_date FROM gift_certificate";
     private static final String SQL_SELECT_CERTIFICATES_BY_ORDER_ID = "SELECT id,name,description,price,duration,create_date,last_update_date FROM orders_has_gift_certificate INNER JOIN gift_certificate ON id = gift_certificate_id WHERE orders_id = ?";
+    private static final String SQL_SEARCH = "select order_has_gift_certificate.gift_certificate_id,id,tag_id,sum(cost),count(tag_id) FROM gift_order INNER JOIN order_has_gift_certificate ON id = gift_order_id INNER JOIN tag_has_gift_certificate on order_has_gift_certificate.gift_certificate_id = tag_has_gift_certificate.gift_certificate_id group by user_id,tag_id ";
 
     @Override
     public List<Certificate> findAll(QuerySpecification querySpecification, Page page) {
@@ -106,15 +107,16 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
-    public boolean applyPatch(Map<String, Object> patchValues, Long id) {
+    public Certificate applyPatch(Map<String, Object> patchValues, Certificate certificate) {
         patchValues.forEach((key, value) -> {
             String formattedSQL = String.format(SQL_UPDATE_BY_ID, key, ":" + key);
             entityManager.createQuery(formattedSQL)
                     .setParameter(key, value)
-                    .setParameter("id", id)
+                    .setParameter("id", certificate.getId())
                     .executeUpdate();
         });
-        return true;
+        entityManager.refresh(certificate);
+        return certificate;
     }
 
     @Override

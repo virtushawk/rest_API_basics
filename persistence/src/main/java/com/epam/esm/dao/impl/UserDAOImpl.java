@@ -2,6 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.entity.Page;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,17 +17,17 @@ public class UserDAOImpl implements UserDAO {
 
     private final EntityManager entityManager;
 
-    private static final String SQL_SELECT_USER_BY_ID = "SELECT id,name FROM user WHERE id = ?";
-    private static final String SQL_SELECT_ALL_USERS = "SELECT id,name FROM user";
-
     @Override
     public List<User> findAll(Page page) {
-        return entityManager.createQuery("SELECT a FROM user a", User.class).getResultList();
+        return entityManager.createQuery("SELECT a FROM user a", User.class)
+                .setFirstResult(page.getPage() * page.getSize())
+                .setMaxResults(page.getSize())
+                .getResultList();
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        return Optional.of(entityManager.find(User.class,id));
+        return Optional.of(entityManager.find(User.class, id));
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.epam.esm.entity.QuerySpecification;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The interface Certificate dao.
@@ -34,7 +35,7 @@ public interface CertificateDAO extends BaseDAO<Certificate, Long> {
      * @param id          the id
      * @return the boolean
      */
-    boolean applyPatch(Map<String, Object> patchValues, Long id);
+    Certificate applyPatch(Map<String, Object> patchValues, Certificate certificate);
 
     /**
      * Find certificates by order id

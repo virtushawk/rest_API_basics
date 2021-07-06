@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         if (user.isEmpty()) {
             throw new UserNotFoundException(id.toString());
         }
-        return orderDAO.findAllByUserId(id).stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
+        return user.get().getOrders().stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
     }
 
     @Override

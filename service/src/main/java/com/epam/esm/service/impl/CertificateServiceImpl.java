@@ -106,9 +106,9 @@ public class CertificateServiceImpl implements CertificateService {
         Map<String, Object> patchMap = objectMapper.convertValue(patchDTO, Map.class);
         patchMap.remove(CERTIFICATE_TAGS_COLUMN);
         patchMap.remove("id");
-        certificateDAO.applyPatch(patchMap, id);
-        certificate.setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
-        return mapperDTO.convertCertificateToDTO(certificate);
+        certificate = certificateDAO.applyPatch(patchMap, certificate);
+       certificate.setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
+       return mapperDTO.convertCertificateToDTO(certificate);
     }
 
     @Override

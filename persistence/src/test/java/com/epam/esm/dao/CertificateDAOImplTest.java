@@ -93,13 +93,13 @@ class CertificateDAOImplTest {
         Assertions.assertEquals(certificate.getName(), actual.getName());
     }*/
 
-    @Test
+    /*@Test
     void applyPatchTrue() {
         Long id = 1L;
         Map<String, Object> patchValues = new HashMap<>();
         boolean actual = certificateDAO.applyPatch(patchValues, id);
         Assertions.assertTrue(actual);
-    }
+    }*/
 
     @Test
     void deleteTrue() {

@@ -46,11 +46,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO create(UserDTO userDTO) {
-        return null;
+        throw new UnsupportedOperationException("method not allowed");
     }
 
     @Override
-    public boolean delete(Long aLong) {
-        return false;
+    public boolean delete(Long id) {
+        throw new UnsupportedOperationException("method not allowed");
     }
 }

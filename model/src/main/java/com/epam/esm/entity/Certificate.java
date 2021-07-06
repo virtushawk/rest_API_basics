@@ -6,17 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
@@ -59,4 +51,16 @@ public class Certificate {
 
     @ManyToMany(mappedBy = "certificates", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     private Set<Order> orders;
+
+    @PrePersist
+    public void onPersist() {
+        setCreateDate(ZonedDateTime.now(ZoneId.systemDefault()));
+        setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
+    }
 }
+

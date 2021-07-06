@@ -5,6 +5,7 @@ import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.mapper.TagMapper;
 import lombok.AllArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,5 +88,19 @@ public class TagDAOImpl implements TagDAO {
         }
         entityManager.persist(tag);
         return tag;
+    }
+
+    @Override
+    public Tag findPopular() {
+        /*return entityManager.createQuery("select t FROM gift_order g INNER JOIN g.certificates on g.id =  inner join ",Tag.class)
+                .getResultList().get(0);*/
+        Session session = entityManager.unwrap(Session.class);
+        return (Tag) session.createSQLQuery("select tag.id,tag.name FROM gift_order " +
+                "INNER JOIN order_has_gift_certificate ON gift_order.id = gift_order_id " +
+                "INNER JOIN tag_has_gift_certificate ON order_has_gift_certificate.gift_certificate_id = tag_has_gift_certificate.gift_certificate_id " +
+                "INNER JOIN tag ON tag_id = tag.id " +
+                "GROUP BY user_id,tag_id " +
+                "ORDER BY sum(cost) DESC, count(tag_id) DESC " +
+                "LIMIT 1").addEntity(Tag.class).getSingleResult();
     }
 }

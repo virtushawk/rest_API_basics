@@ -72,6 +72,6 @@ public class UserController {
         if (orderId < 0) {
             throw new IdInvalidException(userId);
         }
-        return null;
+        return ResponseAssembler.assembleOrder(orderService.findById(orderId));
     }
 }

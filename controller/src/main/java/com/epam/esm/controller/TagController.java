@@ -89,4 +89,8 @@ public class TagController {
         service.delete(id);
     }
 
+    @GetMapping(value = "/popular")
+    public TagDTO findPopular() {
+        return ResponseAssembler.assembleTag(service.findPopular());
+    }
 }

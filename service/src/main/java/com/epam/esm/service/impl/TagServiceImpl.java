@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Page;
@@ -75,5 +76,10 @@ public class TagServiceImpl implements TagService {
             throw new CertificateNotFoundException(id.toString());
         }
         return certificate.get().getTags().stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public TagDTO findPopular() {
+        return mapperDTO.convertTagToDTO(tagDAO.findPopular());
     }
 }

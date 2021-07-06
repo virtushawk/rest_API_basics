@@ -35,4 +35,6 @@ public interface TagDAO extends BaseDAO<Tag, Long> {
     boolean attachToCertificateById(Long tagId, Long certificateId);
 
     Tag findOrCreate(Tag tag);
+
+    Tag findPopular();
 }
