@@ -4,7 +4,6 @@ import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Page;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.TagService;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**

@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -77,10 +76,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> findAllByUserId(Long id) {
-        Optional<User> user = userDAO.findById(id);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException(id.toString());
-        }
-        return user.get().getOrders().stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
+        return userDAO
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id.toString()))
+                .getOrders()
+                .stream()
+                .distinct()
+                .map(mapperDTO::convertOrderToDTO)
+                .collect(Collectors.toList());
     }
 }

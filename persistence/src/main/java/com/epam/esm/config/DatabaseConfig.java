@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 import javax.sql.DataSource;
@@ -72,27 +70,5 @@ public class DatabaseConfig {
         hibernateProperties.put("hibernate.hbm2ddl.auto", hbm2DdlAuto);
         sessionFactory.setHibernateProperties(hibernateProperties);
         return sessionFactory;
-    }
-
-    /**
-     * Jdbc template.
-     *
-     * @param dataSource the data source
-     * @return the jdbc template
-     */
-    @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    /**
-     * Named parameter jdbc template.
-     *
-     * @param dataSource the data source
-     * @return the named parameter jdbc template
-     */
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
-        return new NamedParameterJdbcTemplate(dataSource);
     }
 }

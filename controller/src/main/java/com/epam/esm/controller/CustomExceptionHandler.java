@@ -92,11 +92,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @param locale    the locale
      * @return the response entity
      */
-    /*@ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleInternalServerError(RuntimeException exception, Locale locale) {
         String errorMessage = messageSource.getMessage(INTERNAL_SERVER_CODE, new Object[]{}, locale);
         return new ResponseEntity<>(createErrorResponse(errorMessage, INTERNAL_SERVER_ERROR_CODE), HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
+    }
 
     /**
      * Handles the IdInvalidException class

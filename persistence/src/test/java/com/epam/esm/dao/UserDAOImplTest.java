@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.TestConfig;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,17 +21,19 @@ class UserDAOImplTest {
     @Autowired
     private UserDAO userDAO;
 
-    /*@Test
+    @Test
     void findAllValid() {
-        List<User> tags = userDAO.findAll();
-        Assertions.assertEquals(1, tags.size());
-    }*/
+        Page page = new Page();
+        List<User> users = userDAO.findAll(page);
+        Assertions.assertFalse(users.isEmpty());
+    }
 
     @Test
     void findByIdValid() {
         Long id = 1L;
         Optional<User> actual = userDAO.findById(id);
-        Assertions.assertEquals("Roman", actual.get().getName());
+        String expected = "Roman";
+        Assertions.assertEquals(expected, actual.get().getName());
     }
 
     @Test

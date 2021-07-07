@@ -8,7 +8,6 @@ import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.dto.UserDTO;
-import com.epam.esm.entity.Tag;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.ObjectUtils;
 
