@@ -17,5 +17,10 @@ public interface TagService extends BaseService<TagDTO, Long> {
      */
     List<TagDTO> findAllByCertificateId(Long id);
 
+    /**
+     * Find popular tag dto.
+     *
+     * @return the tag dto
+     */
     TagDTO findPopular();
 }

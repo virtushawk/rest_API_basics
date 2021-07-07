@@ -35,7 +35,7 @@ public class TagController {
 
 
     /**
-     * Find all tags.
+     * Find all.
      *
      * @param page the page
      * @return the list
@@ -89,6 +89,11 @@ public class TagController {
         service.delete(id);
     }
 
+    /**
+     * Find popular tag dto.
+     *
+     * @return the tag dto
+     */
     @GetMapping(value = "/popular")
     public TagDTO findPopular() {
         return ResponseAssembler.assembleTag(service.findPopular());

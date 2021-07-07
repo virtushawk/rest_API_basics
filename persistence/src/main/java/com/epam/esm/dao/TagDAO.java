@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public interface TagDAO extends BaseDAO<Tag, Long> {
     /**
-     * Find all by certificate id list.
+     * Find all by certificate id.
      *
      * @param certificateId the certificate id
      * @return the list
@@ -25,16 +25,12 @@ public interface TagDAO extends BaseDAO<Tag, Long> {
      */
     Optional<Tag> findByName(String name);
 
-    /**
-     * Attach to certificate by id boolean.
-     *
-     * @param tagId         the tag id
-     * @param certificateId the certificate id
-     * @return the boolean
-     */
-    boolean attachToCertificateById(Long tagId, Long certificateId);
-
     Tag findOrCreate(Tag tag);
 
+    /**
+     * Find popular tag.
+     *
+     * @return the tag
+     */
     Tag findPopular();
 }

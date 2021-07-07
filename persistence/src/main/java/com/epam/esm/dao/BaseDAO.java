@@ -36,10 +36,9 @@ public interface BaseDAO<T, K> {
     T create(T t);
 
     /**
-     * Delete object By id
+     * Delete.
      *
-     * @param k the key object
-     * @return the boolean
+     * @param t the t
      */
-    boolean delete(K k);
+    void delete(T t);
 }

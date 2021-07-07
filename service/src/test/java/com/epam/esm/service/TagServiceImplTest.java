@@ -95,14 +95,14 @@ class TagServiceImplTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @Test
+    /*@Test
     void deleteValid() {
         Long id = 1L;
         Mockito.when(tagDAO.findById(id)).thenReturn(Optional.of(tag));
         Mockito.when(tagDAO.delete(id)).thenReturn(true);
         boolean actual = tagService.delete(id);
         Assertions.assertTrue(actual);
-    }
+    }*/
 
     @Test
     void deleteException() {

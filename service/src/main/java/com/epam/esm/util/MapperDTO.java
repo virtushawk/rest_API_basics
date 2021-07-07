@@ -1,7 +1,15 @@
 package com.epam.esm.util;
 
-import com.epam.esm.dto.*;
-import com.epam.esm.entity.*;
+import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.OrderDTO;
+import com.epam.esm.dto.QuerySpecificationDTO;
+import com.epam.esm.dto.TagDTO;
+import com.epam.esm.dto.UserDTO;
+import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Order;
+import com.epam.esm.entity.QuerySpecification;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

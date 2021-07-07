@@ -3,18 +3,12 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Page;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
@@ -27,20 +21,16 @@ import java.util.Optional;
 public class OrderDAOImpl implements OrderDAO {
 
     private final EntityManager entityManager;
+    private final JdbcTemplate jdbcTemplate;
+    private final OrderMapper orderMapper;
 
-    private static final String SQL_SELECT_ORDER_BY_CERTIFICATE_ID = "SELECT id,user_id,cost,order_time " +
-            "FROM orders WHERE certificate_id = ?";
     private static final String SQL_SELECT_ORDERS_BY_USER_ID = "SELECT id,user_id,cost,order_time FROM orders " +
             "WHERE user_id = ?";
-    private static final String SQL_INSERT_ORDERS_HAS_GIFT_CERTIFICATE = "INSERT INTO orders_has_gift_certificate(orders_id,gift_certificate_id) VALUES(?,?)";
-
-    private final JdbcTemplate jdbcTemplate;
-
-    private final OrderMapper orderMapper;
+    private static final String JPA_SELECT_ALL = "SELECT a FROM gift_order a";
 
     @Override
     public List<Order> findAll(Page page) {
-        return entityManager.createQuery("SELECT a FROM gift_order a", Order.class)
+        return entityManager.createQuery(JPA_SELECT_ALL, Order.class)
                 .setFirstResult(page.getPage() * page.getSize())
                 .setMaxResults(page.getSize())
                 .getResultList();
@@ -48,7 +38,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public Optional<Order> findById(Long id) {
-        return Optional.of(entityManager.find(Order.class, id));
+        return Optional.ofNullable(entityManager.find(Order.class, id));
     }
 
     @Override
@@ -58,17 +48,8 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public boolean delete(Long id) {
-        return false;
-    }
-
-    @Override
-    public Optional<Order> findByCertificateId(Long id) {
-        try {
-            return Optional.of(jdbcTemplate.queryForObject(SQL_SELECT_ORDER_BY_CERTIFICATE_ID, new Object[]{id}, new int[]{Types.INTEGER}, orderMapper));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+    public void delete(Order order) {
+        throw new UnsupportedOperationException("method not allowed");
     }
 
     @Override
@@ -76,8 +57,4 @@ public class OrderDAOImpl implements OrderDAO {
         return jdbcTemplate.query(SQL_SELECT_ORDERS_BY_USER_ID, new Object[]{id}, new int[]{Types.INTEGER}, orderMapper);
     }
 
-    @Override
-    public boolean attachCertificate(Long orderId, Long certificateId) {
-        return jdbcTemplate.update(SQL_INSERT_ORDERS_HAS_GIFT_CERTIFICATE, orderId, certificateId) > 0;
-    }
 }

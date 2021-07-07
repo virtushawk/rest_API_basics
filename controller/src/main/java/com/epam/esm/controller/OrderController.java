@@ -34,7 +34,7 @@ public class OrderController {
     private final CertificateService certificateService;
 
     /**
-     * Find all list.
+     * Find all.
      *
      * @param page the page
      * @return the list
@@ -67,7 +67,7 @@ public class OrderController {
      * @return the list
      */
     @GetMapping(value = "/{id}/certificates")
-    public List<CertificateDTO> findCertificatesByOrderId(@PathVariable Long id) {
+    public List<CertificateDTO> findAllByOrderId(@PathVariable Long id) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }

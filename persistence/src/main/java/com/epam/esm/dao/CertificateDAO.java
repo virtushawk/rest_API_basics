@@ -6,16 +6,17 @@ import com.epam.esm.entity.QuerySpecification;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * The interface Certificate dao.
  */
 public interface CertificateDAO extends BaseDAO<Certificate, Long> {
+
     /**
-     * Find all list.
+     * Find all.
      *
      * @param querySpecification the query specification
+     * @param page               the page
      * @return the list
      */
     List<Certificate> findAll(QuerySpecification querySpecification, Page page);
@@ -24,24 +25,17 @@ public interface CertificateDAO extends BaseDAO<Certificate, Long> {
      * Update certificate.
      *
      * @param certificate the certificate
+     * @param update      the update
      * @return the certificate
      */
-    Certificate update(Certificate certificate,Certificate update);
+    Certificate update(Certificate certificate, Certificate update);
 
     /**
-     * Apply patch boolean.
+     * Apply patch certificate.
      *
      * @param patchValues the patch values
-     * @param id          the id
-     * @return the boolean
+     * @param certificate the certificate
+     * @return the certificate
      */
     Certificate applyPatch(Map<String, Object> patchValues, Certificate certificate);
-
-    /**
-     * Find certificates by order id
-     *
-     * @param id the id
-     * @return the list
-     */
-    List<Certificate> findAllByOrderId(Long id);
 }

@@ -46,12 +46,12 @@ public class CertificateController {
      * @return the list
      */
     @GetMapping
-    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO, Page page) {
+    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO, @Valid Page page) {
         return ResponseAssembler.assembleCertificates(certificateService.findAll(querySpecificationDTO, page));
     }
 
     /**
-     * finds certificate by certificate id
+     * finds certificate by id.
      *
      * @param id the id of certificate
      * @return the certificate
@@ -65,7 +65,7 @@ public class CertificateController {
     }
 
     /**
-     * Create certificate
+     * Create certificate.
      *
      * @param certificateDTO the certificate dto
      * @param bindingResult  the binding result
@@ -132,7 +132,8 @@ public class CertificateController {
             throw new InvalidDataFormException(bindingResult);
         }
         certificateDTO.setId(id);
-        return ResponseAssembler.assembleCertificate(certificateService.update(certificateDTO));
+        certificateService.update(certificateDTO);
+        return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
     /**

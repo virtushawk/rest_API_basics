@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,46 +38,41 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> findAll(Page page) {
-        return orderDAO.findAll(page).stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
+        return orderDAO.findAll(page)
+                .stream()
+                .map(mapperDTO::convertOrderToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public OrderDTO findById(Long id) {
-        Optional<Order> order = orderDAO.findById(id);
-        if (order.isEmpty()) {
-            throw new OrderNotFoundException(id.toString());
-        }
-        return mapperDTO.convertOrderToDTO(order.get());
+        return mapperDTO.convertOrderToDTO(orderDAO.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id.toString())));
     }
 
     @Override
     @Transactional
     public OrderDTO create(OrderDTO orderDTO) {
-        Optional<User> user = userDAO.findById(orderDTO.getUserId());
-        if (user.isEmpty()) {
-            throw new UserNotFoundException(orderDTO.getUserId().toString());
-        }
+        User user = userDAO.findById(orderDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(orderDTO.getUserId().toString()));
         orderDTO.setCost(new BigDecimal(0));
         List<Certificate> certificates = new ArrayList<>();
         orderDTO.getCertificateId().forEach(id -> {
-            Optional<Certificate> certificate = certificateDAO.findById(id);
-            if (certificate.isEmpty()) {
-                throw new CertificateNotFoundException(id.toString());
-            }
-            certificates.add(certificate.get());
-            orderDTO.setCost(orderDTO.getCost().add(certificate.get().getPrice()));
+            Certificate certificate = certificateDAO.findById(id)
+                    .orElseThrow(() -> new CertificateNotFoundException(id.toString()));
+            certificates.add(certificate);
+            orderDTO.setCost(orderDTO.getCost().add(certificate.getPrice()));
         });
         Order order = mapperDTO.convertDTOToOrder(orderDTO);
-        order.setUser(user.get());
-        order.setOrderTime(ZonedDateTime.now(ZoneId.systemDefault()));
-        order = orderDAO.create(order);
+        order.setUser(user);
         order.setCertificates(certificates);
+        order = orderDAO.create(order);
         return mapperDTO.convertOrderToDTO(order);
     }
 
     @Override
-    public boolean delete(Long id) {
-        return false;
+    public void delete(Long id) {
+        throw new UnsupportedOperationException("method not allowed");
     }
 
     @Override
@@ -89,13 +82,5 @@ public class OrderServiceImpl implements OrderService {
             throw new UserNotFoundException(id.toString());
         }
         return user.get().getOrders().stream().map(mapperDTO::convertOrderToDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public OrderDTO findByUserIdOrderId(Long userId, Long orderId) {
-        List<OrderDTO> orders = findAllByUserId(userId);
-        if (orders.size() > orderId) {
-        }
-        return null;
     }
 }

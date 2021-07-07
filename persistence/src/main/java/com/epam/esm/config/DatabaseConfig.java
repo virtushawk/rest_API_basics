@@ -35,16 +35,16 @@ public class DatabaseConfig {
 
 
     @Value("${hibernate.dialect}")
-    private String DIALECT;
+    private String dialect;
 
     @Value("${hibernate.show_sql}")
-    private String SHOW_SQL;
+    private String showSql;
 
     @Value("${hibernate.hbm2ddl.auto}")
-    private String HBM2DDL_AUTO;
+    private String hbm2DdlAuto;
 
     @Value("${entitymanager.packagesToScan}")
-    private String PACKAGES_TO_SCAN;
+    private String packagesToScan;
 
     /**
      * Gets data source.
@@ -65,11 +65,11 @@ public class DatabaseConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(getDataSource());
-        sessionFactory.setPackagesToScan(PACKAGES_TO_SCAN);
+        sessionFactory.setPackagesToScan(packagesToScan);
         Properties hibernateProperties = new Properties();
-        hibernateProperties.put("hibernate.dialect", DIALECT);
-        hibernateProperties.put("hibernate.show_sql", SHOW_SQL);
-        hibernateProperties.put("hibernate.hbm2ddl.auto", HBM2DDL_AUTO);
+        hibernateProperties.put("hibernate.dialect", dialect);
+        hibernateProperties.put("hibernate.show_sql", showSql);
+        hibernateProperties.put("hibernate.hbm2ddl.auto", hbm2DdlAuto);
         sessionFactory.setHibernateProperties(hibernateProperties);
         return sessionFactory;
     }

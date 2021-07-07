@@ -2,9 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
-import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
@@ -26,56 +24,45 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    /**
-     * The Tag dao.
-     */
     public final TagDAO tagDAO;
     public final CertificateDAO certificateDAO;
-    /**
-     * The Mapper dto.
-     */
     public final MapperDTO mapperDTO;
 
     @Override
     public List<TagDTO> findAll(Page page) {
-        return tagDAO.findAll(page).stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
+        return tagDAO.findAll(page)
+                .stream()
+                .map(mapperDTO::convertTagToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public TagDTO findById(Long id) {
-        Optional<Tag> tag = tagDAO.findById(id);
-        if (tag.isEmpty()) {
-            throw new TagNotFoundException(id.toString());
-        }
-        return mapperDTO.convertTagToDTO(tag.get());
+        return mapperDTO.convertTagToDTO(tagDAO.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id.toString())));
     }
 
     @Override
-    public TagDTO create(TagDTO tagDTO) {
-        Optional<Tag> tag = tagDAO.findByName(tagDTO.getName());
-        if (tag.isEmpty()) {
-            return mapperDTO.convertTagToDTO(tagDAO.create(mapperDTO.convertDTOToTag(tagDTO)));
-        }
-        return mapperDTO.convertTagToDTO(tag.get());
-    }
-
     @Transactional
+    public TagDTO create(TagDTO tagDTO) {
+        return mapperDTO.convertTagToDTO(tagDAO.findOrCreate(mapperDTO.convertDTOToTag(tagDTO)));
+    }
+
     @Override
-    public boolean delete(Long id) {
-        Optional<Tag> tag = tagDAO.findById(id);
-        if (tag.isEmpty()) {
-            throw new TagNotFoundException(id.toString());
-        }
-        return tagDAO.delete(id);
+    @Transactional
+    public void delete(Long id) {
+        tagDAO.delete(tagDAO.findById(id)
+                .orElseThrow(() -> new TagNotFoundException(id.toString())));
     }
 
     @Override
     public List<TagDTO> findAllByCertificateId(Long id) {
-        Optional<Certificate> certificate = certificateDAO.findById(id);
-        if (certificate.isEmpty()) {
-            throw new CertificateNotFoundException(id.toString());
-        }
-        return certificate.get().getTags().stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
+        return certificateDAO.findById(id)
+                .orElseThrow(() -> new CertificateNotFoundException(id.toString()))
+                .getTags()
+                .stream()
+                .map(mapperDTO::convertTagToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

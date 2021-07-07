@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         throw new UnsupportedOperationException("method not allowed");
     }
 }

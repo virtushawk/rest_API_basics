@@ -11,14 +11,6 @@ import java.util.Optional;
 public interface OrderDAO extends BaseDAO<Order, Long> {
 
     /**
-     * Find order by certificate id
-     *
-     * @param id the id
-     * @return the optional
-     */
-    Optional<Order> findByCertificateId(Long id);
-
-    /**
      * Find orders by user id
      *
      * @param id the id
@@ -26,12 +18,4 @@ public interface OrderDAO extends BaseDAO<Order, Long> {
      */
     List<Order> findAllByUserId(Long id);
 
-    /**
-     * Attach certificate
-     *
-     * @param orderId       the order id
-     * @param certificateId the certificate id
-     * @return the boolean
-     */
-    boolean attachCertificate(Long orderId, Long certificateId);
 }

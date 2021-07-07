@@ -12,14 +12,14 @@ import java.util.List;
  */
 public interface BaseService<T, K> {
     /**
-     * Find all list.
+     * Find all.
      *
      * @return the list
      */
     List<T> findAll(Page page);
 
     /**
-     * Find by id t.
+     * Find by id.
      *
      * @param k the k
      * @return the t
@@ -35,10 +35,9 @@ public interface BaseService<T, K> {
     T create(T t);
 
     /**
-     * Delete boolean.
+     * Delete.
      *
      * @param k the k
-     * @return the boolean
      */
-    boolean delete(K k);
+    void delete(K k);
 }

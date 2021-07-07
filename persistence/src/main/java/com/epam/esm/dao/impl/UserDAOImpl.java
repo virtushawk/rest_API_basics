@@ -36,7 +36,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public void delete(User user) {
         throw new UnsupportedOperationException("method not allowed");
     }
 }

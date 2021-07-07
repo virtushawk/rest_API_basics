@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.TestConfig;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,9 @@ class TagDAOImplTest {
 
     @Test
     void findAllValid() {
-        List<Tag> tags = tagDAO.findAll();
-        Assertions.assertEquals(2, tags.size());
+        Page page = new Page();
+        List<Tag> tags = tagDAO.findAll(page);
+        Assertions.assertFalse(tags.isEmpty());
     }
 
     @Test
@@ -61,29 +63,9 @@ class TagDAOImplTest {
     @Test
     void deleteTrue() {
         Long id = 1L;
-        boolean flag = tagDAO.delete(id);
-        Assertions.assertTrue(flag);
-    }
-
-    @Test
-    void deleteFalse() {
-        Long id = 112L;
-        boolean flag = tagDAO.delete(id);
-        Assertions.assertFalse(flag);
-    }
-
-    @Test
-    void findAllByCertificateIdValid() {
-        Long id = 1L;
-        List<Tag> tags = tagDAO.findAllByCertificateId(id);
-        Assertions.assertFalse(tags.isEmpty());
-    }
-
-    @Test
-    void findAllByCertificateIdEmpty() {
-        Long id = 5L;
-        List<Tag> tags = tagDAO.findAllByCertificateId(id);
-        Assertions.assertTrue(tags.isEmpty());
+        Optional<Tag> tag = tagDAO.findById(id);
+        tagDAO.delete(tag.get());
+        Assertions.assertTrue(tagDAO.findById(id).isEmpty());
     }
 
     @Test
@@ -98,6 +80,27 @@ class TagDAOImplTest {
         String name = "test case";
         Optional<Tag> actual = tagDAO.findByName(name);
         Assertions.assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    void findOrCreateTagExist() {
+        Tag tag = Tag.builder().name("IT").build();
+        Tag actual = tagDAO.findOrCreate(tag);
+        Assertions.assertEquals(tag.getName(), actual.getName());
+    }
+
+    @Test
+    void findOrCreateTagNotExist() {
+        Tag tag = Tag.builder().name("new tag").build();
+        Tag actual = tagDAO.findOrCreate(tag);
+        Assertions.assertEquals(tag.getName(), actual.getName());
+    }
+
+    @Test
+    void findPopularValid() {
+        String expected = "IT";
+        String actual = tagDAO.findPopular().getName();
+        Assertions.assertEquals(expected, actual);
     }
 
 }
