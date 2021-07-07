@@ -39,6 +39,8 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final String LIKE_OPERATOR_FORMAT = "%%%s%%";
     private static final String DESCRIPTION_ATTRIBUTE = "description";
     private static final String SQL_ASC = "ASC";
+    private static final String IS_ACTIVE_ATTRIBUTE = "isActive";
+    private static final boolean IS_ACTIVE_VALUE = true;
 
     @Override
     public List<Certificate> findAll(QuerySpecification querySpecification, Page page) {
@@ -70,25 +72,25 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public Certificate update(Certificate certificate, Certificate update) {
+        certificate.setName(update.getName());
+        certificate.setDescription(update.getDescription());
+        certificate.setPrice(update.getPrice());
+        certificate.setDuration(update.getDuration());
         return certificate;
     }
 
     @Override
-    public Certificate applyPatch(Map<String, Object> patchValues, Certificate certificate) {
-        patchValues.forEach((key, value) -> {
-            String formattedSQL = String.format(SQL_UPDATE_BY_ID, key, ":" + key);
-            entityManager.createQuery(formattedSQL)
-                    .setParameter(key, value)
-                    .setParameter("id", certificate.getId())
-                    .executeUpdate();
-        });
-        entityManager.refresh(certificate);
+    public Certificate applyPatch(Certificate certificate, Certificate update) {
+        certificate.setName(ObjectUtils.isEmpty(update.getName()) ? certificate.getName() : update.getName());
+        certificate.setDescription(ObjectUtils.isEmpty(update.getDescription()) ? certificate.getDescription() : update.getDescription());
+        certificate.setPrice(ObjectUtils.isEmpty(update.getPrice()) ? certificate.getPrice() : update.getPrice());
+        certificate.setDuration(ObjectUtils.isEmpty(update.getDuration()) ? certificate.getDuration() : update.getDuration());
         return certificate;
     }
 
     @Override
     public void delete(Certificate certificate) {
-        entityManager.remove(certificate);
+        certificate.setActive(false);
     }
 
     private CriteriaQuery<Certificate> createCriteriaQueryFromQuerySpecification(QuerySpecification querySpecification) {
@@ -96,6 +98,7 @@ public class CertificateDAOImpl implements CertificateDAO {
         CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
         Root<Certificate> root = criteriaQuery.from(Certificate.class);
         List<Predicate> list = new ArrayList<>();
+        list.add(criteriaBuilder.equal(root.get(IS_ACTIVE_ATTRIBUTE), IS_ACTIVE_VALUE));
         if (!ObjectUtils.isEmpty(querySpecification.getTags())) {
             Join<Certificate, Tag> join = root.join(CERTIFICATE_TAGS_ATTRIBUTE_NAME, JoinType.INNER);
             list.add(criteriaBuilder.in(join.get(NAME_ATTRIBUTE)).value(querySpecification.getTags()));

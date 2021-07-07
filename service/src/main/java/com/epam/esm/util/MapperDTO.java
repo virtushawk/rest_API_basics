@@ -1,10 +1,6 @@
 package com.epam.esm.util;
 
-import com.epam.esm.dto.CertificateDTO;
-import com.epam.esm.dto.OrderDTO;
-import com.epam.esm.dto.QuerySpecificationDTO;
-import com.epam.esm.dto.TagDTO;
-import com.epam.esm.dto.UserDTO;
+import com.epam.esm.dto.*;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.QuerySpecification;
@@ -112,5 +108,9 @@ public class MapperDTO {
      */
     public Order convertDTOToOrder(OrderDTO orderDTO) {
         return modelMapper.map(orderDTO, Order.class);
+    }
+
+    public Certificate convertPatchDTOToCertificate(PatchDTO patchDTO) {
+        return modelMapper.map(patchDTO, Certificate.class);
     }
 }

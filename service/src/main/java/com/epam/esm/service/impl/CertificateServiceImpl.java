@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,8 +58,11 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public CertificateDTO findById(Long id) {
-        return mapperDTO.convertCertificateToDTO(certificateDAO.findById(id)
-                .orElseThrow(() -> new CertificateNotFoundException(id.toString())));
+        Optional<Certificate> certificate = certificateDAO.findById(id);
+        if (certificate.isEmpty() || !certificate.get().isActive()) {
+            throw new CertificateNotFoundException(id.toString());
+        }
+        return mapperDTO.convertCertificateToDTO(certificate.get());
     }
 
     @Override
@@ -73,13 +77,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDTO update(CertificateDTO updateDTO) {
-        Certificate certificate = certificateDAO.findById(updateDTO.getId())
-                .orElseThrow(() -> new CertificateNotFoundException(updateDTO.getId().toString()));
+        Optional<Certificate> optional = certificateDAO.findById(updateDTO.getId());
+        if (optional.isEmpty() || !optional.get().isActive()) {
+            throw new CertificateNotFoundException(updateDTO.getId().toString());
+        }
+        Certificate certificate = optional.get();
         Certificate update = mapperDTO.convertDTOToCertificate(updateDTO);
-        certificate.setName(update.getName());
-        certificate.setDescription(update.getDescription());
-        certificate.setPrice(update.getPrice());
-        certificate.setDuration(update.getDuration());
+        certificate = certificateDAO.update(certificate,update);
         attachTags(certificate, updateDTO.getTags());
         return mapperDTO.convertCertificateToDTO(certificate);
     }
@@ -87,12 +91,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDTO applyPatch(Long id, PatchDTO patchDTO) {
-        Certificate certificate = certificateDAO.findById(id)
-                .orElseThrow(() -> new CertificateNotFoundException(id.toString()));
-        certificate.setName(ObjectUtils.isEmpty(patchDTO.getName()) ? certificate.getName() : patchDTO.getName());
-        certificate.setDescription(ObjectUtils.isEmpty(patchDTO.getDescription()) ? certificate.getDescription() : patchDTO.getDescription());
-        certificate.setPrice(ObjectUtils.isEmpty(patchDTO.getPrice()) ? certificate.getPrice() : patchDTO.getPrice());
-        certificate.setDuration(ObjectUtils.isEmpty(patchDTO.getDuration()) ? certificate.getDuration() : patchDTO.getDuration());
+        Optional<Certificate> optional = certificateDAO.findById(id);
+        if (optional.isEmpty() || !optional.get().isActive()) {
+            throw new CertificateNotFoundException(id.toString());
+        }
+        Certificate certificate = optional.get();
+        Certificate update = mapperDTO.convertPatchDTOToCertificate(patchDTO);
+        certificate = certificateDAO.applyPatch(certificate, update);
         attachTags(certificate, patchDTO.getTags());
         return mapperDTO.convertCertificateToDTO(certificate);
     }

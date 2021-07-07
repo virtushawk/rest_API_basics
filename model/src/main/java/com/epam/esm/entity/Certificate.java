@@ -61,6 +61,9 @@ public class Certificate {
     @ManyToMany(mappedBy = "certificates", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     private Set<Order> orders;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     @PrePersist
     public void onPersist() {
         setCreateDate(ZonedDateTime.now(ZoneId.systemDefault()));

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -57,10 +58,12 @@ public class OrderServiceImpl implements OrderService {
         orderDTO.setCost(new BigDecimal(0));
         List<Certificate> certificates = new ArrayList<>();
         orderDTO.getCertificateId().forEach(id -> {
-            Certificate certificate = certificateDAO.findById(id)
-                    .orElseThrow(() -> new CertificateNotFoundException(id.toString()));
-            certificates.add(certificate);
-            orderDTO.setCost(orderDTO.getCost().add(certificate.getPrice()));
+            Optional<Certificate> optional = certificateDAO.findById(id);
+            if (optional.isEmpty() || !optional.get().isActive()) {
+                throw new CertificateNotFoundException(id.toString());
+            }
+            certificates.add(optional.get());
+            orderDTO.setCost(orderDTO.getCost().add(optional.get().getPrice()));
         });
         Order order = mapperDTO.convertDTOToOrder(orderDTO);
         order.setUser(user);

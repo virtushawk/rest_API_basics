@@ -30,12 +30,13 @@ public interface CertificateDAO extends BaseDAO<Certificate, Long> {
      */
     Certificate update(Certificate certificate, Certificate update);
 
+
     /**
      * Apply patch certificate.
      *
-     * @param patchValues the patch values
      * @param certificate the certificate
+     * @param update      the update
      * @return the certificate
      */
-    Certificate applyPatch(Map<String, Object> patchValues, Certificate certificate);
+    Certificate applyPatch(Certificate certificate, Certificate update);
 }

@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Page;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,9 +57,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDTO> findAllByCertificateId(Long id) {
-        return certificateDAO.findById(id)
-                .orElseThrow(() -> new CertificateNotFoundException(id.toString()))
-                .getTags()
+        Optional<Certificate> optional = certificateDAO.findById(id);
+        if (optional.isEmpty() || !optional.get().isActive()) {
+            throw new CertificateNotFoundException(id.toString());
+        }
+        return optional.get().getTags()
                 .stream()
                 .map(mapperDTO::convertTagToDTO)
                 .collect(Collectors.toList());
