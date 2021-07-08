@@ -20,7 +20,6 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,7 +31,6 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     private final EntityManager entityManager;
 
-    private static final String SQL_UPDATE_BY_ID = "UPDATE gift_certificate SET %s = %s WHERE id = :id";
     private static final String JPA_SELECT_ALL = "SELECT a FROM gift_certificate a";
     private static final String CERTIFICATE_TAGS_ATTRIBUTE_NAME = "tags";
     private static final String NAME_ATTRIBUTE = "name";

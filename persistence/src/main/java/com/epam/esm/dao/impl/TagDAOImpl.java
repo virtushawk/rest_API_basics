@@ -28,6 +28,7 @@ public class TagDAOImpl implements TagDAO {
             "INNER JOIN tag ON tag_id = tag.id GROUP BY user_id,tag_id ORDER BY sum(cost) DESC, count(tag_id) DESC " +
             "LIMIT 1";
     private static final String JPA_FIND_BY_NAME = "select e from tag e where e.name = :name";
+    private static final String ATTRIBUTE_NAME = "name";
 
     @Override
     public List<Tag> findAll(Page page) {
@@ -56,7 +57,7 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public Optional<Tag> findByName(String name) {
         List<Tag> tags = entityManager.createQuery(JPA_FIND_BY_NAME, Tag.class)
-                .setParameter("name", name)
+                .setParameter(ATTRIBUTE_NAME, name)
                 .getResultList();
         if (ObjectUtils.isEmpty(tags)) {
             return Optional.empty();

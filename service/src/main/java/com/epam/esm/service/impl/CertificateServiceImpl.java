@@ -83,7 +83,7 @@ public class CertificateServiceImpl implements CertificateService {
         }
         Certificate certificate = optional.get();
         Certificate update = mapperDTO.convertDTOToCertificate(updateDTO);
-        certificate = certificateDAO.update(certificate,update);
+        certificate = certificateDAO.update(certificate, update);
         attachTags(certificate, updateDTO.getTags());
         return mapperDTO.convertCertificateToDTO(certificate);
     }
@@ -114,6 +114,7 @@ public class CertificateServiceImpl implements CertificateService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     public void delete(Long id) {
         certificateDAO.delete(certificateDAO.findById(id)

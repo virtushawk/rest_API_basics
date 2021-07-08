@@ -109,16 +109,16 @@ class TagServiceImplTest {
     }
 
     @Test
-    void findByCertificateIdValid() {
+    void findAllByCertificateIdValid() {
         Long id = 1L;
-        Certificate certificate = Certificate.builder().tags(new HashSet<>()).build();
+        Certificate certificate = Certificate.builder().isActive(true).tags(new HashSet<>()).build();
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.of(certificate));
         List<TagDTO> actual = tagService.findAllByCertificateId(id);
         Assertions.assertTrue(actual.isEmpty());
     }
 
     @Test
-    void findByCertificateIdException() {
+    void findAllByCertificateIdException() {
         Long id = 1L;
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {

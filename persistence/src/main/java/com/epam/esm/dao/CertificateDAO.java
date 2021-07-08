@@ -5,7 +5,6 @@ import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * The interface Certificate dao.

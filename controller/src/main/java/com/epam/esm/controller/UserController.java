@@ -64,6 +64,13 @@ public class UserController {
         return ResponseAssembler.assembleOrders(orderService.findAllByUserId(id));
     }
 
+    /**
+     * Find user's orders by id
+     *
+     * @param userId  the user id
+     * @param orderId the order id
+     * @return the order dto
+     */
     @GetMapping(value = "/{userId}/orders/{orderId}")
     public OrderDTO findUserOrderById(@PathVariable Long userId, @PathVariable Long orderId) {
         if (userId < 0) {

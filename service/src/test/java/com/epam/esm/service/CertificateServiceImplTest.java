@@ -1,17 +1,19 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.CertificateDAO;
+import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.OrderNotFoundException;
 import com.epam.esm.service.impl.CertificateServiceImpl;
 import com.epam.esm.util.MapperDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,10 +42,10 @@ class CertificateServiceImplTest {
     private TagDAO tagDAO;
 
     @Mock
-    private MapperDTO mapperDTO;
+    private OrderDAO orderDAO;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private MapperDTO mapperDTO;
 
     private static Certificate certificate;
     private static CertificateDTO certificateDTO;
@@ -56,8 +58,10 @@ class CertificateServiceImplTest {
                 .price(new BigDecimal("10"))
                 .duration(5)
                 .tags(new HashSet<>())
+                .isActive(true)
                 .build();
         certificateDTO = CertificateDTO.builder()
+                .id(1L)
                 .name("test name")
                 .description("test description")
                 .price(new BigDecimal("10"))
@@ -131,12 +135,37 @@ class CertificateServiceImplTest {
     }
 
     @Test
+    void updateValid() {
+        Long id = 1L;
+        Certificate update = Certificate.builder().name("wow").build();
+        Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.of(certificate));
+        Mockito.when(mapperDTO.convertDTOToCertificate(certificateDTO)).thenReturn(update);
+        Mockito.when(certificateDAO.update(certificate, update)).thenReturn(certificate);
+        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
+        CertificateDTO actual = certificateService.update(certificateDTO);
+        Assertions.assertEquals(actual.getName(), certificateDTO.getName());
+    }
+
+    @Test
     void updateException() {
         Long id = 1L;
         certificateDTO.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(CertificateNotFoundException.class, () -> certificateService.update(certificateDTO));
+    }
+
+    @Test
+    void applyPatchValid() {
+        Long id = 1L;
+        Certificate update = Certificate.builder().name("wow").build();
+        PatchDTO patchDTO = PatchDTO.builder().name("wow").build();
+        Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.of(certificate));
+        Mockito.when(mapperDTO.convertPatchDTOToCertificate(patchDTO)).thenReturn(update);
+        Mockito.when(certificateDAO.applyPatch(certificate, update)).thenReturn(certificate);
+        Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
+        CertificateDTO actual = certificateService.applyPatch(id, patchDTO);
+        Assertions.assertEquals(actual.getName(), certificateDTO.getName());
     }
 
     @Test
@@ -149,6 +178,22 @@ class CertificateServiceImplTest {
         Assertions.assertThrows(CertificateNotFoundException.class, () -> {
             certificateService.applyPatch(id, patchDTO);
         });
+    }
+
+    @Test
+    void findAllByOrderIdValid() {
+        Long id = 1L;
+        Order order = Order.builder().certificates(new ArrayList<>()).build();
+        Mockito.when(orderDAO.findById(id)).thenReturn(Optional.of(order));
+        List<CertificateDTO> actual = certificateService.findAllByOrderId(id);
+        Assertions.assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    void findAllByOrderIdException() {
+        Long id = 1L;
+        Mockito.when(orderDAO.findById(id)).thenReturn(Optional.empty());
+        Assertions.assertThrows(OrderNotFoundException.class, () -> certificateService.findAllByOrderId(id));
     }
 
     @Test

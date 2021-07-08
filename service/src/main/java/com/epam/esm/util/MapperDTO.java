@@ -110,6 +110,12 @@ public class MapperDTO {
         return modelMapper.map(orderDTO, Order.class);
     }
 
+    /**
+     * Convert patch dto to certificate.
+     *
+     * @param patchDTO the patch dto
+     * @return the certificate
+     */
     public Certificate convertPatchDTOToCertificate(PatchDTO patchDTO) {
         return modelMapper.map(patchDTO, Certificate.class);
     }

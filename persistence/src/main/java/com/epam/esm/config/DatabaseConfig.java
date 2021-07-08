@@ -59,6 +59,11 @@ public class DatabaseConfig {
         return new HikariDataSource(config);
     }
 
+    /**
+     * local session factory bean.
+     *
+     * @return the local session factory bean
+     */
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
