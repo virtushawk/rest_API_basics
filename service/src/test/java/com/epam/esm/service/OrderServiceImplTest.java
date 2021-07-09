@@ -116,16 +116,17 @@ class OrderServiceImplTest {
         Long id = 1L;
         User user = User.builder().orders(new HashSet<>()).build();
         Mockito.when(userDAO.findById(id)).thenReturn(Optional.of(user));
-        List<OrderDTO> actual = orderService.findAllByUserId(id);
+        List<OrderDTO> actual = orderService.findAllByUserId(id, new Page());
         Assertions.assertTrue(actual.isEmpty());
     }
 
     @Test
     void findAllByUserIdException() {
         Long id = 1L;
+        Page page = new Page();
         Mockito.when(userDAO.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThrows(UserNotFoundException.class, () -> {
-            orderService.findAllByUserId(id);
+            orderService.findAllByUserId(id, page);
         });
     }
 }

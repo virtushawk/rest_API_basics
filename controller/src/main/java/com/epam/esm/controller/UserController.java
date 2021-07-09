@@ -57,11 +57,11 @@ public class UserController {
      * @return the list
      */
     @GetMapping(value = "/{id}/orders")
-    public List<OrderDTO> findUserOrders(@PathVariable Long id) {
+    public List<OrderDTO> findUserOrders(@PathVariable Long id, Page page) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return ResponseAssembler.assembleOrders(orderService.findAllByUserId(id));
+        return ResponseAssembler.assembleOrders(orderService.findAllByUserId(id, page));
     }
 
     /**

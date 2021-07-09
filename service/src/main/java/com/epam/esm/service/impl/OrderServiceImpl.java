@@ -78,13 +78,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> findAllByUserId(Long id) {
+    public List<OrderDTO> findAllByUserId(Long id, Page page) {
         return userDAO
                 .findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id.toString()))
                 .getOrders()
                 .stream()
                 .distinct()
+                .skip(page.getPage() * page.getSize())
+                .limit(page.getSize())
                 .map(mapperDTO::convertOrderToDTO)
                 .collect(Collectors.toList());
     }
