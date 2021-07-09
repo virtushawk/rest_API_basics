@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.Optional;
 @SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("dev")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = "classpath:/insert_data_certificate.sql")
 class OrderDAOImplTest {
 
     @Autowired
@@ -47,6 +50,7 @@ class OrderDAOImplTest {
     }
 
     @Test
+    @Transactional
     void createValid() {
         Order order = Order.builder()
                 .certificates(new ArrayList<>())

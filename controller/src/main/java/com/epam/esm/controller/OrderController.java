@@ -61,17 +61,18 @@ public class OrderController {
     }
 
     /**
-     * Find certificates by order id
+     * Find all by order id list.
      *
-     * @param id the id
+     * @param id   the id
+     * @param page the page
      * @return the list
      */
     @GetMapping(value = "/{id}/certificates")
-    public List<CertificateDTO> findAllByOrderId(@PathVariable Long id) {
+    public List<CertificateDTO> findAllByOrderId(@PathVariable Long id, Page page) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return ResponseAssembler.assembleCertificates(certificateService.findAllByOrderId(id));
+        return ResponseAssembler.assembleCertificates(certificateService.findAllByOrderId(id, page));
     }
 
     /**

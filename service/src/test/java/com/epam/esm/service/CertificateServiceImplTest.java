@@ -185,7 +185,7 @@ class CertificateServiceImplTest {
         Long id = 1L;
         Order order = Order.builder().certificates(new ArrayList<>()).build();
         Mockito.when(orderDAO.findById(id)).thenReturn(Optional.of(order));
-        List<CertificateDTO> actual = certificateService.findAllByOrderId(id);
+        List<CertificateDTO> actual = certificateService.findAllByOrderId(id, new Page());
         Assertions.assertTrue(actual.isEmpty());
     }
 
@@ -193,7 +193,7 @@ class CertificateServiceImplTest {
     void findAllByOrderIdException() {
         Long id = 1L;
         Mockito.when(orderDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(OrderNotFoundException.class, () -> certificateService.findAllByOrderId(id));
+        Assertions.assertThrows(OrderNotFoundException.class, () -> certificateService.findAllByOrderId(id, new Page()));
     }
 
     @Test

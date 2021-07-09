@@ -3,4 +3,7 @@ INSERT INTO tag(name) VALUES('IT');
 INSERT INTO tag(name) VALUES('Hello');
 INSERT INTO tag_has_gift_certificate(tag_id,gift_certificate_id) VALUES(1,1);
 INSERT INTO tag_has_gift_certificate(tag_id,gift_certificate_id) VALUES(2,2);
+INSERT INTO user(name) VALUES('Roman');
+INSERT INTO gift_order(user_id,cost,order_date) VALUES(1,10,'2021-03-21T02:07:05-07:00');
+INSERT INTO order_has_gift_certificate(gift_order_id,gift_certificate_id) VALUES(1,1);
 

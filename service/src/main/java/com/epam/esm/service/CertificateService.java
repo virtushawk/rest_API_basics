@@ -37,11 +37,13 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
      */
     CertificateDTO applyPatch(Long id, PatchDTO patchDTO);
 
+
     /**
-     * Find certificates by order id
+     * Find all by order id list.
      *
-     * @param id the id
+     * @param id   the id
+     * @param page the page
      * @return the list
      */
-    List<CertificateDTO> findAllByOrderId(Long id);
+    List<CertificateDTO> findAllByOrderId(Long id, Page page);
 }

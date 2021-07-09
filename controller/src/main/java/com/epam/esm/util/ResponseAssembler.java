@@ -118,7 +118,7 @@ public class ResponseAssembler {
 
     private static CertificateDTO mapCertificate(CertificateDTO certificate) {
         if (!ObjectUtils.isEmpty(certificate.getTags())) {
-            certificate.add(linkTo(methodOn(CertificateController.class).findTagsByCertificateId(certificate.getId(),new Page())).withRel("tags"));
+            certificate.add(linkTo(methodOn(CertificateController.class).findTagsByCertificateId(certificate.getId(), new Page())).withRel("tags"));
         }
         certificate.setTags(null);
         return certificate.add(linkTo(methodOn(CertificateController.class).findById(certificate.getId())).withSelfRel());
@@ -126,7 +126,7 @@ public class ResponseAssembler {
 
     private static OrderDTO mapOrder(OrderDTO orderDTO) {
         orderDTO.add(linkTo(methodOn(OrderController.class).findById(orderDTO.getId())).withSelfRel());
-        orderDTO.add(linkTo(methodOn(OrderController.class).findAllByOrderId(orderDTO.getId())).withRel("certificates"));
+        orderDTO.add(linkTo(methodOn(OrderController.class).findAllByOrderId(orderDTO.getId(), new Page())).withRel("certificates"));
         orderDTO.add(linkTo(methodOn(UserController.class).findById(orderDTO.getUserId())).withRel("user"));
         orderDTO.setCertificateId(null);
         orderDTO.setUserId(null);

@@ -103,13 +103,15 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateDTO> findAllByOrderId(Long id) {
+    public List<CertificateDTO> findAllByOrderId(Long id, Page page) {
         return orderDAO
                 .findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id.toString()))
                 .getCertificates()
                 .stream()
                 .distinct()
+                .skip(page.getPage() * page.getSize())
+                .limit(page.getSize())
                 .map(mapperDTO::convertCertificateToDTO)
                 .collect(Collectors.toList());
     }
