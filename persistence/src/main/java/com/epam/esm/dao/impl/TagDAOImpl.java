@@ -11,6 +11,8 @@ import org.springframework.util.ObjectUtils;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The type Tag dao.
@@ -81,4 +83,5 @@ public class TagDAOImpl implements TagDAO {
                 .addEntity(Tag.class)
                 .getSingleResult();
     }
+
 }

@@ -143,10 +143,10 @@ public class CertificateController {
      * @return the list
      */
     @GetMapping(value = "/{id}/tags")
-    public List<TagDTO> findTagsByCertificateId(@PathVariable Long id) {
+    public List<TagDTO> findTagsByCertificateId(@PathVariable Long id,@Valid Page page) {
         if (id < 0) {
             throw new IdInvalidException(id);
         }
-        return ResponseAssembler.assembleTags(tagService.findAllByCertificateId(id));
+        return ResponseAssembler.assembleTags(tagService.findAllByCertificateId(id,page));
     }
 }

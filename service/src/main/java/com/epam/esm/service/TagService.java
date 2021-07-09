@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Page;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface TagService extends BaseService<TagDTO, Long> {
      * @param id the id
      * @return the list
      */
-    List<TagDTO> findAllByCertificateId(Long id);
+    List<TagDTO> findAllByCertificateId(Long id, Page page);
 
     /**
      * Find popular tag dto.

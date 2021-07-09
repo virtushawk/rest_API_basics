@@ -8,6 +8,7 @@ import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.entity.Page;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.ObjectUtils;
 
@@ -117,7 +118,7 @@ public class ResponseAssembler {
 
     private static CertificateDTO mapCertificate(CertificateDTO certificate) {
         if (!ObjectUtils.isEmpty(certificate.getTags())) {
-            certificate.add(linkTo(methodOn(CertificateController.class).findTagsByCertificateId(certificate.getId())).withRel("tags"));
+            certificate.add(linkTo(methodOn(CertificateController.class).findTagsByCertificateId(certificate.getId(),new Page())).withRel("tags"));
         }
         certificate.setTags(null);
         return certificate.add(linkTo(methodOn(CertificateController.class).findById(certificate.getId())).withSelfRel());

@@ -56,13 +56,15 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> findAllByCertificateId(Long id) {
+    public List<TagDTO> findAllByCertificateId(Long id, Page page) {
         Optional<Certificate> optional = certificateDAO.findById(id);
         if (optional.isEmpty() || !optional.get().isActive()) {
             throw new CertificateNotFoundException(id.toString());
         }
         return optional.get().getTags()
                 .stream()
+                .skip(page.getPage() * page.getSize())
+                .limit(page.getSize())
                 .map(mapperDTO::convertTagToDTO)
                 .collect(Collectors.toList());
     }

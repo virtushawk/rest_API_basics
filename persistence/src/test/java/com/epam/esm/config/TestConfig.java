@@ -2,27 +2,25 @@ package com.epam.esm.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 import java.util.Properties;
 
-/*@Configuration*/
-/*@Import({DatabaseConfig.class})*/
-/*@ComponentScan("com.epam.esm.dao")*/
-/*@EnableJpaRepositories("com.epam.esm")
-@EnableTransactionManagement*/
+@ComponentScan("com.epam.esm.dao")
+@EnableJpaRepositories("com.epam.esm")
 @SpringBootConfiguration
 public class TestConfig {
 
@@ -61,19 +59,6 @@ public class TestConfig {
         return new HikariDataSource(config);
     }
 
-    /*@Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource);
-        sessionFactory.setPackagesToScan(packagesToScan);
-        Properties hibernateProperties = new Properties();
-        hibernateProperties.put("hibernate.dialect", dialect);
-        hibernateProperties.put("hibernate.show_sql", showSql);
-        hibernateProperties.put("hibernate.hbm2ddl.auto", hbm2DdlAuto);
-        sessionFactory.setHibernateProperties(hibernateProperties);
-        return sessionFactory;
-    }*/
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManager(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
@@ -86,6 +71,13 @@ public class TestConfig {
         entityManager.setJpaProperties(hibernateProperties);
         entityManager.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return entityManager;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManager entityManager) {
+        final HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+        transactionManager.setSessionFactory(entityManager.unwrap(Session.class).getSessionFactory());
+        return transactionManager;
     }
 
 }
