@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,23 +21,22 @@ import java.util.Optional;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("dev")
+@Sql(scripts = "classpath:/insert_data_certificate.sql")
 class TagDAOImplTest {
 
     @Autowired
     private TagDAO tagDAO;
 
-    @BeforeEach
-     void init() {
-        Tag tag = Tag.builder().name("test").build();
-        tagDAO.create(tag);
-    }
-
     @Test
     void findAllValid() {
-        System.out.println(tagDAO.findAll(new Page()));
+        Page page = new Page();
+        List<Tag> certificates = tagDAO.findAll(page);
+        Assertions.assertFalse(certificates.isEmpty());
     }
 
+
     @Test
+    @Transactional
     void createNewValid() {
         Tag tag = Tag.builder()
                 .name("tag")
@@ -45,6 +46,7 @@ class TagDAOImplTest {
     }
 
     @Test
+    @Transactional
     void createExistingValid() {
         Tag tag = Tag.builder()
                 .name("IT")
@@ -65,14 +67,6 @@ class TagDAOImplTest {
         Long id = 112L;
         Optional<Tag> actual = tagDAO.findById(id);
         Assertions.assertTrue(actual.isEmpty());
-    }
-
-    @Test
-    void deleteTrue() {
-        Long id = 1L;
-        Optional<Tag> tag = tagDAO.findById(id);
-        tagDAO.delete(tag.get());
-        Assertions.assertTrue(tagDAO.findById(id).isEmpty());
     }
 
     @Test
@@ -97,6 +91,7 @@ class TagDAOImplTest {
     }
 
     @Test
+    @Transactional
     void findOrCreateTagNotExist() {
         Tag tag = Tag.builder().name("new tag").build();
         Tag actual = tagDAO.findOrCreate(tag);
