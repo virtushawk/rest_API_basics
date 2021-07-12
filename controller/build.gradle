@@ -9,5 +9,6 @@ dependencies {
 }
 
 bootRun {
-    main = 'com.epam.esm.config.ApplicationConfiguration'
+    main = 'com.epam.esm.ApplicationConfiguration'
+    systemProperty "spring.profiles.active", 'prod'
 }

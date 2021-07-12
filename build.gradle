@@ -11,14 +11,16 @@ allprojects {
             testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.1'
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.1'
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.1'
-        }
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.5.1'
 
-        test {
-            useJUnitPlatform()
-        }
 
-        repositories {
-            mavenCentral()
+            test {
+                useJUnitPlatform()
+            }
+
+            repositories {
+                mavenCentral()
+            }
         }
     }
 }

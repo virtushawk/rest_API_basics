@@ -1,25 +1,23 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.entity.ErrorResponse;
-import com.epam.esm.exception.CertificateNotFoundException;
-import com.epam.esm.exception.IdInvalidException;
-import com.epam.esm.exception.InvalidDataFormException;
-import com.epam.esm.exception.OrderNotFoundException;
-import com.epam.esm.exception.TagNotFoundException;
-import com.epam.esm.exception.UserNotFoundException;
+import com.epam.esm.exception.CustomServiceException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
+import javax.validation.ConstraintViolationException;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * The type Exception controller.
@@ -27,6 +25,7 @@ import java.util.Locale;
 @RestControllerAdvice
 @AllArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Slf4j
 public class CustomExceptionHandler {
 
     private final MessageSource messageSource;
@@ -34,110 +33,64 @@ public class CustomExceptionHandler {
     private static final int INTERNAL_SERVER_ERROR_CODE = 100;
     private static final String INTERNAL_SERVER_CODE = "error.internalServerError";
     private static final String SPACE_DELIMITER = " ";
-    private static final String COMMA_DELIMITER = ",";
 
     /**
-     * Handles the certificateNotFoundException class
+     * Handle internal server error
      *
      * @param exception the exception
      * @param locale    the locale
      * @return the response entity
      */
-    @ExceptionHandler(CertificateNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCertificateNotFoundException(CertificateNotFoundException exception, Locale locale) {
-        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
-        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Handles the TagNotFoundException class
-     *
-     * @param exception the exception
-     * @param locale    the locale
-     * @return the response entity
-     */
-    @ExceptionHandler(TagNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTagNotFoundException(TagNotFoundException exception, Locale locale) {
-        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
-        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Handles the InvalidDataFromException class
-     *
-     * @param exception the exception
-     * @param locale    the locale
-     * @return the response entity
-     */
-    @ExceptionHandler(InvalidDataFormException.class)
-    public ResponseEntity<Object> handleInvalidDataFormException(InvalidDataFormException exception, Locale locale) {
-        StringBuilder errorMessage = new StringBuilder();
-        errorMessage.append(messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale));
-        List<ObjectError> errors = exception.getBindingResult().getAllErrors();
-        errors.stream().filter(FieldError.class::isInstance)
-                .forEach(objectError -> errorMessage
-                        .append(SPACE_DELIMITER)
-                        .append(messageSource.getMessage(objectError, locale))
-                        .append(COMMA_DELIMITER));
-        errorMessage.deleteCharAt(errorMessage.length() - 1);
-        return new ResponseEntity<>(createErrorResponse(errorMessage.toString(), exception.getErrorCode()), HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Handles the RuntimeException class
-     *
-     * @param exception the exception
-     * @param locale    the locale
-     * @return the response entity
-     */
-    /*@ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleInternalServerError(RuntimeException exception, Locale locale) {
         String errorMessage = messageSource.getMessage(INTERNAL_SERVER_CODE, new Object[]{}, locale);
         return new ResponseEntity<>(createErrorResponse(errorMessage, INTERNAL_SERVER_ERROR_CODE), HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
-
-    /**
-     * Handles the IdInvalidException class
-     *
-     * @param exception the exception
-     * @param locale    the locale
-     * @return the response entity
-     */
-    @ExceptionHandler(IdInvalidException.class)
-    public ResponseEntity<Object> handleIdInvalidException(IdInvalidException exception, Locale locale) {
-        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        String errorMessage = message + SPACE_DELIMITER + exception.getId();
-        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.BAD_REQUEST);
     }
 
+
     /**
-     * Handles the UserNotFoundException class
+     * Handles the CustomServiceException class
      *
      * @param exception the exception
      * @param locale    the locale
      * @return the response entity
      */
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception, Locale locale) {
+    @ExceptionHandler(CustomServiceException.class)
+    public ResponseEntity<Object> handleResourceNotFoundException(CustomServiceException exception, Locale locale) {
         String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
         String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
         return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
     }
 
     /**
-     * Handle the OrderNotFoundException class
+     * Handle method argument not valid exception
      *
      * @param exception the exception
      * @param locale    the locale
      * @return the response entity
      */
-    @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException exception, Locale locale) {
-        String message = messageSource.getMessage(exception.getErrorMessage(), new Object[]{}, locale);
-        String errorMessage = message + SPACE_DELIMITER + exception.getMessage();
-        return new ResponseEntity<>(createErrorResponse(errorMessage, exception.getErrorCode()), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValidException(BindException exception, Locale locale) {
+        Map<String, String> errors = new HashMap<>();
+        exception.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = messageSource.getMessage(error, locale);
+            errors.put(fieldName, errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle constraint violation exception
+     *
+     * @param exception the exception
+     * @return the response entity
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
+        Map<String, String> errors = new HashMap<>();
+        exception.getConstraintViolations().forEach(error -> errors.put("id", error.getMessage()));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     private ErrorResponse createErrorResponse(String errorMessage, int errorCode) {

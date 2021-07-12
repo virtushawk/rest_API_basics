@@ -3,14 +3,12 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.entity.Page;
-import com.epam.esm.exception.IdInvalidException;
-import com.epam.esm.exception.InvalidDataFormException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -28,10 +27,13 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/orders")
 @AllArgsConstructor
+@Validated
 public class OrderController {
 
     private final OrderService orderService;
     private final CertificateService certificateService;
+
+    private static final int MIN_ID_VALUE = 1;
 
     /**
      * Find all.
@@ -40,23 +42,19 @@ public class OrderController {
      * @return the list
      */
     @GetMapping
-    public List<OrderDTO> findAll(Page page) {
+    public List<OrderDTO> findAll(@Valid Page page) {
         return ResponseAssembler.assembleOrders(orderService.findAll(page));
     }
 
     /**
      * Create order
      *
-     * @param orderDTO      the order dto
-     * @param bindingResult the binding result
+     * @param orderDTO the order dto
      * @return the order dto
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderDTO create(@Valid @RequestBody OrderDTO orderDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException(bindingResult);
-        }
+    public OrderDTO create(@Valid @RequestBody OrderDTO orderDTO) {
         return ResponseAssembler.assembleOrder(orderService.create(orderDTO));
     }
 
@@ -68,10 +66,7 @@ public class OrderController {
      * @return the list
      */
     @GetMapping(value = "/{id}/certificates")
-    public List<CertificateDTO> findAllByOrderId(@PathVariable Long id, Page page) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
+    public List<CertificateDTO> findAllByOrderId(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid Page page) {
         return ResponseAssembler.assembleCertificates(certificateService.findAllByOrderId(id, page));
     }
 
@@ -82,10 +77,7 @@ public class OrderController {
      * @return the order dto
      */
     @GetMapping(value = "/{id}")
-    public OrderDTO findById(@PathVariable Long id) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
+    public OrderDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         return ResponseAssembler.assembleOrder(orderService.findById(id));
     }
 
