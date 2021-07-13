@@ -29,6 +29,6 @@ public class Tag {
     @Column(length = 150, nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     List<Certificate> certificates;
 }

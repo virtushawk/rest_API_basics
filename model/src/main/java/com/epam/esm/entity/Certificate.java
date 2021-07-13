@@ -51,14 +51,14 @@ public class Certificate {
     @Column(name = "last_update_date")
     private ZonedDateTime lastUpdateDate;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "tag_has_gift_certificate",
             joinColumns = @JoinColumn(name = "gift_certificate_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
 
-    @ManyToMany(mappedBy = "certificates", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @ManyToMany(mappedBy = "certificates", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     private Set<Order> orders;
 
     @Column(name = "is_active", nullable = false)
