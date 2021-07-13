@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+    id "org.springframework.boot" version "2.5.1"
+}
+
+dependencies {
+    implementation project(':model')
+    implementation project(':service')
+}
+
+bootRun {
+    main = 'com.epam.esm.ApplicationConfiguration'
+    systemProperty "spring.profiles.active", 'prod'
+}

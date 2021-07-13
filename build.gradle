@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+allprojects {
+    plugins.withType(JavaPlugin) {
+        dependencies {
+            compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+            annotationProcessor 'org.projectlombok:lombok:1.18.20'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.5.1'
+            testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.1'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.1'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.1'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.5.1'
+
+
+            test {
+                useJUnitPlatform()
+            }
+
+            repositories {
+                mavenCentral()
+            }
+        }
+    }
+}
