@@ -1,7 +1,6 @@
-package com.epam.esm.controller;
+package com.epam.esm.exception;
 
 import com.epam.esm.entity.ErrorResponse;
-import com.epam.esm.exception.CustomServiceException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -16,10 +15,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * The type Exception controller.
@@ -37,8 +35,6 @@ public class CustomExceptionHandler {
     private static final int CONSTRAINT_VIOLATION_ERROR_CODE = 101;
     private static final String INTERNAL_SERVER_CODE = "error.internalServerError";
     private static final String SPACE_DELIMITER = " ";
-    private static final String ERROR_MESSAGE = "errorMessage";
-    private static final String ERROR_CODE = "errorCode";
 
     /**
      * Handle internal server error
@@ -78,19 +74,20 @@ public class CustomExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     public ResponseEntity<Object> handleBindExceptionException(BindException exception, Locale locale) {
-        Map<String, Object> message = new HashMap<>();
-        message.put(ERROR_MESSAGE, exception.getBindingResult().getAllErrors()
-                .stream()
-                .collect(
-                        Collectors.toMap(
-                                error -> ((FieldError) error).getField(),
-                                error -> messageSource.getMessage(error, locale),
-                                (existing, replacement) -> existing
+        CustomErrorResponse customErrorResponse = CustomErrorResponse.builder()
+                .errorMessage(exception.getBindingResult().getAllErrors()
+                        .stream()
+                        .collect(
+                                Collectors.toMap(
+                                        error -> ((FieldError) error).getField(),
+                                        error -> messageSource.getMessage(error, locale),
+                                        (existing, replacement) -> existing
+                                )
                         )
                 )
-        );
-        message.put(ERROR_CODE, BIND_EXCEPTION_ERROR_CODE);
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+                .errorCode(BIND_EXCEPTION_ERROR_CODE)
+                .build();
+        return new ResponseEntity<>(customErrorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -101,18 +98,20 @@ public class CustomExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
-        Map<String, Object> message = new HashMap<>();
-        message.put(ERROR_MESSAGE, exception.getConstraintViolations()
-                .stream()
-                .collect(
-                        Collectors.toMap(
-                                ConstraintViolation::getInvalidValue,
-                                ConstraintViolation::getMessage,
-                                (existing, replacement) -> existing
-                        )
-                ));
-        message.put(ERROR_CODE, CONSTRAINT_VIOLATION_ERROR_CODE);
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        CustomErrorResponse customErrorResponse = CustomErrorResponse.builder()
+                .errorMessage(exception.getConstraintViolations()
+                        .stream()
+                        .collect(
+                                Collectors.toMap(constraintViolation -> StreamSupport
+                                                .stream(constraintViolation.getPropertyPath().spliterator(), false)
+                                                .reduce((x, y) -> y).orElse(null),
+                                        ConstraintViolation::getMessage,
+                                        (existing, replacement) -> existing
+                                )
+                        ))
+                .errorCode(CONSTRAINT_VIOLATION_ERROR_CODE)
+                .build();
+        return new ResponseEntity<>(customErrorResponse, HttpStatus.BAD_REQUEST);
     }
 
     private ErrorResponse createErrorResponse(String errorMessage, int errorCode) {
