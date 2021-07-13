@@ -18,7 +18,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public class DatabaseConfig {
 
-
     @Value("${spring.datasource.username}")
     private String jdbcName;
 
