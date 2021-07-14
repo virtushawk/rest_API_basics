@@ -1,10 +1,13 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.TestConfig;
+import com.epam.esm.creator.EntityCreator;
 import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,30 +27,23 @@ class TagDAOImplTest {
     @Autowired
     private TagDAO tagDAO;
 
+    public static Object[][] tagData() {
+        return new Object[][]{
+                {EntityCreator.tag},
+                {EntityCreator.existingTag}
+        };
+    }
+
     @Test
     void findAllValid() {
-        Page page = new Page();
-        List<Tag> certificates = tagDAO.findAll(page);
+        List<Tag> certificates = tagDAO.findAll(new Page());
         Assertions.assertFalse(certificates.isEmpty());
     }
 
-
-    @Test
+    @ParameterizedTest
+    @MethodSource("tagData")
     @Transactional
-    void createNewValid() {
-        Tag tag = Tag.builder()
-                .name("tag")
-                .build();
-        Tag actual = tagDAO.create(tag);
-        Assertions.assertEquals(tag.getName(), actual.getName());
-    }
-
-    @Test
-    @Transactional
-    void createExistingValid() {
-        Tag tag = Tag.builder()
-                .name("IT")
-                .build();
+    void create(Tag tag) {
         Tag actual = tagDAO.create(tag);
         Assertions.assertEquals(tag.getName(), actual.getName());
     }
@@ -56,7 +52,7 @@ class TagDAOImplTest {
     void findByIdValid() {
         Long id = 1L;
         Optional<Tag> actual = tagDAO.findById(id);
-        Assertions.assertEquals("IT", actual.get().getName());
+        Assertions.assertEquals(id, actual.get().getId());
     }
 
     @Test
@@ -80,17 +76,10 @@ class TagDAOImplTest {
         Assertions.assertTrue(actual.isEmpty());
     }
 
-    @Test
-    void findOrCreateTagExist() {
-        Tag tag = Tag.builder().name("IT").build();
-        Tag actual = tagDAO.findOrCreate(tag);
-        Assertions.assertEquals(tag.getName(), actual.getName());
-    }
-
-    @Test
+    @ParameterizedTest
+    @MethodSource("tagData")
     @Transactional
-    void findOrCreateTagNotExist() {
-        Tag tag = Tag.builder().name("new tag").build();
+    void findOrCreateTagExist(Tag tag) {
         Tag actual = tagDAO.findOrCreate(tag);
         Assertions.assertEquals(tag.getName(), actual.getName());
     }

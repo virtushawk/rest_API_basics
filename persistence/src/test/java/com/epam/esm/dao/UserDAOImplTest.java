@@ -34,8 +34,7 @@ class UserDAOImplTest {
     void findByIdValid() {
         Long id = 1L;
         Optional<User> actual = userDAO.findById(id);
-        String expected = "Roman";
-        Assertions.assertEquals(expected, actual.get().getName());
+        Assertions.assertEquals(id, actual.get().getId());
     }
 
     @Test
