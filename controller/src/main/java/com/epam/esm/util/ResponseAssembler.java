@@ -138,6 +138,10 @@ public class ResponseAssembler {
     }
 
     private static UserDTO mapUser(UserDTO userDTO) {
+        if (!ObjectUtils.isEmpty(userDTO.getOrders())) {
+            userDTO.add(linkTo(methodOn(UserController.class).findUserOrders(userDTO.getId(), new Page())).withRel("orders"));
+        }
+        userDTO.setOrders(null);
         return userDTO.add(linkTo(methodOn(UserController.class).findById(userDTO.getId())).withSelfRel());
     }
 }
