@@ -12,3 +12,4 @@ bootRun {
     main = 'com.epam.esm.ApplicationConfiguration'
     systemProperty "spring.profiles.active", 'prod'
 }
+
