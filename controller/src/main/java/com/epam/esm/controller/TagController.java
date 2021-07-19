@@ -1,15 +1,16 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.exception.IdInvalidException;
-import com.epam.esm.exception.InvalidDataFormException;
+import com.epam.esm.entity.Page;
 import com.epam.esm.service.TagService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
+import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,34 +28,34 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/tags")
 @AllArgsConstructor
+@Validated
 public class TagController {
 
     private final TagService service;
 
+    private static final int MIN_ID_VALUE = 1;
+
     /**
-     * Gets all tags.
+     * Find all.
      *
-     * @return the all tags
+     * @param page the page
+     * @return the list
      */
     @GetMapping
-    public List<TagDTO> findAll() {
-        return service.findAll();
+    public List<TagDTO> findAll(@Valid Page page) {
+        return ResponseAssembler.assembleTags(service.findAll(page));
     }
 
     /**
      * Create tag
      *
-     * @param tagDTO        the tag dto
-     * @param bindingResult the binding result
+     * @param tagDTO the tag dto
      * @return the tag dto
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDTO create(@Valid @RequestBody TagDTO tagDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException(bindingResult);
-        }
-        return service.create(tagDTO);
+    public TagDTO create(@Valid @RequestBody TagDTO tagDTO) {
+        return ResponseAssembler.assembleTag(service.create(tagDTO));
     }
 
     /**
@@ -64,11 +65,8 @@ public class TagController {
      * @return the tag
      */
     @GetMapping(value = "/{id}")
-    public TagDTO findById(@PathVariable Long id) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
-        return service.findById(id);
+    public TagDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
+        return ResponseAssembler.assembleTag(service.findById(id));
     }
 
     /**
@@ -78,10 +76,17 @@ public class TagController {
      */
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
+    public void delete(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         service.delete(id);
+    }
+
+    /**
+     * Find popular tag dto.
+     *
+     * @return the tag dto
+     */
+    @GetMapping(value = "/popular")
+    public TagDTO findPopular() {
+        return ResponseAssembler.assembleTag(service.findPopular());
     }
 }

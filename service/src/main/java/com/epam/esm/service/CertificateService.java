@@ -3,10 +3,9 @@ package com.epam.esm.service;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
-import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Page;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * The interface Certificate service.
@@ -14,12 +13,13 @@ import java.util.Set;
 public interface CertificateService extends BaseService<CertificateDTO, Long> {
 
     /**
-     * Find all list.
+     * Find all.
      *
      * @param querySpecificationDTO the query specification dto
+     * @param page                  the page
      * @return the list
      */
-    List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO);
+    List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO, Page page);
 
     /**
      * Update certificate dto.
@@ -37,12 +37,13 @@ public interface CertificateService extends BaseService<CertificateDTO, Long> {
      */
     CertificateDTO applyPatch(Long id, PatchDTO patchDTO);
 
+
     /**
-     * Attach tags certificate dto.
+     * Find all by order id list.
      *
-     * @param certificateDTO the certificate dto
-     * @param tagDTOSet      the tag dto set
-     * @return the certificate dto
+     * @param id   the id
+     * @param page the page
+     * @return the list
      */
-    CertificateDTO attachTags(CertificateDTO certificateDTO, Set<TagDTO> tagDTOSet);
+    List<CertificateDTO> findAllByOrderId(Long id, Page page);
 }

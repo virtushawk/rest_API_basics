@@ -1,5 +1,7 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.entity.Page;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +17,7 @@ public interface BaseDAO<T, K> {
      *
      * @return the list
      */
-    List<T> findAll();
+    List<T> findAll(Page page);
 
     /**
      * Find object by id
@@ -34,10 +36,9 @@ public interface BaseDAO<T, K> {
     T create(T t);
 
     /**
-     * Delete object By id
+     * Delete.
      *
-     * @param k the key object
-     * @return the boolean
+     * @param t the t
      */
-    boolean delete(K k);
+    void delete(T t);
 }

@@ -2,26 +2,46 @@ package com.epam.esm.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * The type Database config.
  */
 @Configuration
-@PropertySource("classpath:property/dataSource-prod.properties")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DatabaseConfig {
 
-    private final Environment environment;
+    @Value("${spring.datasource.username}")
+    private String jdbcName;
+
+    @Value("${spring.datasource.url}")
+    private String jdbcUrl;
+
+    @Value("${spring.datasource.password}")
+    private String jdbcPassword;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String jdbcDriver;
+
+
+    @Value("${hibernate.dialect}")
+    private String dialect;
+
+    @Value("${hibernate.show_sql}")
+    private String showSql;
+
+    @Value("${hibernate.hbm2ddl.auto}")
+    private String hbm2DdlAuto;
+
+    @Value("${entitymanager.packagesToScan}")
+    private String packagesToScan;
 
     /**
      * Gets data source.
@@ -29,36 +49,30 @@ public class DatabaseConfig {
      * @return the data source
      */
     @Bean
-    @Profile("prod")
     public DataSource getDataSource() {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(environment.getProperty("url"));
-        config.setUsername(environment.getProperty("user"));
-        config.setPassword(environment.getProperty("password"));
-        config.setDriverClassName(environment.getProperty("driverClassName"));
-        config.setMaximumPoolSize(Integer.parseInt(environment.getProperty("maximum-pool-size")));
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(jdbcName);
+        config.setPassword(jdbcPassword);
+        config.setDriverClassName(jdbcDriver);
         return new HikariDataSource(config);
     }
 
     /**
-     * Jdbc template.
+     * local session factory bean.
      *
-     * @param dataSource the data source
-     * @return the jdbc template
+     * @return the local session factory bean
      */
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    /**
-     * Named parameter jdbc template.
-     *
-     * @param dataSource the data source
-     * @return the named parameter jdbc template
-     */
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
-        return new NamedParameterJdbcTemplate(dataSource);
+    public LocalSessionFactoryBean sessionFactory() {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(getDataSource());
+        sessionFactory.setPackagesToScan(packagesToScan);
+        Properties hibernateProperties = new Properties();
+        hibernateProperties.put("hibernate.dialect", dialect);
+        hibernateProperties.put("hibernate.show_sql", showSql);
+        hibernateProperties.put("hibernate.hbm2ddl.auto", hbm2DdlAuto);
+        sessionFactory.setHibernateProperties(hibernateProperties);
+        return sessionFactory;
     }
 }

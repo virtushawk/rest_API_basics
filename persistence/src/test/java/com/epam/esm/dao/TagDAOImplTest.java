@@ -1,23 +1,24 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.TestConfig;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("dev")
+@Sql(scripts = "classpath:/insert_data_certificate.sql")
 class TagDAOImplTest {
 
     @Autowired
@@ -25,11 +26,14 @@ class TagDAOImplTest {
 
     @Test
     void findAllValid() {
-        List<Tag> tags = tagDAO.findAll();
-        Assertions.assertEquals(2, tags.size());
+        Page page = new Page();
+        List<Tag> certificates = tagDAO.findAll(page);
+        Assertions.assertFalse(certificates.isEmpty());
     }
 
+
     @Test
+    @Transactional
     void createNewValid() {
         Tag tag = Tag.builder()
                 .name("tag")
@@ -39,6 +43,7 @@ class TagDAOImplTest {
     }
 
     @Test
+    @Transactional
     void createExistingValid() {
         Tag tag = Tag.builder()
                 .name("IT")
@@ -62,34 +67,6 @@ class TagDAOImplTest {
     }
 
     @Test
-    void deleteTrue() {
-        Long id = 1L;
-        boolean flag = tagDAO.delete(id);
-        Assertions.assertTrue(flag);
-    }
-
-    @Test
-    void deleteFalse() {
-        Long id = 112L;
-        boolean flag = tagDAO.delete(id);
-        Assertions.assertFalse(flag);
-    }
-
-    @Test
-    void findAllByCertificateIdValid() {
-        Long id = 1L;
-        List<Tag> tags = tagDAO.findAllByCertificateId(id);
-        Assertions.assertFalse(tags.isEmpty());
-    }
-
-    @Test
-    void findAllByCertificateIdEmpty() {
-        Long id = 5L;
-        List<Tag> tags = tagDAO.findAllByCertificateId(id);
-        Assertions.assertTrue(tags.isEmpty());
-    }
-
-    @Test
     void findByNameValid() {
         String name = "IT";
         Optional<Tag> actual = tagDAO.findByName(name);
@@ -101,6 +78,28 @@ class TagDAOImplTest {
         String name = "test case";
         Optional<Tag> actual = tagDAO.findByName(name);
         Assertions.assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    void findOrCreateTagExist() {
+        Tag tag = Tag.builder().name("IT").build();
+        Tag actual = tagDAO.findOrCreate(tag);
+        Assertions.assertEquals(tag.getName(), actual.getName());
+    }
+
+    @Test
+    @Transactional
+    void findOrCreateTagNotExist() {
+        Tag tag = Tag.builder().name("new tag").build();
+        Tag actual = tagDAO.findOrCreate(tag);
+        Assertions.assertEquals(tag.getName(), actual.getName());
+    }
+
+    @Test
+    void findPopularValid() {
+        String expected = "IT";
+        String actual = tagDAO.findPopular().getName();
+        Assertions.assertEquals(expected, actual);
     }
 
 }

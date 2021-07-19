@@ -2,26 +2,26 @@ package com.epam.esm.dao;
 
 import com.epam.esm.config.TestConfig;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TestConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("dev")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = "classpath:/insert_data_certificate.sql")
 class CertificateDAOImplTest {
 
     @Autowired
@@ -29,21 +29,46 @@ class CertificateDAOImplTest {
 
     @Test
     void findAllQuerySpecification() {
-        QuerySpecification querySpecification = QuerySpecification.builder()
-                .tag("IT")
-                .build();
-        List<Certificate> certificates = certificateDAO.findAll(querySpecification);
+        QuerySpecification querySpecification = QuerySpecification.builder().build();
+        querySpecification.setTags(new ArrayList<>());
+        querySpecification.getTags().add("IT");
+        Page page = new Page();
+        List<Certificate> certificates = certificateDAO.findAll(querySpecification, page);
         Assertions.assertFalse(certificates.isEmpty());
     }
 
     @Test
     void findAllQuerySpecificationEmptySpecification() {
         QuerySpecification querySpecification = new QuerySpecification();
-        List<Certificate> certificates = certificateDAO.findAll(querySpecification);
+        Page page = new Page();
+        List<Certificate> certificates = certificateDAO.findAll(querySpecification, page);
         Assertions.assertFalse(certificates.isEmpty());
     }
 
     @Test
+    void findAllQuerySpecificationEmpty() {
+        QuerySpecification querySpecification = QuerySpecification.builder()
+                .tags(new ArrayList<>())
+                .build();
+        querySpecification.getTags().add("new tag");
+        Page page = new Page();
+        List<Certificate> certificates = certificateDAO.findAll(querySpecification, page);
+        Assertions.assertTrue(certificates.isEmpty());
+    }
+
+    @Test
+    void findAllQuerySpecificationNotActive() {
+        QuerySpecification querySpecification = QuerySpecification.builder()
+                .tags(new ArrayList<>())
+                .build();
+        querySpecification.getTags().add("Hello");
+        Page page = new Page();
+        List<Certificate> certificates = certificateDAO.findAll(querySpecification, page);
+        Assertions.assertTrue(certificates.isEmpty());
+    }
+
+    @Test
+    @Transactional
     void createValid() {
         Certificate certificate = Certificate.builder()
                 .name("test name")
@@ -56,17 +81,9 @@ class CertificateDAOImplTest {
     }
 
     @Test
-    void findAllQuerySpecificationEmpty() {
-        QuerySpecification querySpecification = QuerySpecification.builder()
-                .tag("test case")
-                .build();
-        List<Certificate> certificates = certificateDAO.findAll(querySpecification);
-        Assertions.assertTrue(certificates.isEmpty());
-    }
-
-    @Test
     void findAllValid() {
-        List<Certificate> certificates = certificateDAO.findAll();
+        Page page = new Page();
+        List<Certificate> certificates = certificateDAO.findAll(page);
         Assertions.assertFalse(certificates.isEmpty());
     }
 
@@ -91,30 +108,42 @@ class CertificateDAOImplTest {
                 .description("Test description")
                 .price(new BigDecimal("11"))
                 .duration(4)
+                .isActive(true)
                 .build();
-        Certificate actual = certificateDAO.update(certificate);
-        Assertions.assertEquals(certificate.getName(), actual.getName());
+        Certificate update = Certificate.builder()
+                .name("new name")
+                .description("Test description")
+                .price(new BigDecimal("11"))
+                .duration(4)
+                .build();
+        Certificate actual = certificateDAO.update(certificate, update);
+        Assertions.assertEquals(update.getName(), actual.getName());
     }
 
     @Test
-    void applyPatchTrue() {
+    void applyPatchValid() {
+        Certificate certificate = Certificate.builder()
+                .name("test name")
+                .description("Test description")
+                .price(new BigDecimal("11"))
+                .duration(4)
+                .isActive(true)
+                .build();
+        Certificate update = Certificate.builder()
+                .name("new name")
+                .description("Test description")
+                .price(new BigDecimal("11"))
+                .duration(4)
+                .build();
+        Certificate actual = certificateDAO.applyPatch(certificate, update);
+        Assertions.assertEquals(update.getName(), actual.getName());
+    }
+
+    @Test
+    void deleteValid() {
         Long id = 1L;
-        Map<String, Object> patchValues = new HashMap<>();
-        boolean actual = certificateDAO.applyPatch(patchValues, id);
-        Assertions.assertTrue(actual);
-    }
-
-    @Test
-    void deleteTrue() {
-        Long id = 1L;
-        boolean flag = certificateDAO.delete(id);
-        Assertions.assertTrue(flag);
-    }
-
-    @Test
-    void deleteFalse() {
-        Long id = 1231L;
-        boolean flag = certificateDAO.delete(id);
-        Assertions.assertFalse(flag);
+        Optional<Certificate> certificate = certificateDAO.findById(id);
+        certificateDAO.delete(certificate.get());
+        Assertions.assertFalse(certificate.get().isActive());
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuerySpecificationDTO {
-    private String tag;
+    private List<String> tags;
 
     private String text;
 

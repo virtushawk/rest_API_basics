@@ -14,18 +14,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class CertificateDTO {
+public class CertificateDTO extends RepresentationModel<CertificateDTO> {
 
     private Long id;
 
@@ -34,7 +37,7 @@ public class CertificateDTO {
     private String name;
 
     @NotBlank
-    @Size(min = 1,max = 300)
+    @Size(min = 1, max = 300)
     private String description;
 
     @DecimalMin("0.1")

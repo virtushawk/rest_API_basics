@@ -21,8 +21,8 @@ public abstract class CustomServiceException extends RuntimeException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    protected abstract int getErrorCode();
+    public abstract int getErrorCode();
 
-    protected abstract String getErrorMessage();
+    public abstract String getErrorMessage();
 
 }

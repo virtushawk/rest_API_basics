@@ -3,12 +3,14 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.QuerySpecificationDTO;
-import com.epam.esm.exception.IdInvalidException;
-import com.epam.esm.exception.InvalidDataFormException;
+import com.epam.esm.dto.TagDTO;
+import com.epam.esm.entity.Page;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.service.TagService;
+import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -29,49 +32,47 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/certificates")
 @AllArgsConstructor
+@Validated
 public class CertificateController {
 
-    private final CertificateService service;
+    private final CertificateService certificateService;
+    private final TagService tagService;
+
+    private static final int MIN_ID_VALUE = 1;
 
     /**
-     * finds all certificates by criteria
+     * Find all by criteria list.
      *
      * @param querySpecificationDTO the query specification dto
-     * @return List of all certificates
+     * @param page                  the page
+     * @return the list
      */
     @GetMapping
-    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO) {
-        return service.findAll(querySpecificationDTO);
+    public List<CertificateDTO> findAllByCriteria(QuerySpecificationDTO querySpecificationDTO, @Valid Page page) {
+        return ResponseAssembler.assembleCertificates(certificateService.findAll(querySpecificationDTO, page));
     }
 
     /**
-     * finds certificate by certificate id
+     * finds certificate by id.
      *
      * @param id the id of certificate
      * @return the certificate
      */
     @GetMapping(value = "/{id}")
-    public CertificateDTO findById(@PathVariable Long id) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
-        return service.findById(id);
+    public CertificateDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
+        return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
     /**
-     * Create certificate
+     * Create certificate dto.
      *
      * @param certificateDTO the certificate dto
-     * @param bindingResult  the binding result
      * @return the certificate dto
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDTO create(@Valid @RequestBody CertificateDTO certificateDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException(bindingResult);
-        }
-        return service.create(certificateDTO);
+    public CertificateDTO create(@Valid @RequestBody CertificateDTO certificateDTO) {
+        return ResponseAssembler.assembleCertificate(certificateService.create(certificateDTO));
     }
 
     /**
@@ -81,30 +82,21 @@ public class CertificateController {
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
-        service.delete(id);
+    public void delete(@PathVariable @Min(MIN_ID_VALUE) Long id) {
+        certificateService.delete(id);
     }
 
     /**
      * Patch certificate
      *
-     * @param id            the id
-     * @param patchDTO      the patch dto
-     * @param bindingResult the binding result
+     * @param id       the id
+     * @param patchDTO the patch dto
      * @return the certificate dto
      */
     @PatchMapping(value = "/{id}")
-    public CertificateDTO patch(@PathVariable Long id, @Valid @RequestBody PatchDTO patchDTO, BindingResult bindingResult) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
-        if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException(bindingResult);
-        }
-        return service.applyPatch(id,patchDTO);
+    public CertificateDTO patch(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid @RequestBody PatchDTO patchDTO) {
+        certificateService.applyPatch(id, patchDTO);
+        return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
     /**
@@ -112,19 +104,23 @@ public class CertificateController {
      *
      * @param id             the id
      * @param certificateDTO the certificate dto
-     * @param bindingResult  the binding result
      * @return the certificate dto
      */
     @PutMapping(value = "/{id}")
-    public CertificateDTO update(@PathVariable Long id, @Valid @RequestBody CertificateDTO certificateDTO,
-                                            BindingResult bindingResult) {
-        if (id < 0) {
-            throw new IdInvalidException(id);
-        }
-        if (bindingResult.hasErrors()) {
-            throw new InvalidDataFormException(bindingResult);
-        }
+    public CertificateDTO update(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid @RequestBody CertificateDTO certificateDTO) {
         certificateDTO.setId(id);
-        return service.update(certificateDTO);
+        certificateService.update(certificateDTO);
+        return ResponseAssembler.assembleCertificate(certificateService.findById(id));
+    }
+
+    /**
+     * Find tags by certificate id.
+     *
+     * @param id the id
+     * @return the list
+     */
+    @GetMapping(value = "/{id}/tags")
+    public List<TagDTO> findTagsByCertificateId(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid Page page) {
+        return ResponseAssembler.assembleTags(tagService.findAllByCertificateId(id, page));
     }
 }
