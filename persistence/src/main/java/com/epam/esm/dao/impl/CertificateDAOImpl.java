@@ -6,6 +6,7 @@ import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.entity.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 

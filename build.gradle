@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "org.flywaydb.flyway" version "7.11.3"
 }
 
 allprojects {
@@ -12,7 +13,8 @@ allprojects {
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.1'
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.1'
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.5.1'
-
+            implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-server', version: '2.4.3'
+            implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '2.4.3'
 
             test {
                 useJUnitPlatform()
@@ -23,4 +25,11 @@ allprojects {
             }
         }
     }
+}
+
+flyway {
+    flyway.user = 'root'
+    flyway.password = '2745839'
+    flyway.url = 'jdbc:mysql://localhost:3306/certificate'
+    flyway.locations = 'database/migration'
 }
