@@ -1,1 +1,0 @@
-UPDATE gift_certificate SET duration = duration + 1;
