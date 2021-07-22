@@ -1,9 +1,10 @@
-package com.epam.esm.dao.impl;
+package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.UserDAO;
-import com.epam.esm.entity.Page;
 import com.epam.esm.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
+@Profile("jpa")
 public class UserDAOImpl implements UserDAO {
 
     private final EntityManager entityManager;
@@ -19,10 +21,10 @@ public class UserDAOImpl implements UserDAO {
     private static final String JPA_SELECT_ALL = "SELECT a FROM user a";
 
     @Override
-    public List<User> findAll(Page page) {
+    public List<User> findAll(Pageable page) {
         return entityManager.createQuery(JPA_SELECT_ALL, User.class)
-                .setFirstResult(page.getPage() * page.getSize())
-                .setMaxResults(page.getSize())
+                .setFirstResult(page.getPageNumber() * page.getPageSize())
+                .setMaxResults(page.getPageSize())
                 .getResultList();
     }
 

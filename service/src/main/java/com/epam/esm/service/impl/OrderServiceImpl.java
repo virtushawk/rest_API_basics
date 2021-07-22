@@ -14,6 +14,8 @@ import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> findAll(Page page) {
-        return orderDAO.findAll(page)
+        Pageable pageRequest = PageRequest.of(page.getPage(), page.getSize());
+        return orderDAO.findAll(pageRequest)
                 .stream()
                 .map(mapperDTO::convertOrderToDTO)
                 .collect(Collectors.toList());

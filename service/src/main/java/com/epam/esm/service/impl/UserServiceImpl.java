@@ -7,6 +7,8 @@ import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +26,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> findAll(Page page) {
-        return userDAO.findAll(page)
+        Pageable pageRequest = PageRequest.of(page.getPage(), page.getSize());
+        return userDAO.findAll(pageRequest)
                 .stream()
                 .map(mapperDTO::convertUserToDTO)
                 .collect(Collectors.toList());

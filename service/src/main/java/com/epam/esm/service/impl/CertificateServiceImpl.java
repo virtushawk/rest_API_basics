@@ -16,6 +16,8 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +52,8 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<CertificateDTO> findAll(Page page) {
-        return certificateDAO.findAll(page)
+        Pageable pageRequest = PageRequest.of(page.getPage(), page.getSize());
+        return certificateDAO.findAll(pageRequest)
                 .stream()
                 .map(mapperDTO::convertCertificateToDTO)
                 .collect(Collectors.toList());
@@ -67,8 +70,9 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<CertificateDTO> findAll(QuerySpecificationDTO querySpecificationDTO, Page page) {
+        Pageable pageRequest = PageRequest.of(page.getPage(), page.getSize());
         QuerySpecification querySpecification = mapperDTO.convertDTOToQuery(querySpecificationDTO);
-        return certificateDAO.findAll(querySpecification, page)
+        return certificateDAO.findAll(querySpecification, pageRequest)
                 .stream()
                 .map(mapperDTO::convertCertificateToDTO)
                 .collect(Collectors.toList());
@@ -77,11 +81,9 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDTO update(CertificateDTO updateDTO) {
-        Optional<Certificate> optional = certificateDAO.findById(updateDTO.getId());
-        if (optional.isEmpty() || !optional.get().isActive()) {
-            throw new CertificateNotFoundException(updateDTO.getId().toString());
-        }
-        Certificate certificate = optional.get();
+        Certificate certificate = certificateDAO.findById(updateDTO.getId())
+                .filter(Certificate::isActive)
+                .orElseThrow(() -> new CertificateNotFoundException(updateDTO.getId().toString()));
         Certificate update = mapperDTO.convertDTOToCertificate(updateDTO);
         certificate = certificateDAO.update(certificate, update);
         attachTags(certificate, updateDTO.getTags());
@@ -91,11 +93,9 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDTO applyPatch(Long id, PatchDTO patchDTO) {
-        Optional<Certificate> optional = certificateDAO.findById(id);
-        if (optional.isEmpty() || !optional.get().isActive()) {
-            throw new CertificateNotFoundException(id.toString());
-        }
-        Certificate certificate = optional.get();
+        Certificate certificate = certificateDAO.findById(id)
+                .filter(Certificate::isActive)
+                .orElseThrow(() -> new CertificateNotFoundException(id.toString()));
         Certificate update = mapperDTO.convertPatchDTOToCertificate(patchDTO);
         certificate = certificateDAO.applyPatch(certificate, update);
         attachTags(certificate, patchDTO.getTags());
@@ -122,6 +122,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificateDAO.delete(certificateDAO.findById(id)
                 .orElseThrow(() -> new CertificateNotFoundException(id.toString())));
     }
+
 
     private void attachTags(Certificate certificate, Set<TagDTO> tags) {
         if (!ObjectUtils.isEmpty(tags)) {

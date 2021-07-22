@@ -10,6 +10,8 @@ import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.MapperDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDTO> findAll(Page page) {
-        return tagDAO.findAll(page)
+        Pageable pageRequest = PageRequest.of(page.getPage(), page.getSize());
+        return tagDAO.findAll(pageRequest)
                 .stream()
                 .map(mapperDTO::convertTagToDTO)
                 .collect(Collectors.toList());
