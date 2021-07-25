@@ -8,4 +8,5 @@
  */
 
 rootProject.name = 'certificate'
-include 'persistence','controller','model','service'
+include 'persistence','controller','model','service','security'
+

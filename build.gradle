@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id "org.flywaydb.flyway" version "7.11.3"
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
 }
 
 allprojects {
@@ -15,7 +16,9 @@ allprojects {
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.5.1'
             implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-server', version: '2.4.3'
             implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '2.4.3'
-
+            implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '14.0.0'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.5.2'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.5.2'
             test {
                 useJUnitPlatform()
             }
@@ -27,9 +30,8 @@ allprojects {
     }
 }
 
-flyway {
-    flyway.user = 'root'
-    flyway.password = '2745839'
-    flyway.url = 'jdbc:mysql://localhost:3306/certificate'
-    flyway.locations = 'database/db.migration'
+dependencyManagement {
+    imports {
+        mavenBom "org.keycloak.bom:keycloak-adapter-bom:14.0.0"
+    }
 }

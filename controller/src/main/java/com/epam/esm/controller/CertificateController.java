@@ -9,7 +9,11 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -33,6 +38,7 @@ import java.util.List;
 @RequestMapping(value = "/certificates")
 @AllArgsConstructor
 @Validated
+@Slf4j
 public class CertificateController {
 
     private final CertificateService certificateService;
@@ -58,8 +64,12 @@ public class CertificateController {
      * @param id the id of certificate
      * @return the certificate
      */
+    @PreAuthorize("hasAuthority('user')")
     @GetMapping(value = "/{id}")
-    public CertificateDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
+    public CertificateDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id, Principal principal) {
+        log.info(principal.getName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        /*log.info(authentication);*/
         return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
