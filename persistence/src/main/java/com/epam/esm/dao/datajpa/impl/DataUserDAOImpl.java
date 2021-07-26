@@ -30,11 +30,16 @@ public class DataUserDAOImpl implements UserDAO {
 
     @Override
     public User create(User user) {
-        throw new UnsupportedOperationException("method not allowed");
+        return jpaUserDAO.save(user);
     }
 
     @Override
     public void delete(User user) {
         throw new UnsupportedOperationException("method not allowed");
+    }
+
+    @Override
+    public Optional<User> findByName(String name) {
+        return jpaUserDAO.findByName(name);
     }
 }

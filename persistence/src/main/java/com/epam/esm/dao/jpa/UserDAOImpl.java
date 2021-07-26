@@ -42,4 +42,9 @@ public class UserDAOImpl implements UserDAO {
     public void delete(User user) {
         throw new UnsupportedOperationException("method not allowed");
     }
+
+    @Override
+    public Optional<User> findByName(String name) {
+        return null;
+    }
 }

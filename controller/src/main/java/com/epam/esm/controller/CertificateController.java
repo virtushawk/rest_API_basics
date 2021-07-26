@@ -12,8 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.security.Principal;
 import java.util.List;
 
 /**
@@ -64,12 +61,8 @@ public class CertificateController {
      * @param id the id of certificate
      * @return the certificate
      */
-    @PreAuthorize("hasAuthority('user')")
     @GetMapping(value = "/{id}")
-    public CertificateDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id, Principal principal) {
-        log.info(principal.getName());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        /*log.info(authentication);*/
+    public CertificateDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         return ResponseAssembler.assembleCertificate(certificateService.findById(id));
     }
 
@@ -81,6 +74,7 @@ public class CertificateController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('admin')")
     public CertificateDTO create(@Valid @RequestBody CertificateDTO certificateDTO) {
         return ResponseAssembler.assembleCertificate(certificateService.create(certificateDTO));
     }
@@ -92,6 +86,7 @@ public class CertificateController {
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('admin')")
     public void delete(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         certificateService.delete(id);
     }
@@ -104,6 +99,7 @@ public class CertificateController {
      * @return the certificate dto
      */
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public CertificateDTO patch(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid @RequestBody PatchDTO patchDTO) {
         certificateService.applyPatch(id, patchDTO);
         return ResponseAssembler.assembleCertificate(certificateService.findById(id));
@@ -117,6 +113,7 @@ public class CertificateController {
      * @return the certificate dto
      */
     @PutMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public CertificateDTO update(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid @RequestBody CertificateDTO certificateDTO) {
         certificateDTO.setId(id);
         certificateService.update(certificateDTO);

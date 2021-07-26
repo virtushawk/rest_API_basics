@@ -3,15 +3,20 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.UserDTO;
 import com.epam.esm.entity.Page;
+import com.epam.esm.entity.User;
 import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.MapperDTO;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     public final UserDAO userDAO;
@@ -40,8 +46,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO create(UserDTO userDTO) {
-        throw new UnsupportedOperationException("method not allowed");
+        Optional<User> optional = userDAO.findByName(userDTO.getName());
+        if (optional.isEmpty()) {
+            return mapperDTO.convertUserToDTO(userDAO.create(mapperDTO.convertDTOToUser(userDTO)));
+        }
+        return mapperDTO.convertUserToDTO(optional.get());
     }
 
     @Override
