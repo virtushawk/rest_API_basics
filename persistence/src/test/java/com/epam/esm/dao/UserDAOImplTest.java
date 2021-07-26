@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.TestConfig;
+import com.epam.esm.creator.EntityCreator;
 import com.epam.esm.entity.Page;
 import com.epam.esm.entity.User;
 import org.junit.jupiter.api.Assertions;
@@ -10,12 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest(classes = {TestConfig.class})
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "jpaData"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = "classpath:/insert_data_certificate.sql")
 class UserDAOImplTest {
@@ -25,8 +27,7 @@ class UserDAOImplTest {
 
     @Test
     void findAllValid() {
-        Page page = new Page();
-        List<User> users = userDAO.findAll(page);
+        List<User> users = userDAO.findAll(EntityCreator.page);
         Assertions.assertFalse(users.isEmpty());
     }
 

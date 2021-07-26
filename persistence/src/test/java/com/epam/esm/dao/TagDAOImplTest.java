@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = {TestConfig.class})
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "jpaData"})
 @Sql(scripts = "classpath:/insert_data_certificate.sql")
 class TagDAOImplTest {
 
@@ -36,7 +36,7 @@ class TagDAOImplTest {
 
     @Test
     void findAllValid() {
-        List<Tag> certificates = tagDAO.findAll(new Page());
+        List<Tag> certificates = tagDAO.findAll(EntityCreator.page);
         Assertions.assertFalse(certificates.isEmpty());
     }
 

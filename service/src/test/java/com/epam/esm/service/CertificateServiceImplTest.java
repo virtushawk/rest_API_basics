@@ -22,6 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ class CertificateServiceImplTest {
 
     private static Certificate certificate;
     private static CertificateDTO certificateDTO;
+    private static Pageable pageable;
 
     @BeforeEach
     public void initEach() {
@@ -68,6 +71,7 @@ class CertificateServiceImplTest {
                 .duration(5)
                 .tags(new HashSet<>())
                 .build();
+        pageable = PageRequest.of(0, 10);
     }
 
     @Test
@@ -85,20 +89,18 @@ class CertificateServiceImplTest {
         List<CertificateDTO> expected = new ArrayList<>();
         certificates.add(certificate);
         expected.add(certificateDTO);
-        Page page = new Page();
         Mockito.when(mapperDTO.convertCertificateToDTO(certificate)).thenReturn(certificateDTO);
-        Mockito.when(certificateDAO.findAll(page)).thenReturn(certificates);
-        List<CertificateDTO> actual = certificateService.findAll(page);
+        Mockito.when(certificateDAO.findAll(pageable)).thenReturn(certificates);
+        List<CertificateDTO> actual = certificateService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void findAllEmpty() {
-        Page page = new Page();
         List<Certificate> certificates = new ArrayList<>();
         List<CertificateDTO> expected = new ArrayList<>();
-        Mockito.when(certificateDAO.findAll(page)).thenReturn(certificates);
-        List<CertificateDTO> actual = certificateService.findAll(page);
+        Mockito.when(certificateDAO.findAll(pageable)).thenReturn(certificates);
+        List<CertificateDTO> actual = certificateService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -116,9 +118,7 @@ class CertificateServiceImplTest {
     void findByIdException() {
         Long id = 1L;
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
-            certificateService.findById(id);
-        });
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> certificateService.findById(id));
     }
 
     @Test
@@ -127,10 +127,9 @@ class CertificateServiceImplTest {
         QuerySpecification querySpecification = QuerySpecification.builder().build();
         Mockito.when(mapperDTO.convertDTOToQuery(querySpecificationDTO)).thenReturn(querySpecification);
         List<Certificate> certificates = new ArrayList<>();
-        Page page = new Page();
-        Mockito.when(certificateDAO.findAll(querySpecification, page)).thenReturn(certificates);
+        Mockito.when(certificateDAO.findAll(querySpecification, pageable)).thenReturn(certificates);
         List<CertificateDTO> expected = new ArrayList<>();
-        List<CertificateDTO> actual = certificateService.findAll(querySpecificationDTO, page);
+        List<CertificateDTO> actual = certificateService.findAll(querySpecificationDTO, new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -175,9 +174,7 @@ class CertificateServiceImplTest {
         certificateDTO.setId(id);
         certificate.setId(id);
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
-            certificateService.applyPatch(id, patchDTO);
-        });
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> certificateService.applyPatch(id, patchDTO));
     }
 
     @Test
@@ -200,8 +197,6 @@ class CertificateServiceImplTest {
     void deleteException() {
         Long id = 1L;
         Mockito.when(certificateDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CertificateNotFoundException.class, () -> {
-            certificateService.delete(id);
-        });
+        Assertions.assertThrows(CertificateNotFoundException.class, () -> certificateService.delete(id));
     }
 }

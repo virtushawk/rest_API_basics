@@ -5,19 +5,22 @@ import com.epam.esm.entity.Order;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class EntityCreator {
     public static Certificate certificate;
-    public static Certificate update;
-    public static QuerySpecification validQuerySpecification;
-    public static QuerySpecification emptyQuerySpecification;
-    public static QuerySpecification invalidQuerySpecification;
-    public static Order order;
-    public static Tag tag;
-    public static Tag existingTag;
+    public static final Certificate update;
+    public static final QuerySpecification validQuerySpecification;
+    public static final QuerySpecification emptyQuerySpecification;
+    public static final QuerySpecification invalidQuerySpecification;
+    public static final Order order;
+    public static final Tag tag;
+    public static final Tag existingTag;
+    public static Pageable page;
 
     static {
         validQuerySpecification = QuerySpecification.builder().build();
@@ -52,5 +55,6 @@ public class EntityCreator {
         existingTag = Tag.builder()
                 .name("IT")
                 .build();
+        page = PageRequest.of(0, 10);
     }
 }

@@ -7,7 +7,6 @@ import com.epam.esm.entity.User;
 import com.epam.esm.exception.UserNotFoundException;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.MapperDTO;
-import com.fasterxml.jackson.annotation.OptBoolean;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

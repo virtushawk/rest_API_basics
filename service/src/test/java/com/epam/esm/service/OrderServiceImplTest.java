@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ class OrderServiceImplTest {
 
     private static Order order;
     private static OrderDTO orderDTO;
+    private static Pageable pageable;
 
     @BeforeEach
     public void initEach() {
@@ -57,6 +60,7 @@ class OrderServiceImplTest {
                 .certificateId(new ArrayList<>())
                 .cost(new BigDecimal("11"))
                 .build();
+        pageable = PageRequest.of(0, 10);
     }
 
     @Test
@@ -65,20 +69,18 @@ class OrderServiceImplTest {
         List<OrderDTO> expected = new ArrayList<>();
         orders.add(order);
         expected.add(orderDTO);
-        Page page = new Page();
         Mockito.when(mapperDTO.convertOrderToDTO(order)).thenReturn(orderDTO);
-        Mockito.when(orderDAO.findAll(page)).thenReturn(orders);
-        List<OrderDTO> actual = orderService.findAll(page);
+        Mockito.when(orderDAO.findAll(pageable)).thenReturn(orders);
+        List<OrderDTO> actual = orderService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void findAllEmpty() {
-        Page page = new Page();
         List<Order> orders = new ArrayList<>();
         List<OrderDTO> expected = new ArrayList<>();
-        Mockito.when(orderDAO.findAll(page)).thenReturn(orders);
-        List<OrderDTO> actual = orderService.findAll(page);
+        Mockito.when(orderDAO.findAll(pageable)).thenReturn(orders);
+        List<OrderDTO> actual = orderService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -96,9 +98,7 @@ class OrderServiceImplTest {
     void findByIdException() {
         Long id = 1L;
         Mockito.when(orderDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(OrderNotFoundException.class, () -> {
-            orderService.findById(id);
-        });
+        Assertions.assertThrows(OrderNotFoundException.class, () -> orderService.findById(id));
     }
 
     @Test
@@ -125,8 +125,6 @@ class OrderServiceImplTest {
         Long id = 1L;
         Page page = new Page();
         Mockito.when(userDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(UserNotFoundException.class, () -> {
-            orderService.findAllByUserId(id, page);
-        });
+        Assertions.assertThrows(UserNotFoundException.class, () -> orderService.findAllByUserId(id, page));
     }
 }

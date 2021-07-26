@@ -24,6 +24,7 @@ public class UserFilter extends GenericFilterBean {
 
     private final UserService userService;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

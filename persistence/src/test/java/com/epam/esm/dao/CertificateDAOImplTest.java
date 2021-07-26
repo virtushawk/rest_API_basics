@@ -3,7 +3,6 @@ package com.epam.esm.dao;
 import com.epam.esm.config.TestConfig;
 import com.epam.esm.creator.EntityCreator;
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest(classes = {TestConfig.class})
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "jpaData"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = "classpath:/insert_data_certificate.sql")
 class CertificateDAOImplTest {
@@ -45,7 +44,7 @@ class CertificateDAOImplTest {
     @ParameterizedTest
     @MethodSource("querySpecificationData")
     void findAllQuerySpecification(QuerySpecification querySpecification, boolean expected) {
-        List<Certificate> certificates = certificateDAO.findAll(querySpecification, new Page());
+        List<Certificate> certificates = certificateDAO.findAll(querySpecification, EntityCreator.page);
         Assertions.assertEquals(expected, certificates.isEmpty());
     }
 
@@ -59,7 +58,7 @@ class CertificateDAOImplTest {
 
     @Test
     void findAllValid() {
-        List<Certificate> certificates = certificateDAO.findAll(new Page());
+        List<Certificate> certificates = certificateDAO.findAll(EntityCreator.page);
         Assertions.assertFalse(certificates.isEmpty());
     }
 
