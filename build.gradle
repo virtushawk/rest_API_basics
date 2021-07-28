@@ -3,35 +3,32 @@ plugins {
     id "org.flywaydb.flyway" version "7.11.3"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
 }
-
 allprojects {
     plugins.withType(JavaPlugin) {
         dependencies {
             compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
             annotationProcessor 'org.projectlombok:lombok:1.18.20'
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.5.1'
-            testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.5.1'
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.1'
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.5.1'
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.5.1'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.4.6'
+            testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.4.6'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.4.6'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.4.6'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.4.6'
             implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-server', version: '2.4.3'
             implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '2.4.3'
-            implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '14.0.0'
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.5.2'
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '2.5.2'
+            implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '13.0.1'
+            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.4.6'
+
             test {
                 useJUnitPlatform()
             }
-
             repositories {
                 mavenCentral()
             }
         }
     }
 }
-
 dependencyManagement {
     imports {
-        mavenBom "org.keycloak.bom:keycloak-adapter-bom:14.0.0"
+        mavenBom "org.keycloak.bom:keycloak-adapter-bom:13.0.1"
     }
 }

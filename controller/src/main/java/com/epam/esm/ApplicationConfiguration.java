@@ -1,6 +1,7 @@
 package com.epam.esm;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
@@ -9,6 +10,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 
 @SpringBootApplication
 @EnableAdminServer
+@Slf4j
 public class ApplicationConfiguration {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationConfiguration.class, args);
@@ -22,4 +24,5 @@ public class ApplicationConfiguration {
         source.setDefaultEncoding("UTF-8");
         return source;
     }
+
 }

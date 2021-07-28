@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -42,7 +43,9 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         super.configure(httpSecurity);
-        httpSecurity.csrf().disable().authorizeRequests().anyRequest().permitAll()
-                .and().addFilterAfter(new UserFilter(userService), BasicAuthenticationFilter.class);
+        httpSecurity
+                .csrf().disable().authorizeRequests().anyRequest().permitAll()
+                .and()
+                .addFilterAfter(new UserFilter(userService), BasicAuthenticationFilter.class);
     }
 }
