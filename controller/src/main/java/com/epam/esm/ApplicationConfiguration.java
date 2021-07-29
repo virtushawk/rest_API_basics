@@ -1,6 +1,5 @@
 package com.epam.esm;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 @SpringBootApplication
-@EnableAdminServer
 @Slf4j
 public class ApplicationConfiguration {
     public static void main(String[] args) {
