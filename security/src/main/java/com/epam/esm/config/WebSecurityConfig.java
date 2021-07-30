@@ -46,6 +46,7 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         httpSecurity
                 .csrf().disable().authorizeRequests().anyRequest().permitAll()
                 .and()
-                .addFilterAfter(new UserFilter(userService), BasicAuthenticationFilter.class);
+                .addFilterAfter(new UserFilter(userService), BasicAuthenticationFilter.class)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }

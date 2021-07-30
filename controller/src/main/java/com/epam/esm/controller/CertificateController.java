@@ -9,7 +9,6 @@ import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +34,6 @@ import java.util.List;
 @RequestMapping(value = "/certificates")
 @AllArgsConstructor
 @Validated
-@Slf4j
 public class CertificateController {
 
     private final CertificateService certificateService;
@@ -68,7 +66,6 @@ public class CertificateController {
 
     /**
      * Create certificate dto.
-     *
      * @param certificateDTO the certificate dto
      * @return the certificate dto
      */
