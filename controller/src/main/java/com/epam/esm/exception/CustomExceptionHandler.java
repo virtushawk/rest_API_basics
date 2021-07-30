@@ -1,7 +1,6 @@
 package com.epam.esm.exception;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -26,7 +25,6 @@ import java.util.stream.StreamSupport;
 @RestControllerAdvice
 @AllArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@Slf4j
 public class CustomExceptionHandler {
 
     private final MessageSource messageSource;

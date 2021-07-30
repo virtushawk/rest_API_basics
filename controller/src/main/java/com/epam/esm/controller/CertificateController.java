@@ -66,6 +66,7 @@ public class CertificateController {
 
     /**
      * Create certificate dto.
+     *
      * @param certificateDTO the certificate dto
      * @return the certificate dto
      */

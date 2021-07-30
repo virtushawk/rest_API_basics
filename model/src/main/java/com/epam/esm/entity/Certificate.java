@@ -64,12 +64,18 @@ public class Certificate {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
+    /**
+     * Sets create_date and last_update_date fields on persist in ISO-8601 format.
+     */
     @PrePersist
     public void onPersist() {
         setCreateDate(ZonedDateTime.now(ZoneId.systemDefault()));
         setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
     }
 
+    /**
+     * Updates last_update_date field on update in ISO-8601 format.
+     */
     @PreUpdate
     public void onUpdate() {
         setLastUpdateDate(ZonedDateTime.now(ZoneId.systemDefault()));
