@@ -9,7 +9,11 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.naming.*;
+import javax.naming.CompositeName;
+import javax.naming.InitialContext;
+import javax.naming.Name;
+import javax.naming.NameParser;
+import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 
@@ -17,7 +21,8 @@ import javax.sql.DataSource;
 public class EmbeddedKeycloakConfig {
 
     @Bean
-    ServletRegistrationBean<HttpServlet30Dispatcher> keycloakJaxRsApplication(KeycloakServerProperties keycloakServerProperties, DataSource dataSource) throws Exception {
+    ServletRegistrationBean<HttpServlet30Dispatcher> keycloakJaxRsApplication
+            (KeycloakServerProperties keycloakServerProperties, DataSource dataSource) throws Exception {
         mockJndiEnvironment(dataSource);
         EmbeddedKeycloakApplication.keycloakServerProperties = keycloakServerProperties;
         ServletRegistrationBean<HttpServlet30Dispatcher> servlet = new ServletRegistrationBean<>(new HttpServlet30Dispatcher());
@@ -45,7 +50,7 @@ public class EmbeddedKeycloakConfig {
     }
 
     private void mockJndiEnvironment(DataSource dataSource) throws NamingException {
-        NamingManager.setInitialContextFactoryBuilder((env) -> (environment) -> new InitialContext() {
+        NamingManager.setInitialContextFactoryBuilder(env -> environment -> new InitialContext() {
 
             @Override
             public Object lookup(Name name) {
@@ -54,11 +59,9 @@ public class EmbeddedKeycloakConfig {
 
             @Override
             public Object lookup(String name) {
-
                 if ("spring/datasource".equals(name)) {
                     return dataSource;
                 }
-
                 return null;
             }
 
@@ -69,7 +72,6 @@ public class EmbeddedKeycloakConfig {
 
             @Override
             public void close() {
-                // NOOP
             }
         });
     }

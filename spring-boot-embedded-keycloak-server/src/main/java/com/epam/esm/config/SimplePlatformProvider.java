@@ -3,10 +3,6 @@ package com.epam.esm.config;
 import org.keycloak.platform.PlatformProvider;
 import org.keycloak.services.ServicesLogger;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public class SimplePlatformProvider implements PlatformProvider {
 
     Runnable shutdownHook;

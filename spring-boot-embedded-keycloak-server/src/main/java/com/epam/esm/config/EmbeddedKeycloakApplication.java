@@ -22,6 +22,7 @@ public class EmbeddedKeycloakApplication extends KeycloakApplication {
     private static final Logger LOG = LoggerFactory.getLogger(EmbeddedKeycloakApplication.class);
     static KeycloakServerProperties keycloakServerProperties;
 
+    @Override
     protected void loadConfig() {
         JsonConfigProviderFactory factory = new RegularJsonConfigProviderFactory();
         Config.init(factory.create()
@@ -29,22 +30,15 @@ public class EmbeddedKeycloakApplication extends KeycloakApplication {
     }
 
     public EmbeddedKeycloakApplication() {
-
         super();
-
         createMasterRealmAdminUser();
-
         createSpringRealm();
     }
 
     private void createMasterRealmAdminUser() {
-
         KeycloakSession session = getSessionFactory().create();
-
         ApplianceBootstrap applianceBootstrap = new ApplianceBootstrap(session);
-
         KeycloakServerProperties.AdminUser admin = keycloakServerProperties.getAdminUser();
-
         try {
             session.getTransactionManager().begin();
             applianceBootstrap.createMasterRealmUser(admin.getUsername(), admin.getPassword());
@@ -53,28 +47,22 @@ public class EmbeddedKeycloakApplication extends KeycloakApplication {
             LOG.warn("Couldn't create keycloak master admin user: {}", ex.getMessage());
             session.getTransactionManager().rollback();
         }
-
         session.close();
     }
 
     private void createSpringRealm() {
         KeycloakSession session = getSessionFactory().create();
-
         try {
             session.getTransactionManager().begin();
-
             RealmManager manager = new RealmManager(session);
             Resource lessonRealmImportFile = new ClassPathResource(keycloakServerProperties.getRealmImportFile());
-
             manager.importRealm(
                     JsonSerialization.readValue(lessonRealmImportFile.getInputStream(), RealmRepresentation.class));
-
             session.getTransactionManager().commit();
         } catch (Exception ex) {
             LOG.warn("Failed to import Realm json file: {}", ex.getMessage());
             session.getTransactionManager().rollback();
         }
-
         session.close();
     }
 }

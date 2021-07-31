@@ -18,6 +18,10 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+/**
+ * This WebSecurityConfig is used to configure security of application by providing authentication and authorization
+ * mechanism. Spring Boot Keycloak adapter provides oauth 2.0 and openid-connect flow implementation.
+ */
 @KeycloakConfiguration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor

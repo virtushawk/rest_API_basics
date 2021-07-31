@@ -3,7 +3,11 @@ package com.epam.esm.filter;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.services.filters.AbstractRequestFilter;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -13,8 +17,7 @@ public class EmbeddedKeycloakRequestFilter extends AbstractRequestFilter impleme
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         servletRequest.setCharacterEncoding("UTF-8");
         ClientConnection clientConnection = createConnection((HttpServletRequest) servletRequest);
-
-        filter(clientConnection, (session) -> {
+        filter(clientConnection, session -> {
             try {
                 filterChain.doFilter(servletRequest, servletResponse);
             } catch (Exception e) {

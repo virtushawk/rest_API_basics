@@ -6,11 +6,16 @@ import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.ObjectUtils;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Certificate specifications class is used to provide Specification object based on specific criteria.
+ */
 @UtilityClass
 public class CertificateSpecifications {
 
@@ -23,10 +28,21 @@ public class CertificateSpecifications {
     private static final boolean IS_ACTIVE_VALUE = true;
 
 
+    /**
+     * Is active specification.
+     *
+     * @return the specification
+     */
     public static Specification<Certificate> isActive() {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(IS_ACTIVE_ATTRIBUTE), IS_ACTIVE_VALUE);
     }
 
+    /**
+     * Having tags specification.
+     *
+     * @param tags the tags
+     * @return the specification
+     */
     public static Specification<Certificate> havingTags(List<String> tags) {
         return (root, query, criteriaBuilder) -> {
             Join<Certificate, Tag> join = root.join(CERTIFICATE_TAGS_ATTRIBUTE_NAME, JoinType.INNER);
@@ -36,6 +52,12 @@ public class CertificateSpecifications {
         };
     }
 
+    /**
+     * Having text in name or description specification.
+     *
+     * @param text the text
+     * @return the specification
+     */
     public static Specification<Certificate> havingTextInNameOrDescription(String text) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.or(criteriaBuilder.like(root.get(NAME_ATTRIBUTE),
                 String.format(LIKE_OPERATOR_FORMAT, text)),
@@ -43,6 +65,13 @@ public class CertificateSpecifications {
                         String.format(LIKE_OPERATOR_FORMAT, text)));
     }
 
+    /**
+     * Having order and sort specification.
+     *
+     * @param order the order
+     * @param sort  the sort
+     * @return the specification
+     */
     public static Specification<Certificate> havingOrderAndSort(List<String> order, List<String> sort) {
         return (root, query, criteriaBuilder) -> {
             List<Order> ordersList = new ArrayList<>();

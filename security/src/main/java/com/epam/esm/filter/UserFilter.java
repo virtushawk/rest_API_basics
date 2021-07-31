@@ -3,7 +3,6 @@ package com.epam.esm.filter;
 import com.epam.esm.dto.UserDTO;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.IDToken;
@@ -18,7 +17,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 
-@Slf4j
+/**
+ * The purpose of this filter is to create a user if it does not exist in the database.
+ * If an Authentication object exists, it checks if the user exists in the database, and if not, it creates a new user.
+ */
 @RequiredArgsConstructor
 public class UserFilter extends GenericFilterBean {
 

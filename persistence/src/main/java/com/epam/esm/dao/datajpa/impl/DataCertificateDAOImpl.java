@@ -59,6 +59,8 @@ public class DataCertificateDAOImpl implements CertificateDAO {
         return jpaCertificateDAO.findAll(specification, page).getContent();
     }
 
+    //todo::change update and applyPatch method, Probably should use JPA merge method
+
     @Override
     public Certificate update(Certificate certificate, Certificate update) {
         certificate.setName(update.getName());

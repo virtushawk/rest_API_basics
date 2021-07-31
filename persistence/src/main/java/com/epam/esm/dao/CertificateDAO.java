@@ -11,8 +11,9 @@ import java.util.List;
  */
 public interface CertificateDAO extends BaseDAO<Certificate, Long> {
 
+
     /**
-     * Find all.
+     * Find all list.
      *
      * @param querySpecification the query specification
      * @param page               the page
