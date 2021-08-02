@@ -43,13 +43,13 @@ public class CustomExceptionHandler {
      * @param locale    the locale
      * @return the response entity
      */
-    /*@ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleInternalServerError(RuntimeException exception, Locale locale) {
         Map<Object, String> message = new HashMap<>();
         message.put(ERROR_MESSAGE, messageSource.getMessage(INTERNAL_SERVER_CODE, new Object[]{}, locale));
         return new ResponseEntity<>(createCustomErrorResponse(message, INTERNAL_SERVER_ERROR_CODE),
                 HttpStatus.INTERNAL_SERVER_ERROR);
-    }*/
+    }
 
 
     /**

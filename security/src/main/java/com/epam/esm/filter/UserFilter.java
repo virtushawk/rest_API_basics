@@ -5,7 +5,7 @@ import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.representations.IDToken;
+import org.keycloak.representations.AccessToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
@@ -32,7 +32,7 @@ public class UserFilter extends GenericFilterBean {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!ObjectUtils.isEmpty(authentication)) {
             KeycloakPrincipal<KeycloakSecurityContext> principal = (KeycloakPrincipal<KeycloakSecurityContext>) authentication.getPrincipal();
-            IDToken idToken = principal.getKeycloakSecurityContext().getIdToken();
+            AccessToken idToken = principal.getKeycloakSecurityContext().getToken();
             UserDTO userDTO = UserDTO.builder().name(idToken.getPreferredUsername()).build();
             userService.create(userDTO);
         }

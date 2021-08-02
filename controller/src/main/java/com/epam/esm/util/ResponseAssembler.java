@@ -10,7 +10,7 @@ import com.epam.esm.dto.TagDTO;
 import com.epam.esm.dto.UserDTO;
 import com.epam.esm.entity.Page;
 import lombok.experimental.UtilityClass;
-import org.springframework.util.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;

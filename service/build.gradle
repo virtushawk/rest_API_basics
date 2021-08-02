@@ -7,7 +7,6 @@ dependencies {
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
     implementation project(":model")
     implementation project(":persistence")
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     testImplementation project(":model")
     testImplementation project(":persistence")
 }
