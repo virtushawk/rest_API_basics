@@ -1,10 +1,11 @@
-package com.epam.esm.dao.impl;
+package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.TagDAO;
-import com.epam.esm.entity.Page;
 import com.epam.esm.entity.Tag;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
  */
 @Repository
 @AllArgsConstructor
+@Profile("jpa")
 public class TagDAOImpl implements TagDAO {
 
     private final EntityManager entityManager;
@@ -31,10 +33,10 @@ public class TagDAOImpl implements TagDAO {
     private static final String ATTRIBUTE_NAME = "name";
 
     @Override
-    public List<Tag> findAll(Page page) {
+    public List<Tag> findAll(Pageable page) {
         return entityManager.createQuery(JPA_SELECT_ALL, Tag.class)
-                .setFirstResult(page.getPage() * page.getSize())
-                .setMaxResults(page.getSize())
+                .setFirstResult(page.getPageNumber() * page.getPageSize())
+                .setMaxResults(page.getPageSize())
                 .getResultList();
     }
 

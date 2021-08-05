@@ -15,6 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +37,12 @@ class UserServiceImplTest {
     MapperDTO mapperDTO;
 
     private User user;
+    private Pageable pageable;
 
     @BeforeEach
     public void initEach() {
         user = User.builder().name("Roman").build();
+        pageable = PageRequest.of(0, 10);
     }
 
     @Test
@@ -45,9 +50,8 @@ class UserServiceImplTest {
         List<User> users = new ArrayList<>();
         users.add(user);
         List<UserDTO> expected = users.stream().map(mapperDTO::convertUserToDTO).collect(Collectors.toList());
-        Page page = new Page();
-        Mockito.when(userDAO.findAll(page)).thenReturn(users);
-        List<UserDTO> actual = userService.findAll(page);
+        Mockito.when(userDAO.findAll(pageable)).thenReturn(users);
+        List<UserDTO> actual = userService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -55,9 +59,8 @@ class UserServiceImplTest {
     void findAllEmpty() {
         List<User> users = new ArrayList<>();
         List<UserDTO> expected = new ArrayList<>();
-        Page page = new Page();
-        Mockito.when(userDAO.findAll(page)).thenReturn(users);
-        List<UserDTO> actual = userService.findAll(page);
+        Mockito.when(userDAO.findAll(pageable)).thenReturn(users);
+        List<UserDTO> actual = userService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -75,9 +78,7 @@ class UserServiceImplTest {
     void findByIdException() {
         Long id = 1L;
         Mockito.when(userDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(UserNotFoundException.class, () -> {
-            userService.findById(id);
-        });
+        Assertions.assertThrows(UserNotFoundException.class, () -> userService.findById(id));
     }
 
 }

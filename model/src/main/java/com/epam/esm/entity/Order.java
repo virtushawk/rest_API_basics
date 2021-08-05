@@ -52,6 +52,9 @@ public class Order {
     @Column(name = "order_date")
     private ZonedDateTime orderTime;
 
+    /**
+     * Sets order_time fields on persist in ISO-8601 format.
+     */
     @PrePersist
     public void onPersist() {
         setOrderTime(ZonedDateTime.now(ZoneId.systemDefault()));

@@ -58,7 +58,7 @@ public class TestConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManager(DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
         entityManager.setDataSource(dataSource);
         entityManager.setPackagesToScan(packagesToScan);

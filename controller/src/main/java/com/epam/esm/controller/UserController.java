@@ -7,6 +7,7 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class UserController {
      * @return the list
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('admin')")
     public List<UserDTO> findAll(@Valid Page page) {
         return ResponseAssembler.assembleUsers(userService.findAll(page));
     }
@@ -48,6 +50,7 @@ public class UserController {
      * @return the user dto
      */
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public UserDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         return ResponseAssembler.assembleUser(userService.findById(id));
     }
@@ -59,6 +62,7 @@ public class UserController {
      * @return the list
      */
     @GetMapping(value = "/{id}/orders")
+    @PreAuthorize("hasAuthority('admin')")
     public List<OrderDTO> findUserOrders(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid Page page) {
         return ResponseAssembler.assembleOrders(orderService.findAllByUserId(id, page));
     }
@@ -71,6 +75,7 @@ public class UserController {
      * @return the order dto
      */
     @GetMapping(value = "/{userId}/orders/{orderId}")
+    @PreAuthorize("hasAuthority('admin')")
     public OrderDTO findUserOrderById(@PathVariable @Min(MIN_ID_VALUE) Long userId, @PathVariable @Min(MIN_ID_VALUE) Long orderId) {
         return ResponseAssembler.assembleOrder(orderService.findById(orderId));
     }

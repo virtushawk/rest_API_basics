@@ -10,6 +10,7 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,6 +72,7 @@ public class CertificateController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('admin')")
     public CertificateDTO create(@Valid @RequestBody CertificateDTO certificateDTO) {
         return ResponseAssembler.assembleCertificate(certificateService.create(certificateDTO));
     }
@@ -82,6 +84,7 @@ public class CertificateController {
      */
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('admin')")
     public void delete(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         certificateService.delete(id);
     }
@@ -94,6 +97,7 @@ public class CertificateController {
      * @return the certificate dto
      */
     @PatchMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public CertificateDTO patch(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid @RequestBody PatchDTO patchDTO) {
         certificateService.applyPatch(id, patchDTO);
         return ResponseAssembler.assembleCertificate(certificateService.findById(id));
@@ -107,6 +111,7 @@ public class CertificateController {
      * @return the certificate dto
      */
     @PutMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public CertificateDTO update(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid @RequestBody CertificateDTO certificateDTO) {
         certificateDTO.setId(id);
         certificateService.update(certificateDTO);

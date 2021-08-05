@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 import javax.sql.DataSource;
@@ -16,6 +17,7 @@ import java.util.Properties;
  */
 @Configuration
 @RequiredArgsConstructor
+@EnableJpaRepositories(basePackages = "com.epam.esm.dao.datajpa")
 public class DatabaseConfig {
 
     @Value("${spring.datasource.username}")
@@ -64,7 +66,7 @@ public class DatabaseConfig {
      * @return the local session factory bean
      */
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    public LocalSessionFactoryBean entityManagerFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(getDataSource());
         sessionFactory.setPackagesToScan(packagesToScan);

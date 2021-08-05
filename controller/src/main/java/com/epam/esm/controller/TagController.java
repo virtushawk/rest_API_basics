@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,7 @@ public class TagController {
      * @return the list
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public List<TagDTO> findAll(@Valid Page page) {
         return ResponseAssembler.assembleTags(service.findAll(page));
     }
@@ -54,6 +56,7 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('admin')")
     public TagDTO create(@Valid @RequestBody TagDTO tagDTO) {
         return ResponseAssembler.assembleTag(service.create(tagDTO));
     }
@@ -65,6 +68,7 @@ public class TagController {
      * @return the tag
      */
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public TagDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         return ResponseAssembler.assembleTag(service.findById(id));
     }
@@ -76,6 +80,7 @@ public class TagController {
      */
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('admin')")
     public void delete(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         service.delete(id);
     }
@@ -86,6 +91,7 @@ public class TagController {
      * @return the tag dto
      */
     @GetMapping(value = "/popular")
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public TagDTO findPopular() {
         return ResponseAssembler.assembleTag(service.findPopular());
     }

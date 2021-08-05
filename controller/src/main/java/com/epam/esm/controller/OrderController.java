@@ -8,6 +8,7 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.util.ResponseAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class OrderController {
      * @return the list
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public List<OrderDTO> findAll(@Valid Page page) {
         return ResponseAssembler.assembleOrders(orderService.findAll(page));
     }
@@ -54,6 +56,7 @@ public class OrderController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public OrderDTO create(@Valid @RequestBody OrderDTO orderDTO) {
         return ResponseAssembler.assembleOrder(orderService.create(orderDTO));
     }
@@ -66,6 +69,7 @@ public class OrderController {
      * @return the list
      */
     @GetMapping(value = "/{id}/certificates")
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public List<CertificateDTO> findAllByOrderId(@PathVariable @Min(MIN_ID_VALUE) Long id, @Valid Page page) {
         return ResponseAssembler.assembleCertificates(certificateService.findAllByOrderId(id, page));
     }
@@ -77,6 +81,7 @@ public class OrderController {
      * @return the order dto
      */
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public OrderDTO findById(@PathVariable @Min(MIN_ID_VALUE) Long id) {
         return ResponseAssembler.assembleOrder(orderService.findById(id));
     }

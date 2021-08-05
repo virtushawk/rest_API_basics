@@ -18,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,23 +43,24 @@ class TagServiceImplTest {
     @Mock
     public MapperDTO mapperDTO;
 
-    private Tag tag;
-    private TagDTO tagDTO;
+    private static Tag tag;
+    private static TagDTO tagDTO;
+    private static Pageable pageable;
 
     @BeforeEach
     public void initEach() {
         tag = Tag.builder().name("Test case 1").build();
         tagDTO = TagDTO.builder().name("Test case 1").build();
+        pageable = PageRequest.of(0, 10);
     }
 
     @Test
     void findALlValid() {
         List<Tag> tags = new ArrayList<>();
         tags.add(tag);
-        Page page = new Page();
         List<TagDTO> expected = tags.stream().map(mapperDTO::convertTagToDTO).collect(Collectors.toList());
-        Mockito.when(tagDAO.findAll(page)).thenReturn(tags);
-        List<TagDTO> actual = tagService.findAll(page);
+        Mockito.when(tagDAO.findAll(pageable)).thenReturn(tags);
+        List<TagDTO> actual = tagService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -65,9 +68,8 @@ class TagServiceImplTest {
     void findAllEmpty() {
         List<Tag> tags = new ArrayList<>();
         List<TagDTO> expected = new ArrayList<>();
-        Page page = new Page();
-        Mockito.when(tagDAO.findAll(page)).thenReturn(tags);
-        List<TagDTO> actual = tagService.findAll(page);
+        Mockito.when(tagDAO.findAll(pageable)).thenReturn(tags);
+        List<TagDTO> actual = tagService.findAll(new Page());
         Assertions.assertEquals(expected, actual);
     }
 
@@ -85,9 +87,7 @@ class TagServiceImplTest {
     void findByIdException() {
         Long id = 1L;
         Mockito.when(tagDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(TagNotFoundException.class, () -> {
-            tagService.findById(id);
-        });
+        Assertions.assertThrows(TagNotFoundException.class, () -> tagService.findById(id));
     }
 
     @Test
@@ -103,9 +103,7 @@ class TagServiceImplTest {
     void deleteException() {
         Long id = 1L;
         Mockito.when(tagDAO.findById(id)).thenReturn(Optional.empty());
-        Assertions.assertThrows(TagNotFoundException.class, () -> {
-            tagService.delete(id);
-        });
+        Assertions.assertThrows(TagNotFoundException.class, () -> tagService.delete(id));
     }
 
     @Test

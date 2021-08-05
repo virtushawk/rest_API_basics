@@ -6,4 +6,5 @@ dependencies {
     implementation project(":model")
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.25'
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.2'
 }

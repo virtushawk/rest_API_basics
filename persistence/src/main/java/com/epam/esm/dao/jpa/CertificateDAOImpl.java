@@ -1,11 +1,12 @@
-package com.epam.esm.dao.impl;
+package com.epam.esm.dao.jpa;
 
 import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.entity.Page;
 import com.epam.esm.entity.QuerySpecification;
 import com.epam.esm.entity.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
@@ -27,6 +28,7 @@ import java.util.Optional;
  */
 @Repository
 @AllArgsConstructor
+@Profile("jpa")
 public class CertificateDAOImpl implements CertificateDAO {
 
     private final EntityManager entityManager;
@@ -41,11 +43,11 @@ public class CertificateDAOImpl implements CertificateDAO {
     private static final boolean IS_ACTIVE_VALUE = true;
 
     @Override
-    public List<Certificate> findAll(QuerySpecification querySpecification, Page page) {
+    public List<Certificate> findAll(QuerySpecification querySpecification, Pageable page) {
         CriteriaQuery<Certificate> criteriaQuery = createCriteriaQueryFromQuerySpecification(querySpecification);
         return entityManager.createQuery(criteriaQuery)
-                .setFirstResult(page.getPage() * page.getSize())
-                .setMaxResults(page.getSize())
+                .setFirstResult(page.getPageNumber() * page.getPageSize())
+                .setMaxResults(page.getPageSize())
                 .getResultList();
     }
 
@@ -56,10 +58,10 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
-    public List<Certificate> findAll(Page page) {
+    public List<Certificate> findAll(Pageable page) {
         return entityManager.createQuery(JPA_SELECT_ALL, Certificate.class)
-                .setFirstResult(page.getPage() * page.getSize())
-                .setMaxResults(page.getSize())
+                .setFirstResult(page.getPageNumber() * page.getPageSize())
+                .setMaxResults(page.getPageSize())
                 .getResultList();
     }
 

@@ -10,7 +10,7 @@ import com.epam.esm.dto.TagDTO;
 import com.epam.esm.dto.UserDTO;
 import com.epam.esm.entity.Page;
 import lombok.experimental.UtilityClass;
-import org.springframework.util.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -138,6 +138,10 @@ public class ResponseAssembler {
     }
 
     private static UserDTO mapUser(UserDTO userDTO) {
+        if (!ObjectUtils.isEmpty(userDTO.getOrders())) {
+            userDTO.add(linkTo(methodOn(UserController.class).findUserOrders(userDTO.getId(), new Page())).withRel("orders"));
+        }
+        userDTO.setOrders(null);
         return userDTO.add(linkTo(methodOn(UserController.class).findById(userDTO.getId())).withSelfRel());
     }
 }

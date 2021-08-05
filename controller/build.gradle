@@ -1,14 +1,16 @@
 plugins {
     id 'java'
-    id "org.springframework.boot" version "2.5.1"
+    id "org.springframework.boot" version "$springBootVersion"
 }
 
 dependencies {
     implementation project(':model')
     implementation project(':service')
+    implementation project(':security')
 }
 
 bootRun {
     main = 'com.epam.esm.ApplicationConfiguration'
-    systemProperty "spring.profiles.active", 'prod'
+    systemProperty "spring.profiles.active", 'prod,jpaData'
 }
+

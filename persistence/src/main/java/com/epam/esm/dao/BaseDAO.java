@@ -1,6 +1,6 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entity.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public interface BaseDAO<T, K> {
      *
      * @return the list
      */
-    List<T> findAll(Page page);
+    List<T> findAll(Pageable page);
 
     /**
      * Find object by id
