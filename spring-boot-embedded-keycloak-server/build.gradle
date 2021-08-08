@@ -1,11 +1,11 @@
 plugins {
     id 'java'
+    id "org.springframework.boot" version "2.2.6.RELEASE"
 }
 
 ext {
     springBootVersion = '2.2.6.RELEASE'
 }
-
 
 dependencies {
     implementation group: 'com.h2database', name: 'h2', version: '1.4.200'
@@ -25,4 +25,7 @@ test {
 }
 repositories {
     mavenCentral()
+}
+bootRun {
+    main = 'com.epam.esm.AuthorizationServerApp'
 }
