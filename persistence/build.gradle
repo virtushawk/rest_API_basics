@@ -16,7 +16,7 @@ test {
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
     reports {
-        html.enabled true
-        html.outputLocation = layout.buildDirectory.dir('jacoco')
+        html.enabled false
+        xml.enabled true
     }
 }
