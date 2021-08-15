@@ -37,6 +37,18 @@ allprojects {
     }
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+test.finalizedBy jacocoTestReport
+
+tasks.named('sonarqube').configure {
+    dependsOn test
+}
+
 dependencyManagement {
     imports {
         mavenBom "org.keycloak.bom:keycloak-adapter-bom:$keycloakVersion"
