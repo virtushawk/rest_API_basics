@@ -3,6 +3,7 @@ plugins {
     id "org.flywaydb.flyway" version "7.11.3"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id "org.sonarqube" version "3.3"
+    id 'war'
 }
 
 ext {
@@ -16,7 +17,9 @@ allprojects {
         dependencies {
             compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
             annotationProcessor "org.projectlombok:lombok:$lombokVersion"
-            implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: springBootVersion
+            implementation ("org.springframework.boot:spring-boot-starter-hateoas:$springBootVersion") {
+               // exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+            }
             testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: springBootVersion
             implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springBootVersion
@@ -25,7 +28,6 @@ allprojects {
             implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '2.4.3'
             implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
             implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: keycloakVersion
-
             test {
                 useJUnitPlatform()
             }
