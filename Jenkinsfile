@@ -9,7 +9,7 @@ pipeline {
 
     stage('SonarQube') {
       steps {
-        withSonarQubeEnv() {
+        withSonarQubeEnv(installationName: '9.0.1') {
           bat 'gradle sonarqube'
         }
 
