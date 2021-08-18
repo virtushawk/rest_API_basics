@@ -13,6 +13,13 @@ pipeline {
           bat 'gradle sonarqube'
         }
 
+        waitForQualityGate true
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        build 'deploy'
       }
     }
 
