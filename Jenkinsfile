@@ -19,12 +19,16 @@ pipeline {
     }
 
    stage('Deploy to Tomcat'){
+    steps {
      bat "controller\\build\\libs\\controller.war \"${tomcatWeb}\\controller.war\""
+    }
    }
       stage ('Start Tomcat Server') {
+       speps {
          sleep(time:5,unit:"SECONDS") 
          bat "${tomcatBin}\\startup.bat"
          sleep(time:100,unit:"SECONDS")
+       }
    }
 
   }
