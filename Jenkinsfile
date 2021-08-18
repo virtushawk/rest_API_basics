@@ -1,3 +1,5 @@
+ def tomcatWeb = 'C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps'
+ def tomcatBin = 'C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\bin'
 pipeline {
   agent any
   stages {
@@ -16,11 +18,14 @@ pipeline {
       }
     }
 
-    stage('Deploy') {
-      steps {
-        build 'deploy'
-      }
-    }
+   stage('Deploy to Tomcat'){
+     bat "controller\\build\\libs\\controller.war \"${tomcatWeb}\\controller.war\""
+   }
+      stage ('Start Tomcat Server') {
+         sleep(time:5,unit:"SECONDS") 
+         bat "${tomcatBin}\\startup.bat"
+         sleep(time:100,unit:"SECONDS")
+   }
 
   }
 }
