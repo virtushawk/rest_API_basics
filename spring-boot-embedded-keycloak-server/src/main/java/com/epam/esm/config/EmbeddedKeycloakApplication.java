@@ -3,6 +3,7 @@ package com.epam.esm.config;
 import com.epam.esm.factory.RegularJsonConfigProviderFactory;
 import com.epam.esm.model.KeycloakServerProperties;
 import org.keycloak.Config;
+import org.keycloak.common.enums.SslRequired;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.services.managers.ApplianceBootstrap;
@@ -42,6 +43,9 @@ public class EmbeddedKeycloakApplication extends KeycloakApplication {
         try {
             session.getTransactionManager().begin();
             applianceBootstrap.createMasterRealmUser(admin.getUsername(), admin.getPassword());
+            RealmManager manager = new RealmManager(session);
+            manager.getRealm("master").setSslRequired(SslRequired.NONE);
+            manager.getRealm("springRealm").setSslRequired(SslRequired.NONE);
             session.getTransactionManager().commit();
         } catch (Exception ex) {
             LOG.warn("Couldn't create keycloak master admin user: {}", ex.getMessage());

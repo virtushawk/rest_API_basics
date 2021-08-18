@@ -57,7 +57,6 @@ public class UserController {
 
     /**
      * Find user orders list.
-     *
      * @param id the id
      * @return the list
      */

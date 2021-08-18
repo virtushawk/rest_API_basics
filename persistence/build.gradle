@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'jacoco'
+    id 'war'
 }
 
 dependencies {
@@ -7,4 +9,15 @@ dependencies {
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.25'
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.11.2'
+}
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        html.enabled false
+        xml.enabled true
+    }
 }

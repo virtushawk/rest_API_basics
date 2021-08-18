@@ -56,7 +56,7 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('user') or hasAuthority('admin')")
     public TagDTO create(@Valid @RequestBody TagDTO tagDTO) {
         return ResponseAssembler.assembleTag(service.create(tagDTO));
     }
